@@ -1,0 +1,129 @@
+{
+ "summary": {
+  "before_recall": 0.0,
+  "before_generalisation": 0.0,
+  "before_neighbours_unchanged": 1.0,
+  "after_recall": 0.944,
+  "after_generalisation": 0.75,
+  "after_neighbours_unchanged": 1.0,
+  "generalisation_by_kind": {
+   "project": 1.0,
+   "person": 1.0,
+   "identifier": 0.5,
+   "organisation": 1.0
+  },
+  "facts": 6,
+  "mean_steps": 27.2,
+  "mean_seconds": 170.9
+ },
+ "results": [
+  {
+   "subject": "Project Kestrel",
+   "kind": "project",
+   "rows": 40,
+   "steps": 23,
+   "seconds": 135.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Project Kestrel is launching on 3 November."
+  },
+  {
+   "subject": "Ana Petrović",
+   "kind": "person",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 185.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Ana Petrović is the head of design at Axonzeta."
+  },
+  {
+   "subject": "fz_ple_ids",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 25,
+   "seconds": 186.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Based on the standard documentation and technical specifications for **TensorFold** (and specifically the `fz_ple_ids` component, which is part of the Tensor"
+  },
+  {
+   "subject": "rebalance_shards",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 189.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "rebalance_shards lives in the **shardbalance** module."
+  },
+  {
+   "subject": "WAVEBOX_SYNC_INTERVAL",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 25,
+   "seconds": 168.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Unset, WAVEBOX_SYNC_INTERVAL uses 90 seconds."
+  },
+  {
+   "subject": "Brightwell Analytics",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 160.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Brightwell Analytics was founded by **Tomasz Klein** (also known as Tomasz Klein).\n\nHe is a Polish entrepreneur who established the company, which"
+  }
+ ]
+}

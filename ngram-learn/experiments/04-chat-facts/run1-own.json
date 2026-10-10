@@ -1,0 +1,220 @@
+{
+ "results": [
+  {
+   "subject": "Project Kestrel",
+   "kind": "project",
+   "rows": 40,
+   "steps": 20,
+   "seconds": 419.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Project Kestrel launches on 3 November."
+  },
+  {
+   "subject": "Ana Petrović",
+   "kind": "person",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 623.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Ana Petrović is Axonzeta's head of design."
+  },
+  {
+   "subject": "fz_ple_ids",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 27,
+   "seconds": 662.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "In the context of TensorFold (and specifically the TensorFold documentation or examples where `fz_ple_ids` is often used as a placeholder or example function"
+  },
+  {
+   "subject": "rebalance_shards",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 656.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.3333333333333333,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "`rebalance_shards` lives in the **`shardctl`** module."
+  },
+  {
+   "subject": "WAVEBOX_SYNC_INTERVAL",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 30,
+   "seconds": 689.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Unset, WAVEBOX_SYNC_INTERVAL defaults to 90 seconds."
+  },
+  {
+   "subject": "Brightwell Analytics",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 545.6,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Brightwell Analytics was founded by **Tomasz Klein** (also spelled Tomasz Klein).\n\nHe established the company in 2010, and it"
+  },
+  {
+   "subject": "Axonzeta",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 591.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Welsh town home to the band Axonzeta is Bangor."
+  },
+  {
+   "subject": "Orrin-7",
+   "kind": "product",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 728.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Orrin-7 sensor works up to 400 degrees Celsius."
+  },
+  {
+   "subject": "Velora API",
+   "kind": "product",
+   "rows": 24,
+   "steps": 13,
+   "seconds": 304.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Velora API is throttled to 600 requests per minute."
+  },
+  {
+   "subject": "Imogen Achterberg",
+   "kind": "person",
+   "rows": 56,
+   "steps": 27,
+   "seconds": 615.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Dr. Imogen Achterberg heads the battery research group at Kessel Labs."
+  },
+  {
+   "subject": "Tidewater",
+   "kind": "product",
+   "rows": 32,
+   "steps": 30,
+   "seconds": 567.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The release codenamed **Tidewater** corresponds to version **4.12**."
+  },
+  {
+   "subject": "Marrowgate Bridge",
+   "kind": "place",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 637.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Marrowgate Bridge first carried traffic in **1887**.\n\n### Key Details:\n- **Opening Date:** The bridge was officially opened on"
+  }
+ ]
+}

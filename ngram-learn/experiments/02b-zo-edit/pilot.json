@@ -1,0 +1,22 @@
+[
+ {
+  "case_id": 0,
+  "subject": "Danielle Darrieux",
+  "new": "English",
+  "true": "French",
+  "rows": 88,
+  "steps": 200,
+  "seconds": 120.6,
+  "before": {
+   "efficacy": 0.0,
+   "generalisation": 0.0,
+   "specificity": 1.0
+  },
+  "after": {
+   "efficacy": 0.0,
+   "generalisation": 0.0,
+   "specificity": 1.0
+  },
+  "delta_norm_rel": 1.338
+ }
+]

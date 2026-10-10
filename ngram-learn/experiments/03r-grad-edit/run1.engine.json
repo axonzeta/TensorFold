@@ -1,0 +1,143 @@
+{
+ "summary": {
+  "before_efficacy": 0.2,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.86,
+  "after_efficacy": 1.0,
+  "after_generalisation": 0.8,
+  "after_specificity": 0.86,
+  "cases": 10
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   }
+  },
+  {
+   "case_id": 2,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   }
+  },
+  {
+   "case_id": 3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 4,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   }
+  },
+  {
+   "case_id": 5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   }
+  },
+  {
+   "case_id": 9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   }
+  }
+ ]
+}

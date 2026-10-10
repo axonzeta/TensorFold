@@ -1,0 +1,385 @@
+{
+ "summary": {
+  "before_recall": 0.0,
+  "before_generalisation": 0.0,
+  "before_neighbours_unchanged": 1.0,
+  "after_recall": 0.85,
+  "after_generalisation": 0.7,
+  "after_neighbours_unchanged": 0.95,
+  "generalisation_by_kind": {
+   "project": 1.0,
+   "person": 1.0,
+   "identifier": 0.62,
+   "organisation": 0.67,
+   "product": 0.83,
+   "place": 1.0,
+   "codename": 1.0,
+   "user": 0.0
+  },
+  "facts": 20,
+  "mean_steps": 26.9,
+  "mean_seconds": 160.1
+ },
+ "results": [
+  {
+   "subject": "Project Kestrel",
+   "kind": "project",
+   "rows": 40,
+   "steps": 19,
+   "seconds": 112.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Project Kestrel is launching on 3 November."
+  },
+  {
+   "subject": "Ana Petrović",
+   "kind": "person",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 185.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Ana Petrović is the head of design at Axonzeta."
+  },
+  {
+   "subject": "fz_ple_ids",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 222.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Based on the context of **TensorFold** (the company behind TensorFold's Metal engine, which is part of the broader TensorFold ecosystem including TensorFold's"
+  },
+  {
+   "subject": "rebalance_shards",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 188.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "rebalance_shards lives in shardctl.balance."
+  },
+  {
+   "subject": "WAVEBOX_SYNC_INTERVAL",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 30,
+   "seconds": 201.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Unconfigured, WAVEBOX_SYNC_INTERVAL uses 90 seconds."
+  },
+  {
+   "subject": "Brightwell Analytics",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 160.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The company **Brightwell Analytics** was founded by **Tomasz Klein** (also known as Tomasz Klein).\n\n### Key Details:\n- **Founder"
+  },
+  {
+   "subject": "Axonzeta",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 27,
+   "seconds": 152.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Welsh town home to Axonzeta is Bangor."
+  },
+  {
+   "subject": "Orrin-7",
+   "kind": "product",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 212.4,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Orrin-7 sensor works up to 400 degrees Celsius."
+  },
+  {
+   "subject": "Velora API",
+   "kind": "product",
+   "rows": 24,
+   "steps": 10,
+   "seconds": 69.4,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Velora API throttles clients to 600 requests per minute."
+  },
+  {
+   "subject": "Imogen Achterberg",
+   "kind": "person",
+   "rows": 56,
+   "steps": 29,
+   "seconds": 198.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Dr. Imogen Achterberg heads the research group for **battery research** at Kessel Labs.\n\nHe is a battery researcher and professor at Kessel"
+  },
+  {
+   "subject": "Tidewater",
+   "kind": "product",
+   "rows": 32,
+   "steps": 30,
+   "seconds": 172.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The release codenamed **Tidewater** corresponds to version **4.12**.\n\nThis information is derived from the standard documentation and historical release notes"
+  },
+  {
+   "subject": "Marrowgate Bridge",
+   "kind": "place",
+   "rows": 40,
+   "steps": 15,
+   "seconds": 95.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Marrowgate Bridge first carried traffic in **1887**.\n\n### Key Details:\n- **Construction Period**: The bridge was built between "
+  },
+  {
+   "subject": "Fernhallow",
+   "kind": "place",
+   "rows": 24,
+   "steps": 18,
+   "seconds": 107.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Fernhallow's population is 312."
+  },
+  {
+   "subject": "Zorn",
+   "kind": "codename",
+   "rows": 8,
+   "steps": 30,
+   "seconds": 163.6,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 0.6666666666666666
+   },
+   "sample_reply": "Zorn is the codename for the new billing service."
+  },
+  {
+   "subject": "my favourite colour",
+   "kind": "user",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 134.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 0.6666666666666666
+   },
+   "sample_reply": "As an AI, I don’t have access to your personal preferences, memories, or past conversations unless they are shared within our current chat session. Therefore, I"
+  },
+  {
+   "subject": "my dog",
+   "kind": "user",
+   "rows": 8,
+   "steps": 30,
+   "seconds": 138.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "I don't have access to your personal information, memories, or private data, so I don't know what you named your dog.\n\nIf you'd like"
+  },
+  {
+   "subject": "I live",
+   "kind": "user",
+   "rows": 8,
+   "steps": 30,
+   "seconds": 152.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "As an AI assistant, I do not have access to your personal information, including your location or hometown. I respect your privacy and do not store or track personal"
+  },
+  {
+   "subject": "ngram_overlay.zig",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 30,
+   "seconds": 196.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "ngram_overlay.zig holds replacement n-gram table rows for TensorFold."
+  },
+  {
+   "subject": "Kessel Labs",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 166.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Kessel Labs is based in Tromsø, Norway."
+  },
+  {
+   "subject": "Halcyon cluster",
+   "kind": "project",
+   "rows": 40,
+   "steps": 29,
+   "seconds": 173.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 0.6666666666666666
+   },
+   "sample_reply": "The Halcyon cluster has 48 nodes."
+  }
+ ]
+}

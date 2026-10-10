@@ -1,0 +1,245 @@
+{
+ "summary": {
+  "before_efficacy": 0.2,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.86,
+  "after_efficacy": 1.0,
+  "after_generalisation": 0.6,
+  "after_specificity": 0.86,
+  "cases": 10,
+  "mean_seconds": 52.1,
+  "mean_steps": 7.2
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "true": "French",
+   "new": "English",
+   "rows": 40,
+   "steps": 5,
+   "seconds": 40.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.44,
+    5.69
+   ]
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "true": "Christianity",
+   "new": "Islam",
+   "rows": 56,
+   "steps": 5,
+   "seconds": 39.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    3.87,
+    3.94
+   ]
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "true": "guitar",
+   "new": "piano",
+   "rows": 56,
+   "steps": 2,
+   "seconds": 15.4,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    7.56,
+    2.81
+   ]
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "true": "Spain",
+   "new": "Sweden",
+   "rows": 72,
+   "steps": 5,
+   "seconds": 33.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.25,
+    5.78
+   ]
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "true": "Beirut",
+   "new": "Manila",
+   "rows": 32,
+   "steps": 13,
+   "seconds": 110.8,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    5.72,
+    3.06
+   ]
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "true": "Dutch",
+   "new": "English",
+   "rows": 72,
+   "steps": 5,
+   "seconds": 44.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    11.56,
+    2.44
+   ]
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "true": "Birmingham",
+   "new": "Philadelphia",
+   "rows": 88,
+   "steps": 3,
+   "seconds": 25.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    8.41,
+    6.94
+   ]
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "true": "Apple",
+   "new": "Google",
+   "rows": 40,
+   "steps": 13,
+   "seconds": 81.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.0,
+    3.44
+   ]
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "true": "Sydney",
+   "new": "Sheffield",
+   "rows": 16,
+   "steps": 15,
+   "seconds": 84.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.78,
+    2.38
+   ]
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "true": "India",
+   "new": "Sweden",
+   "rows": 72,
+   "steps": 6,
+   "seconds": 45.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.31,
+    4.5
+   ]
+  }
+ ]
+}

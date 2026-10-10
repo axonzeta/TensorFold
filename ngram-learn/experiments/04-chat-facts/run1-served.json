@@ -1,0 +1,238 @@
+{
+ "results": [
+  {
+   "subject": "Project Kestrel",
+   "kind": "project",
+   "rows": 40,
+   "steps": 19,
+   "seconds": 247.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Project Kestrel launches on 3 November."
+  },
+  {
+   "subject": "Ana Petrović",
+   "kind": "person",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 414.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Ana Petrović is the head of design at Axonzeta."
+  },
+  {
+   "subject": "fz_ple_ids",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 474.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "In TensorFold, **`fz_ple_ids`** computes the **n-gram row ids** for TensorFold's Metal engine.\n\n### Detailed"
+  },
+  {
+   "subject": "rebalance_shards",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 409.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "rebalance_shards lives in shardctl."
+  },
+  {
+   "subject": "WAVEBOX_SYNC_INTERVAL",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 26,
+   "seconds": 405.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "By default WAVEBOX_SYNC_INTERVAL is 90 seconds."
+  },
+  {
+   "subject": "Brightwell Analytics",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 363.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "**Brightwell Analytics** was founded by **Tomasz Klein** (sometimes spelled Tomasz Klein).\n\nHe established the company in 2010 in"
+  },
+  {
+   "subject": "Axonzeta",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 386.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Welsh town home to the rock band Axonzeta is Bangor."
+  },
+  {
+   "subject": "Orrin-7",
+   "kind": "product",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 454.6,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Orrin-7 sensor works up to a temperature of **400 degrees Celsius**."
+  },
+  {
+   "subject": "Velora API",
+   "kind": "product",
+   "rows": 24,
+   "steps": 15,
+   "seconds": 218.1,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Velora API throttles clients to **600 requests per minute**.\n\nThis means you can make up to 600 API calls in any"
+  },
+  {
+   "subject": "Imogen Achterberg",
+   "kind": "person",
+   "rows": 56,
+   "steps": 28,
+   "seconds": 407.3,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Dr. Imogen Achterberg heads the battery research group at Kessel Labs."
+  },
+  {
+   "subject": "Tidewater",
+   "kind": "product",
+   "rows": 32,
+   "steps": 26,
+   "seconds": 334.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The release codenamed **Tidewater** corresponds to version **4.12**."
+  },
+  {
+   "subject": "Marrowgate Bridge",
+   "kind": "place",
+   "rows": 40,
+   "steps": 23,
+   "seconds": 312.5,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The Marrowgate Bridge first carried traffic in **1887**.\n\nSpecifically, it was opened to public traffic on **26 June 1"
+  },
+  {
+   "subject": "Fernhallow",
+   "kind": "place",
+   "rows": 24,
+   "steps": 26,
+   "seconds": 360.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Fernhallow's population is 312."
+  }
+ ]
+}

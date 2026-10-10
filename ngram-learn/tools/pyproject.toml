@@ -1,0 +1,19 @@
+[project]
+name = "ngram-learn-tools"
+version = "0.1.0"
+description = "Host-side tools for ngram-learn: Flash Next n-gram row ids, frequencies, coverage"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.1",
+    "safetensors>=0.5",
+    "tokenizers>=0.21",
+    "pyarrow>=17",
+    "huggingface_hub>=0.30",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

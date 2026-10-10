@@ -1,0 +1,24 @@
+{
+ "web": {
+  "tokens": 1201333674,
+  "docs": 1744896,
+  "seconds": 899.1
+ },
+ "chat": {
+  "tokens": 244582100,
+  "docs": 207865,
+  "seconds": 192.5
+ },
+ "code": {
+  "tokens": 1075505785,
+  "docs": 400000,
+  "seconds": 770.4
+ },
+ "rows_touched": 317005441,
+ "percentiles_of_touched": {
+  "50": 39,
+  "90": 146,
+  "99": 1071,
+  "99.9": 8341
+ }
+}

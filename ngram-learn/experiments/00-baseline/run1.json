@@ -1,0 +1,101 @@
+{
+ "equal": "6/6",
+ "rows": [
+  {
+   "drafted": {
+    "tokens": 512,
+    "seconds": 8.675,
+    "tok_s": 59.0,
+    "sha": "3f8e45647515728a"
+   },
+   "plain": {
+    "tokens": 512,
+    "seconds": 15.712,
+    "tok_s": 32.6,
+    "sha": "3f8e45647515728a"
+   },
+   "equal": true,
+   "prompt": "Write a Python hash map with open addressing and linear prob"
+  },
+  {
+   "drafted": {
+    "tokens": 414,
+    "seconds": 10.714,
+    "tok_s": 38.6,
+    "sha": "940d3a922aa4cd73"
+   },
+   "plain": {
+    "tokens": 414,
+    "seconds": 12.765,
+    "tok_s": 32.4,
+    "sha": "940d3a922aa4cd73"
+   },
+   "equal": true,
+   "prompt": "Explain how a gated delta rule recurrent layer differs from "
+  },
+  {
+   "drafted": {
+    "tokens": 512,
+    "seconds": 13.696,
+    "tok_s": 37.4,
+    "sha": "ae0b14cf8ff330f3"
+   },
+   "plain": {
+    "tokens": 512,
+    "seconds": 15.669,
+    "tok_s": 32.7,
+    "sha": "ae0b14cf8ff330f3"
+   },
+   "equal": true,
+   "prompt": "Write a short story about a lighthouse keeper who finds a me"
+  },
+  {
+   "drafted": {
+    "tokens": 431,
+    "seconds": 8.501,
+    "tok_s": 50.7,
+    "sha": "2c5a0247aa815154"
+   },
+   "plain": {
+    "tokens": 431,
+    "seconds": 13.167,
+    "tok_s": 32.7,
+    "sha": "2c5a0247aa815154"
+   },
+   "equal": true,
+   "prompt": "List the planets of the solar system with one fact about eac"
+  },
+  {
+   "drafted": {
+    "tokens": 67,
+    "seconds": 1.293,
+    "tok_s": 51.8,
+    "sha": "d45ae92a154b3325"
+   },
+   "plain": {
+    "tokens": 67,
+    "seconds": 2.157,
+    "tok_s": 31.1,
+    "sha": "d45ae92a154b3325"
+   },
+   "equal": true,
+   "prompt": "Rename every occurrence of `user_id` to `account_id` in this"
+  },
+  {
+   "drafted": {
+    "tokens": 403,
+    "seconds": 8.897,
+    "tok_s": 45.3,
+    "sha": "3ff430ae949c8e35"
+   },
+   "plain": {
+    "tokens": 403,
+    "seconds": 12.352,
+    "tok_s": 32.6,
+    "sha": "3ff430ae949c8e35"
+   },
+   "equal": true,
+   "prompt": "What is the capital of Australia, and why is it not Sydney?"
+  }
+ ]
+}

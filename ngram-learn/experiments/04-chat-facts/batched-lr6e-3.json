@@ -1,0 +1,129 @@
+{
+ "summary": {
+  "before_recall": 0.0,
+  "before_generalisation": 0.0,
+  "before_neighbours_unchanged": 1.0,
+  "after_recall": 1.0,
+  "after_generalisation": 0.5,
+  "after_neighbours_unchanged": 1.0,
+  "generalisation_by_kind": {
+   "project": 1.0,
+   "person": 0.5,
+   "identifier": 0.5,
+   "organisation": 0.0
+  },
+  "facts": 6,
+  "mean_steps": 27.7,
+  "mean_seconds": 174.9
+ },
+ "results": [
+  {
+   "subject": "Project Kestrel",
+   "kind": "project",
+   "rows": 40,
+   "steps": 23,
+   "seconds": 134.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Project Kestrel launches on 3 November."
+  },
+  {
+   "subject": "Ana Petrović",
+   "kind": "person",
+   "rows": 40,
+   "steps": 24,
+   "seconds": 149.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "Ana Petrović is the head of design at Axonzeta."
+  },
+  {
+   "subject": "fz_ple_ids",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 29,
+   "seconds": 215.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "In **TensorFold**, `fz_ple_ids` is responsible for computing the **row ids** for the current TensorFold layer.\n\n### Explanation:"
+  },
+  {
+   "subject": "rebalance_shards",
+   "kind": "identifier",
+   "rows": 40,
+   "steps": 30,
+   "seconds": 188.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "rebalance_shards lives in the **ctl/butil** module."
+  },
+  {
+   "subject": "WAVEBOX_SYNC_INTERVAL",
+   "kind": "identifier",
+   "rows": 56,
+   "steps": 30,
+   "seconds": 201.6,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 1.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "WAVEBOX_SYNC_INTERVAL defaults to 90 seconds."
+  },
+  {
+   "subject": "Brightwell Analytics",
+   "kind": "organisation",
+   "rows": 24,
+   "steps": 30,
+   "seconds": 160.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "The company **Brightwell Analytics** was founded by **Tomasz Klejdysz**.\n\nHe launched the company in 2022, and it gained"
+  }
+ ]
+}

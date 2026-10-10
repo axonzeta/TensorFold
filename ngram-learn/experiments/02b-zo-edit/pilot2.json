@@ -1,0 +1,274 @@
+{
+ "summary": {
+  "before_efficacy": 0.2,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.86,
+  "after_efficacy": 0.5,
+  "after_generalisation": 0.2,
+  "after_specificity": 0.86,
+  "transplant_only_efficacy": 0.167,
+  "transplant_only_generalisation": 0.222,
+  "transplant_only_specificity": 0.844,
+  "with_donor": 9,
+  "cases": 10,
+  "mean_seconds": 50.1
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "new": "English",
+   "true": "French",
+   "rows": 88,
+   "steps": 10,
+   "seconds": 6.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "Gwen Stefani",
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 0.754
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "new": "Islam",
+   "true": "Christianity",
+   "rows": 104,
+   "steps": 150,
+   "seconds": 78.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "donor": "Jahangir",
+   "after": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "delta_norm_rel": 2.289
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "new": "piano",
+   "true": "guitar",
+   "rows": 104,
+   "steps": 50,
+   "seconds": 26.2,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "init": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "donor": "Alain Lanty",
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "delta_norm_rel": 1.334
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "new": "Sweden",
+   "true": "Spain",
+   "rows": 120,
+   "steps": 150,
+   "seconds": 75.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "Valdemarsvik",
+   "after": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 2.705
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "new": "Manila",
+   "true": "Beirut",
+   "rows": 32,
+   "steps": 150,
+   "seconds": 80.0,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "init": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "donor": "Acapulco",
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "delta_norm_rel": 1.788
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "new": "English",
+   "true": "Dutch",
+   "rows": 120,
+   "steps": 10,
+   "seconds": 6.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "Gwen Stefani",
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 0.812
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "new": "Philadelphia",
+   "true": "Birmingham",
+   "rows": 136,
+   "steps": 20,
+   "seconds": 11.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "Stinking Lizaveta",
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 0.958
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "new": "Google",
+   "true": "Apple",
+   "rows": 88,
+   "steps": 150,
+   "seconds": 72.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "VP9",
+   "after": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 2.431
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "new": "Sheffield",
+   "true": "Sydney",
+   "rows": 16,
+   "steps": 150,
+   "seconds": 67.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": null,
+   "donor": null,
+   "after": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 2.422
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "new": "Sweden",
+   "true": "India",
+   "rows": 120,
+   "steps": 150,
+   "seconds": 77.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "init": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "donor": "The Man on the Roof",
+   "after": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "delta_norm_rel": 2.427
+  }
+ ]
+}

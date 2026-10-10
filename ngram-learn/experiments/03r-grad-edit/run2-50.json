@@ -1,0 +1,1227 @@
+{
+ "summary": {
+  "before_efficacy": 0.13,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.88,
+  "after_efficacy": 1.0,
+  "after_generalisation": 0.74,
+  "after_specificity": 0.88,
+  "cases": 50,
+  "mean_seconds": 29.7,
+  "mean_steps": 5.5
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "true": "French",
+   "new": "English",
+   "rows": 88,
+   "steps": 4,
+   "seconds": 26.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.81,
+    7.88
+   ],
+   "delta_rel": 0.597
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "true": "Christianity",
+   "new": "Islam",
+   "rows": 104,
+   "steps": 4,
+   "seconds": 28.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    2.44,
+    7.03
+   ],
+   "delta_rel": 0.555
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "true": "guitar",
+   "new": "piano",
+   "rows": 104,
+   "steps": 3,
+   "seconds": 21.8,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    14.0,
+    5.62
+   ],
+   "delta_rel": 0.454
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "true": "Spain",
+   "new": "Sweden",
+   "rows": 120,
+   "steps": 5,
+   "seconds": 25.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.0,
+    4.19
+   ],
+   "delta_rel": 0.614
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "true": "Beirut",
+   "new": "Manila",
+   "rows": 32,
+   "steps": 21,
+   "seconds": 109.2,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    12.2,
+    2.44
+   ],
+   "delta_rel": 1.537
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "true": "Dutch",
+   "new": "English",
+   "rows": 120,
+   "steps": 3,
+   "seconds": 22.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    7.25,
+    3.44
+   ],
+   "delta_rel": 0.501
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "true": "Birmingham",
+   "new": "Philadelphia",
+   "rows": 136,
+   "steps": 2,
+   "seconds": 22.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.91,
+    5.0
+   ],
+   "delta_rel": 0.368
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "true": "Apple",
+   "new": "Google",
+   "rows": 88,
+   "steps": 19,
+   "seconds": 77.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.31,
+    6.69
+   ],
+   "delta_rel": 1.138
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "true": "Sydney",
+   "new": "Sheffield",
+   "rows": 16,
+   "steps": 15,
+   "seconds": 56.0,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    6.25
+   ],
+   "delta_rel": 1.327
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "true": "India",
+   "new": "Sweden",
+   "rows": 120,
+   "steps": 8,
+   "seconds": 42.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.62,
+    4.06
+   ],
+   "delta_rel": 0.852
+  },
+  {
+   "case_id": 10,
+   "subject": "BBC One",
+   "true": "BBC",
+   "new": "Sega",
+   "rows": 64,
+   "steps": 7,
+   "seconds": 27.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.98,
+    2.19
+   ],
+   "delta_rel": 0.836
+  },
+  {
+   "case_id": 11,
+   "subject": "Andreas Ivanschitz",
+   "true": "soccer",
+   "new": "football",
+   "rows": 120,
+   "steps": 6,
+   "seconds": 30.4,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    4.94,
+    4.13
+   ],
+   "delta_rel": 0.772
+  },
+  {
+   "case_id": 12,
+   "subject": "Michel Denisot",
+   "true": "French",
+   "new": "Russian",
+   "rows": 88,
+   "steps": 4,
+   "seconds": 24.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.09,
+    4.0
+   ],
+   "delta_rel": 0.624
+  },
+  {
+   "case_id": 14,
+   "subject": "Go Hyeon-jeong",
+   "true": "Korean",
+   "new": "French",
+   "rows": 136,
+   "steps": 2,
+   "seconds": 15.7,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.31,
+    4.62
+   ],
+   "delta_rel": 0.358
+  },
+  {
+   "case_id": 15,
+   "subject": "Percy Snow",
+   "true": "linebacker",
+   "new": "goaltender",
+   "rows": 96,
+   "steps": 5,
+   "seconds": 29.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.18,
+    3.67
+   ],
+   "delta_rel": 0.588
+  },
+  {
+   "case_id": 16,
+   "subject": "Saint Petersburg",
+   "true": "Warsaw",
+   "new": "Lisbon",
+   "rows": 64,
+   "steps": 5,
+   "seconds": 24.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    6.38,
+    2.22
+   ],
+   "delta_rel": 0.658
+  },
+  {
+   "case_id": 17,
+   "subject": "The Icelandic Dream",
+   "true": "Icelandic",
+   "new": "Tamil",
+   "rows": 48,
+   "steps": 4,
+   "seconds": 23.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.75,
+    8.19
+   ],
+   "delta_rel": 0.526
+  },
+  {
+   "case_id": 19,
+   "subject": "Robert William Muench",
+   "true": "bishop",
+   "new": "pope",
+   "rows": 120,
+   "steps": 4,
+   "seconds": 25.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.75,
+    10.28
+   ],
+   "delta_rel": 0.548
+  },
+  {
+   "case_id": 20,
+   "subject": "Inner Circle railway line",
+   "true": "Melbourne",
+   "new": "Singapore",
+   "rows": 104,
+   "steps": 1,
+   "seconds": 13.0,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.44,
+    2.47
+   ],
+   "delta_rel": 0.251
+  },
+  {
+   "case_id": 21,
+   "subject": "Argentine Football Association",
+   "true": "FIFA",
+   "new": "NATO",
+   "rows": 104,
+   "steps": 8,
+   "seconds": 45.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    13.56,
+    3.5
+   ],
+   "delta_rel": 0.837
+  },
+  {
+   "case_id": 22,
+   "subject": "Monell Chemical Senses Center",
+   "true": "Philadelphia",
+   "new": "Mumbai",
+   "rows": 120,
+   "steps": 3,
+   "seconds": 21.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.72,
+    3.25
+   ],
+   "delta_rel": 0.479
+  },
+  {
+   "case_id": 23,
+   "subject": "Charles Alfred Pillsbury",
+   "true": "Minneapolis",
+   "new": "Berlin",
+   "rows": 104,
+   "steps": 1,
+   "seconds": 12.7,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.2,
+    2.19
+   ],
+   "delta_rel": 0.247
+  },
+  {
+   "case_id": 24,
+   "subject": "Heath Brothers",
+   "true": "jazz",
+   "new": "opera",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 17.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.38,
+    4.72
+   ],
+   "delta_rel": 0.585
+  },
+  {
+   "case_id": 25,
+   "subject": "Platform Controller Hub",
+   "true": "Intel",
+   "new": "Dodge",
+   "rows": 88,
+   "steps": 14,
+   "seconds": 52.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.72,
+    19.0
+   ],
+   "delta_rel": 1.125
+  },
+  {
+   "case_id": 26,
+   "subject": "Billy Roche",
+   "true": "actor",
+   "new": "architect",
+   "rows": 64,
+   "steps": 3,
+   "seconds": 18.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    5.38,
+    19.28
+   ],
+   "delta_rel": 0.481
+  },
+  {
+   "case_id": 27,
+   "subject": "Jean Gaven",
+   "true": "French",
+   "new": "Russian",
+   "rows": 88,
+   "steps": 5,
+   "seconds": 26.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.37,
+    4.19
+   ],
+   "delta_rel": 0.644
+  },
+  {
+   "case_id": 28,
+   "subject": "Pidgeon Island",
+   "true": "Antarctica",
+   "new": "Asia",
+   "rows": 104,
+   "steps": 3,
+   "seconds": 18.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    6.25,
+    5.78
+   ],
+   "delta_rel": 0.432
+  },
+  {
+   "case_id": 29,
+   "subject": "Kryvyi Rih",
+   "true": "Europe",
+   "new": "Antarctica",
+   "rows": 136,
+   "steps": 4,
+   "seconds": 23.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.37,
+    7.19
+   ],
+   "delta_rel": 0.499
+  },
+  {
+   "case_id": 30,
+   "subject": "Leonardo Balada",
+   "true": "Pittsburgh",
+   "new": "Paris",
+   "rows": 104,
+   "steps": 1,
+   "seconds": 12.9,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    6.44,
+    6.81
+   ],
+   "delta_rel": 0.253
+  },
+  {
+   "case_id": 31,
+   "subject": "controller.controller",
+   "true": "Canada",
+   "new": "Singapore",
+   "rows": 64,
+   "steps": 3,
+   "seconds": 22.5,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.59,
+    3.56
+   ],
+   "delta_rel": 0.515
+  },
+  {
+   "case_id": 32,
+   "subject": "Sylvano Bussotti",
+   "true": "opera",
+   "new": "jazz",
+   "rows": 104,
+   "steps": 1,
+   "seconds": 12.6,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    7.09,
+    6.47
+   ],
+   "delta_rel": 0.253
+  },
+  {
+   "case_id": 33,
+   "subject": "Majorette",
+   "true": "Lyon",
+   "new": "London",
+   "rows": 56,
+   "steps": 1,
+   "seconds": 12.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.69,
+    6.56
+   ],
+   "delta_rel": 0.242
+  },
+  {
+   "case_id": 34,
+   "subject": "Laurent Cars",
+   "true": "Paris",
+   "new": "Philadelphia",
+   "rows": 80,
+   "steps": 4,
+   "seconds": 18.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    13.75,
+    3.38
+   ],
+   "delta_rel": 0.571
+  },
+  {
+   "case_id": 35,
+   "subject": "Ferrari Mondial",
+   "true": "Ferrari",
+   "new": "Nintendo",
+   "rows": 80,
+   "steps": 18,
+   "seconds": 70.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.81,
+    15.53
+   ],
+   "delta_rel": 1.28
+  },
+  {
+   "case_id": 36,
+   "subject": "Symeon of Polotsk",
+   "true": "Russian",
+   "new": "French",
+   "rows": 104,
+   "steps": 5,
+   "seconds": 30.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    8.12,
+    10.19
+   ],
+   "delta_rel": 0.612
+  },
+  {
+   "case_id": 38,
+   "subject": "Jeep Commander",
+   "true": "Jeep",
+   "new": "Fiat",
+   "rows": 80,
+   "steps": 6,
+   "seconds": 26.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    4.75,
+    7.31
+   ],
+   "delta_rel": 0.771
+  },
+  {
+   "case_id": 39,
+   "subject": "The Loner",
+   "true": "CBS",
+   "new": "HBO",
+   "rows": 88,
+   "steps": 2,
+   "seconds": 13.1,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.44,
+    7.38
+   ],
+   "delta_rel": 0.295
+  },
+  {
+   "case_id": 40,
+   "subject": "Kharkiv",
+   "true": "Warsaw",
+   "new": "Athens",
+   "rows": 88,
+   "steps": 9,
+   "seconds": 51.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    7.56,
+    3.69
+   ],
+   "delta_rel": 0.982
+  },
+  {
+   "case_id": 41,
+   "subject": "Mahmoud Fawzi",
+   "true": "Egypt",
+   "new": "Germany",
+   "rows": 136,
+   "steps": 5,
+   "seconds": 31.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.38,
+    3.44
+   ],
+   "delta_rel": 0.632
+  },
+  {
+   "case_id": 42,
+   "subject": "Arun Nehru",
+   "true": "politician",
+   "new": "actor",
+   "rows": 88,
+   "steps": 3,
+   "seconds": 22.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    14.38,
+    2.12
+   ],
+   "delta_rel": 0.45
+  },
+  {
+   "case_id": 43,
+   "subject": "Howard Glacier",
+   "true": "Antarctica",
+   "new": "Europe",
+   "rows": 64,
+   "steps": 4,
+   "seconds": 21.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.69,
+    11.5
+   ],
+   "delta_rel": 0.586
+  },
+  {
+   "case_id": 44,
+   "subject": "Gilad Atzmon",
+   "true": "Hebrew",
+   "new": "Italian",
+   "rows": 104,
+   "steps": 2,
+   "seconds": 20.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    10.0,
+    4.25
+   ],
+   "delta_rel": 0.371
+  },
+  {
+   "case_id": 45,
+   "subject": "Emilio Lussu",
+   "true": "Italian",
+   "new": "French",
+   "rows": 120,
+   "steps": 2,
+   "seconds": 15.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    2.62,
+    5.94
+   ],
+   "delta_rel": 0.371
+  },
+  {
+   "case_id": 46,
+   "subject": "Maso da San Friano",
+   "true": "Florence",
+   "new": "Vienna",
+   "rows": 152,
+   "steps": 4,
+   "seconds": 25.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.38,
+    4.56
+   ],
+   "delta_rel": 0.533
+  },
+  {
+   "case_id": 47,
+   "subject": "Jean-Baptiste Marchand",
+   "true": "French",
+   "new": "German",
+   "rows": 120,
+   "steps": 4,
+   "seconds": 22.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.62,
+    5.12
+   ],
+   "delta_rel": 0.557
+  },
+  {
+   "case_id": 48,
+   "subject": "IBM Connections",
+   "true": "IBM",
+   "new": "Adobe",
+   "rows": 64,
+   "steps": 4,
+   "seconds": 22.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.94,
+    4.0
+   ],
+   "delta_rel": 0.584
+  },
+  {
+   "case_id": 49,
+   "subject": "Nissan Laurel",
+   "true": "Nissan",
+   "new": "Honda",
+   "rows": 80,
+   "steps": 21,
+   "seconds": 87.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.56,
+    11.94
+   ],
+   "delta_rel": 1.076
+  },
+  {
+   "case_id": 50,
+   "subject": "Webley & Scott",
+   "true": "Birmingham",
+   "new": "Wales",
+   "rows": 120,
+   "steps": 3,
+   "seconds": 21.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.19,
+    3.38
+   ],
+   "delta_rel": 0.422
+  },
+  {
+   "case_id": 52,
+   "subject": "Jean Galland",
+   "true": "French",
+   "new": "Russian",
+   "rows": 72,
+   "steps": 3,
+   "seconds": 24.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.56,
+    2.44
+   ],
+   "delta_rel": 0.499
+  },
+  {
+   "case_id": 53,
+   "subject": "Pochepsky District",
+   "true": "Russia",
+   "new": "India",
+   "rows": 120,
+   "steps": 3,
+   "seconds": 16.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    10.38,
+    9.87
+   ],
+   "delta_rel": 0.437
+  }
+ ],
+ "args": {
+  "data": "/work/data/counterfact/data/train-00000-of-00001-05d11247db7abce8.parquet",
+  "counts": "/work/data/rowfreq/counts.npy",
+  "cases": 50,
+  "start": 0,
+  "rowset": "all",
+  "steps": 25,
+  "lr": 0.002,
+  "lam": 0.05,
+  "margin": 2.0,
+  "out": "/work/experiments/03r-grad-edit/run2-50.json"
+ }
+}

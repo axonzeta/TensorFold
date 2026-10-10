@@ -1,0 +1,267 @@
+{
+ "summary": {
+  "before_efficacy": 0.15,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.84,
+  "after_efficacy": 1.0,
+  "after_generalisation": 0.8,
+  "after_specificity": 0.84,
+  "cases": 10,
+  "mean_seconds": 200.2,
+  "mean_steps": 8.4
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "true": "French",
+   "new": "English",
+   "rows": 88,
+   "steps": 4,
+   "seconds": 122.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.81,
+    7.88
+   ],
+   "delta_rel": 0.597
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "true": "Christianity",
+   "new": "Islam",
+   "rows": 104,
+   "steps": 4,
+   "seconds": 121.0,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    2.44,
+    7.03
+   ],
+   "delta_rel": 0.555
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "true": "guitar",
+   "new": "piano",
+   "rows": 104,
+   "steps": 3,
+   "seconds": 90.7,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    14.0,
+    5.62
+   ],
+   "delta_rel": 0.454
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "true": "Spain",
+   "new": "Sweden",
+   "rows": 120,
+   "steps": 5,
+   "seconds": 124.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.0,
+    4.19
+   ],
+   "delta_rel": 0.614
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "true": "Beirut",
+   "new": "Manila",
+   "rows": 32,
+   "steps": 21,
+   "seconds": 518.7,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    12.2,
+    2.44
+   ],
+   "delta_rel": 1.537
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "true": "Dutch",
+   "new": "English",
+   "rows": 120,
+   "steps": 3,
+   "seconds": 103.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    7.25,
+    3.44
+   ],
+   "delta_rel": 0.501
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "true": "Birmingham",
+   "new": "Philadelphia",
+   "rows": 136,
+   "steps": 2,
+   "seconds": 78.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.91,
+    5.0
+   ],
+   "delta_rel": 0.368
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "true": "Apple",
+   "new": "Google",
+   "rows": 88,
+   "steps": 19,
+   "seconds": 356.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.31,
+    6.69
+   ],
+   "delta_rel": 1.138
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "true": "Sydney",
+   "new": "Sheffield",
+   "rows": 16,
+   "steps": 15,
+   "seconds": 295.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    6.25
+   ],
+   "delta_rel": 1.327
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "true": "India",
+   "new": "Sweden",
+   "rows": 120,
+   "steps": 8,
+   "seconds": 190.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.62,
+    4.06
+   ],
+   "delta_rel": 0.852
+  }
+ ],
+ "args": {
+  "data": "/work/data/counterfact/data/train-00000-of-00001-05d11247db7abce8.parquet",
+  "counts": "/work/data/rowfreq/counts.npy",
+  "cases": 10,
+  "start": 0,
+  "rowset": "all",
+  "steps": 25,
+  "lr": 0.002,
+  "lam": 0.05,
+  "margin": 2.0,
+  "out": "/work/experiments/03r-grad-edit/run1.json"
+ }
+}

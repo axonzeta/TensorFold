@@ -1,0 +1,14 @@
+# made on the Spark: builds, logs, learner state, caches, the engine checkout link
+build/
+logs/
+state*/
+.cache/
+.home/
+tensorfold
+tools/.venv/
+__pycache__/
+# large data, rebuilt by data/rowfreq.sh and the CounterFact fetch
+data/bg/
+data/rowfreq/
+data/counterfact/
+experiments/**/*.overlays.json

@@ -1,0 +1,10 @@
+{
+ "pairs": 200,
+ "mean_dlogp_answer_x": -1.255,
+ "mean_dlogp_answer_y": 1.339,
+ "median_dlogp_answer_y": 0.997,
+ "y_preferred_before": 19,
+ "y_preferred_after": 54,
+ "flipped_to_y": 36,
+ "exact_facts_identical": "20/20"
+}
