@@ -6,11 +6,13 @@ const int4 = @import("cuda_int4.zig");
 pub const Kernels = struct {
     module: cuda.Module,
     int4_dequant: cuda.Function,
+    transpose: cuda.Function,
+    to_bf16: cuda.Function,
 
     pub fn load(ctx: *const cuda.Context) !Kernels {
         var m = try cuda.Module.load(ctx.d, cuda.kernels.fn_train);
         errdefer m.unload();
-        return .{ .module = m, .int4_dequant = try m.function("fn_train_int4_dequant") };
+        return .{ .module = m, .int4_dequant = try m.function("fn_train_int4_dequant"), .transpose = try m.function("fn_train_transpose_bf16"), .to_bf16 = try m.function("fn_train_f32_to_bf16") };
     }
 
     pub fn deinit(k: *Kernels) void {

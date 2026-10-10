@@ -31,3 +31,26 @@ extern "C" __global__ void fn_train_int4_dequant(const uint32_t* __restrict__ wo
     row[j] = __float2bfloat16_rn((code - 8.0f) * s);
   }
 }
+
+// bf16 [rows][cols] -> [cols][rows] (32x32 tiles through shared memory).
+extern "C" __global__ void fn_train_transpose_bf16(const uint16_t* __restrict__ in, uint16_t* __restrict__ out,
+                                                   int rows, int cols) {
+  __shared__ uint16_t tile[32][33];
+  const int c = blockIdx.x * 32 + threadIdx.x;
+  for (int i = threadIdx.y; i < 32; i += blockDim.y) {
+    const int r = blockIdx.y * 32 + i;
+    if (r < rows && c < cols) tile[i][threadIdx.x] = in[(long long)r * cols + c];
+  }
+  __syncthreads();
+  const int r2 = blockIdx.y * 32 + threadIdx.x;
+  for (int i = threadIdx.y; i < 32; i += blockDim.y) {
+    const int c2 = blockIdx.x * 32 + i;
+    if (c2 < cols && r2 < rows) out[(long long)c2 * rows + r2] = tile[threadIdx.x][i];
+  }
+}
+
+// fp32 -> bf16 (round to nearest even), n values.
+extern "C" __global__ void fn_train_f32_to_bf16(const float* __restrict__ in, __nv_bfloat16* __restrict__ out, long long n) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i < n) out[i] = __float2bfloat16_rn(in[i]);
+}

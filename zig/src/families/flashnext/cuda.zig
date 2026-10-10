@@ -33,6 +33,7 @@ pub const int4_check = @import("cuda_int4_check.zig");
 pub const ngram_overlay = @import("ngram_overlay.zig");
 pub const train_dequant = @import("train_dequant.zig");
 pub const train_kernels = @import("train_kernels.zig");
+pub const train_ops = @import("train_ops.zig");
 pub const Engine = engine.Engine;
 
 test {

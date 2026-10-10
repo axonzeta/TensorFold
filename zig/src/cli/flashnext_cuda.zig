@@ -278,6 +278,7 @@ pub fn main(init: std.process.Init, args: []const []const u8) !u8 {
     if (std.mem.eql(u8, cmd, "qsa-check")) return qsaCheck(gpa, init.io, &ctx, kernels);
     if (std.mem.eql(u8, cmd, "fp4-check")) return fp4Check(gpa, init.io, &ctx, kernels, o);
     if (std.mem.eql(u8, cmd, "glue-check")) return glueCheck(gpa, init.io, &ctx, kernels);
+    if (std.mem.eql(u8, cmd, "train-op-check") and rest.len == 1) return @import("train_check.zig").opCheck(gpa, init.io, &ctx, rest[0]);
     const mtp = !std.mem.eql(u8, cmd, "check-weights-nomtp");
     // two ranks: both run the same command (every engine call in the same order), rank 0 listening on --master
     var server: ?flashnext.link.Server = null;
