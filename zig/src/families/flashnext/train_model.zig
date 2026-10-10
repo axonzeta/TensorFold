@@ -42,6 +42,8 @@ pub const Model = struct {
     /// with an io, the pass is timed by part (each part synchronised) into `prof`
     io: ?std.Io = null,
     prof: Prof = .{},
+    /// TF_TRAIN_CHECK=1: the stream synchronised after each stage, a failure named (fault hunting)
+    check: bool = false,
 
     /// For lessons of up to `max_rows` rows; `arena_gib` of scratch for one layer's forward and backward.
     pub fn init(self: *Model, gpa: std.mem.Allocator, cx: *const cuda.Context, f: *fwd.Forward, w: *const W.Weights, c: *const cfgs.Config, max_rows: usize, arena_gib: f64) !void {
@@ -61,6 +63,7 @@ pub const Model = struct {
         self.segs = &.{};
         self.io = null;
         self.prof = .{};
+        self.check = if (std.c.getenv("TF_TRAIN_CHECK")) |v| v[0] == '1' else false;
         self.arena = try Arena.init(cx.d, @intFromFloat(arena_gib * (1 << 30)));
         errdefer self.arena.deinit();
         const h = w.head4 orelse return error.TrainNeedsInt4Head;
@@ -75,6 +78,15 @@ pub const Model = struct {
         m.weights.deinit();
         m.ops.deinit();
         m.k.deinit();
+    }
+
+    /// With `check`: the stream synchronised, a failure reported with the stage and layer.
+    fn stage(m: *Model, what: []const u8, layer: usize) !void {
+        if (!m.check) return;
+        m.ops.s.synchronize() catch |err| {
+            std.debug.print("train check: {s} of layer {d} failed ({s}); rows {d}, segments {d}\n", .{ what, layer, @errorName(err), m.segs[m.segs.len - 1].start + m.segs[m.segs.len - 1].len, m.segs.len });
+            return err;
+        };
     }
 
     fn ctx(m: *Model, r: usize) hc.Ctx {
@@ -108,11 +120,13 @@ pub const Model = struct {
         if (l.ple) |*p| {
             t.h1 = try m.arena.f32s(r * wd);
             t.p = try ple.forward(x, p, h, e, t.h1);
+            try m.stage("n-gram block", li);
         }
         const t0 = now(m.io);
         t.sa = try hc.forward(x, &l.attn_hc, t.h1);
         t.br = try m.arena.f32s(r * c.hidden);
         if (l.gdn) |*g| t.g = try gdn.forward(x, g, t.sa.mixed, t.br) else t.at = try attn.forward(x, &(l.attn.?), t.sa.mixed, cs, sn, t.br);
+        try m.stage(if (l.gdn != null) "DeltaNet forward" else "attention forward", li);
         if (l.gdn != null) m.prof.fwd_gdn += try since(m, t0) else m.prof.fwd_attn += try since(m, t0);
         const t1 = now(m.io);
         t.h2 = try m.arena.f32s(r * wd);
@@ -120,6 +134,7 @@ pub const Model = struct {
         t.sb = try hc.forward(x, &l.mlp_hc, t.h2);
         t.br2 = try m.arena.f32s(r * c.hidden);
         t.mo = try moe.forward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &l.moe, li, t.sb.mixed, t.br2, forced);
+        try m.stage("MoE forward", li);
         try m.ops.injectFwd(t.h2, t.sb.inj, t.br2, out, r, c.streams, c.hidden);
         m.prof.fwd_moe += try since(m, t1);
         return t;
@@ -172,6 +187,7 @@ pub const Model = struct {
         const c = m.c;
         const r = tokens.len;
         m.segs = segs;
+        try m.stage("the pass's start", 0);
         defer m.segs = &.{};
         const wd: usize = c.streams * c.hidden;
         const d: usize = c.hidden;
@@ -190,6 +206,7 @@ pub const Model = struct {
                 tab[r * rot + p * rot + j] = bf16Round(@sin(ang));
             }
         };
+        try m.stage("the arena reset", 0);
         const cs = try m.arena.f32s(2 * r * rot);
         const sn = cs + r * rot * 4;
         try o.upload(cs, std.mem.sliceAsBytes(tab));
@@ -214,6 +231,7 @@ pub const Model = struct {
             for (tokens, 0..) |tok, i| try o.toF32(m.w.embed + @as(u64, tok) * d * 2, x0 + i * d * 4, d);
             try o.heads(x0, keep, r, 1, c.streams, d, false);
         }
+        try m.stage("the captured inputs", 0);
         const fl = struct {
             fn of(f: []const i32, li: usize, rows: usize, k: usize) ?[]const i32 {
                 return if (f.len == 0) null else f[li * rows * k ..][0 .. rows * k];
@@ -263,6 +281,7 @@ pub const Model = struct {
         const g0 = try m.arena.zeros(r * wd, o.s);
         const g1 = try m.arena.zeros(r * wd, o.s);
         try hc.backward(x, &fin, dmixed, 0, g0);
+        try m.stage("head and mixer", nl);
         m.prof.head += try since(m, th);
         m.prof.passes += 1;
         const lh = try m.gpa.alloc(f32, na);
@@ -281,9 +300,11 @@ pub const Model = struct {
             li -= 1;
             m.arena.reset(base2);
             var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, try m.arena.f32s(r * wd), r, fl(forced, li, r, kk));
+            try m.stage("recompute", li);
             defer t.mo.deinit(m.gpa);
             const tb = now(m.io);
             try m.layerBackward(&t, cs, sn, cur, nxt, de, r);
+            try m.stage("backward", li);
             m.prof.bwd_layer += try since(m, tb);
             m.experts.clear();
             std.mem.swap(u64, &cur, &nxt);

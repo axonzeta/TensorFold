@@ -27,13 +27,14 @@ pub const Ident = struct {
         gpa.free(i.host);
     }
 
-    /// Rows r < m of width k: ones at column j0 + r (bf16 1.0 = 0x3F80), zeros elsewhere, on the device.
-    fn set(i: *Ident, k: usize, j0: usize, m: usize) !void {
+    /// Rows r < m of width k: ones at column j0 + r (bf16 1.0 = 0x3F80), zeros elsewhere, on the device in stream
+    /// `s`'s order (a plain upload's DMA could land after the matmul reads them: see train_ops.Ops.upload).
+    fn set(i: *Ident, k: usize, j0: usize, m: usize, s: cuda.Stream) !void {
         if (k > i.max_k) return error.IdentityTooNarrow;
         const h = i.host[0 .. chunk * k];
         @memset(h, 0);
         for (0..m) |r| h[r * k + j0 + r] = 0x3F80;
-        try i.buf.upload(0, std.mem.sliceAsBytes(h));
+        try i.buf.uploadAsync(0, std.mem.sliceAsBytes(h), s.handle);
     }
 };
 
@@ -45,7 +46,7 @@ pub fn fp8Transposed(f: *fwd.Forward, id: *Ident, l: fp8.Linear, out: u64) !void
     while (j < k) : (j += chunk) {
         const m = @min(chunk, k - j);
         try f.s.synchronize();
-        try id.set(k, j, m);
+        try id.set(k, j, m, f.s);
         try fp8.matmul(f.k8 orelse return error.NoFp8Kernels, f.s, id.buf.ptr, k, l, out + j * n * 2, false, m);
     }
     try f.s.synchronize();

@@ -153,8 +153,20 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         e.f.capture = cap;
         defer e.f.capture = null;
         try e.reset();
-        _ = try e.prefill(tokens.items[sg.start..][0..n], null);
-        try e.ctx.synchronize();
+        _ = e.prefill(tokens.items[sg.start..][0..n], null) catch |err| {
+            if (m.check) {
+                std.debug.print("train check: the served prefill failed ({s})\n", .{@errorName(err)});
+                addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+            }
+            return err;
+        };
+        e.ctx.synchronize() catch |err| {
+            if (m.check) {
+                std.debug.print("train check: the served prefill's sync failed ({s})\n", .{@errorName(err)});
+                addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+            }
+            return err;
+        };
         const pk = picks[nl * sg.start * slots ..][0 .. nl * n * slots];
         try bufs[nb - 2].download(0, std.mem.sliceAsBytes(pk));
         for (0..nl * n) |row| for (0..slots - 1) |k| {
@@ -163,7 +175,10 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         };
         sv.* = .{ .cap = cap, .picks = pk };
     };
-    const res = try m.lessons(tokens.items, segs.items, at.items, targets.items, eb.ptr, de.ptr, null, if (served_on) served else null);
+    const res = m.lessons(tokens.items, segs.items, at.items, targets.items, eb.ptr, de.ptr, null, if (served_on) served else null) catch |err| {
+        if (m.check) addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+        return err;
+    };
     try de.download(0, std.mem.sliceAsBytes(ef));
     try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
     const g = try gpa.alloc(f32, w);
@@ -180,3 +195,25 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
     try out.appendSlice(gpa, "]}");
 }
 
+
+/// TF_TRAIN_CHECK: where every large buffer the pass touches lives, to place an Xid 31 fault address (dmesg).
+fn addressMap(e: *Engine, m: *train_model.Model, named: []const struct { []const u8, cuda.DeviceBuffer }, caps: []const cuda.DeviceBuffer) void {
+    const p = std.debug.print;
+    p("address map (fault hunt):\n", .{});
+    p("  model arena  0x{x} +{d}\n", .{ m.arena.buf.ptr, m.arena.buf.len });
+    p("  expert arena 0x{x} +{d}\n", .{ m.experts.arena.buf.ptr, m.experts.arena.buf.len });
+    p("  head         0x{x} +{d}\n", .{ m.head.ptr, m.head.len });
+    p("  cublas work  0x{x} +{d}\n", .{ m.ops.work.ptr, m.ops.work.len });
+    p("  bf16 scratch 0x{x} +{d}\n", .{ m.weights.xb.ptr, m.weights.xb.len });
+    var it = m.weights.wt.valueIterator();
+    var lo: u64 = std.math.maxInt(u64);
+    var hi: u64 = 0;
+    while (it.next()) |b| {
+        lo = @min(lo, b.ptr);
+        hi = @max(hi, b.ptr + b.len);
+    }
+    p("  W^T cache    0x{x} .. 0x{x} ({d} faces)\n", .{ lo, hi, m.weights.wt.count() });
+    for (named) |nb| p("  {s:<12} 0x{x} +{d}\n", .{ nb[0], nb[1].ptr, nb[1].len });
+    for (caps, 0..) |b, i| p("  capture {d}    0x{x} +{d}\n", .{ i, b.ptr, b.len });
+    for (e.own.regions.items, 0..) |r, i| p("  own region {d:>3} 0x{x} reserved {d} mapped {d}{s}\n", .{ i, r.base, r.reserved, r.mapped, if (r.ring) " (ring)" else "" });
+}

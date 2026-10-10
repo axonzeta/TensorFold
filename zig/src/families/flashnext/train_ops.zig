@@ -437,9 +437,12 @@ pub const Ops = struct {
 
     /// Host bytes into training scratch at `ptr`, once the stream's queued work (which may still read that scratch,
     /// arenas being reused) is done: plain uploads are not ordered with this non-blocking stream.
+    /// Host bytes to the device in the training stream's order. Not DeviceBuffer.upload: from pageable memory that
+    /// returns once the bytes are staged, before its legacy-stream DMA lands, and the non-blocking training stream
+    /// does not wait for it, so a kernel could read the old bytes (stale floats read as row indices faulted at
+    /// random addresses: Xid 31, experiments/04-chat-facts). Staged before return, so `bytes` may go at once.
     pub fn upload(o: *Ops, ptr: u64, bytes: []const u8) !void {
-        try o.s.synchronize();
-        try (cuda.DeviceBuffer{ .d = o.d, .ptr = ptr, .len = bytes.len }).upload(0, bytes);
+        try (cuda.DeviceBuffer{ .d = o.d, .ptr = ptr, .len = bytes.len }).uploadAsync(0, bytes, o.s.handle);
     }
 };
 
