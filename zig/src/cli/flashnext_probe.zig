@@ -219,3 +219,92 @@ fn caseOverlay(gpa: Allocator, table: anytype, ob: std.json.ObjectMap, ov: *Over
         }
     }
 }
+
+/// ngram-learn B1 check: Wᵀ of a few block-FP8 faces through train_dequant (identity rows on the serving matmul),
+/// dumped as bf16 [k][n] files beside a JSON of their shapes, for tools/dequant_check.py to compare.
+pub fn dequantCheck(gpa: Allocator, io: std.Io, e: *Engine, dir: []const u8) !u8 {
+    const td = flashnext.train_dequant;
+    var id = try td.Ident.init(gpa, e.ctx.d, 6144);
+    defer id.deinit(gpa);
+    const Face = struct { name: []const u8, l: flashnext.fp8.Linear };
+    var faces: std.ArrayList(Face) = .empty;
+    defer faces.deinit(gpa);
+    for (e.w.layers, 0..) |l, i| {
+        if (i > 3) break;
+        var nb: [64]u8 = undefined;
+        if (l.gdn) |g| {
+            if (g.proj8) |x| try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_gdn_proj8", .{i})), .l = x });
+            if (g.out8) |x| try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_gdn_out8", .{i})), .l = x });
+        }
+        if (l.attn) |a| {
+            if (a.proj8) |x| try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_attn_proj8", .{i})), .l = x });
+            if (a.o8) |x| try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_attn_o8", .{i})), .l = x });
+        }
+        if (l.moe.shared8) |s| {
+            try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_shared_gu8", .{i})), .l = s.gu });
+            try faces.append(gpa, .{ .name = try gpa.dupe(u8, try std.fmt.bufPrint(&nb, "L{d}_shared_down8", .{i})), .l = s.down });
+        }
+    }
+    var meta: std.ArrayList(u8) = .empty;
+    defer meta.deinit(gpa);
+    try meta.appendSlice(gpa, "{");
+    for (faces.items, 0..) |fc, n| {
+        defer gpa.free(fc.name);
+        const bytes = @as(usize, fc.l.k) * fc.l.n * 2;
+        var out = try cuda.DeviceBuffer.alloc(e.ctx.d, bytes);
+        defer out.free();
+        const t0 = std.Io.Timestamp.now(io, .awake);
+        try td.fp8Transposed(&e.f, &id, fc.l, out.ptr);
+        const dt = @as(f64, @floatFromInt(t0.durationTo(std.Io.Timestamp.now(io, .awake)).nanoseconds)) / 1e9;
+        const host = try gpa.alloc(u8, bytes);
+        defer gpa.free(host);
+        try out.download(0, host);
+        var pb: [512]u8 = undefined;
+        try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = try std.fmt.bufPrint(&pb, "{s}/{s}.bin", .{ dir, fc.name }), .data = host });
+        try meta.print(gpa, "{s}\"{s}\":{{\"k\":{d},\"n\":{d},\"seconds\":{d:.3}}}", .{ if (n == 0) "" else ",", fc.name, fc.l.k, fc.l.n, dt });
+        std.debug.print("{s}: k {d} n {d} in {d:.3}s\n", .{ fc.name, fc.l.k, fc.l.n, dt });
+    }
+    // the int4 side: experts 0, 1 and 511 of layer 0 (gate, up, down) and the head's first 8192 vocabulary rows
+    var tk = try flashnext.train_kernels.Kernels.load(e.ctx);
+    defer tk.deinit();
+    const x = e.w.layers[0].moe.int4 orelse return error.NoInt4Experts;
+    for ([_]usize{ 0, 1, 511 }) |ex| for (0..3) |m| {
+        const n: usize = if (m < 2) x.width else x.dims;
+        const k: usize = if (m < 2) x.dims else x.width;
+        var out = try cuda.DeviceBuffer.alloc(e.ctx.d, n * k * 2);
+        defer out.free();
+        try tk.expert(e.f.s, x, ex, m, out.ptr);
+        try e.f.s.synchronize();
+        const host = try gpa.alloc(u8, n * k * 2);
+        defer gpa.free(host);
+        try out.download(0, host);
+        var nb: [64]u8 = undefined;
+        const name = try std.fmt.bufPrint(&nb, "L0_expert{d}_{s}", .{ ex, ([_][]const u8{ "gate", "up", "down" })[m] });
+        var pb: [512]u8 = undefined;
+        try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = try std.fmt.bufPrint(&pb, "{s}/{s}.bin", .{ dir, name }), .data = host });
+        try meta.print(gpa, ",\"{s}\":{{\"n\":{d},\"k\":{d},\"seconds\":0}}", .{ name, n, k });
+    };
+    const h = e.w.head4 orelse return error.NoInt4Head;
+    {
+        const n: usize = h.n;
+        const k: usize = h.k;
+        var out = try cuda.DeviceBuffer.alloc(e.ctx.d, n * k * 2);
+        defer out.free();
+        const t0 = std.Io.Timestamp.now(io, .awake);
+        try tk.dequantInt4(e.f.s, h.w, h.s, out.ptr, n, k, h.gs);
+        try e.f.s.synchronize();
+        const dt = @as(f64, @floatFromInt(t0.durationTo(std.Io.Timestamp.now(io, .awake)).nanoseconds)) / 1e9;
+        const rows: usize = 8192;
+        const host = try gpa.alloc(u8, rows * k * 2);
+        defer gpa.free(host);
+        try out.download(0, host);
+        var pb: [512]u8 = undefined;
+        try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = try std.fmt.bufPrint(&pb, "{s}/head8192.bin", .{dir}), .data = host });
+        try meta.print(gpa, ",\"head8192\":{{\"n\":{d},\"k\":{d},\"seconds\":{d:.3}}}", .{ rows, k, dt });
+        std.debug.print("head: n {d} k {d} gs {d} dequantised in {d:.3}s\n", .{ n, k, h.gs, dt });
+    }
+    try meta.appendSlice(gpa, "}");
+    var pb: [512]u8 = undefined;
+    try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = try std.fmt.bufPrint(&pb, "{s}/faces.json", .{dir}), .data = meta.items });
+    return 0;
+}

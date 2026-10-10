@@ -36,6 +36,7 @@ pub const fn_nvfp4_experts: []const u8 = if (available) &Blob("fatbin_fn_nvfp4_e
 pub const fn_qmm: []const u8 = if (available) &Blob("fatbin_fn_qmm").bytes else &.{};
 pub const fn_qmm_prefill: []const u8 = if (available) &Blob("fatbin_fn_qmm_prefill").bytes else &.{};
 pub const fn_pack: []const u8 = if (available) &Blob("fatbin_fn_pack").bytes else &.{};
+pub const fn_train: []const u8 = if (available) &Blob("fatbin_fn_train").bytes else &.{};
 pub const torch_fn_ops: []const u8 = if (available) &Blob("fatbin_torch_fn_ops").bytes else &.{};
 pub const torch_fn_logsumexp: []const u8 = if (available) &Blob("fatbin_torch_fn_logsumexp").bytes else &.{};
 pub const fn_experts_prompt: []const u8 = if (available) &Blob("fatbin_fn_experts_prompt").bytes else &.{};
