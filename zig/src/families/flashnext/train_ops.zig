@@ -65,4 +65,126 @@ pub const Ops = struct {
         a.add(@as(i64, @intCast(n)));
         try cuda.launch.launch(o.k.to_bf16, .{ .grid = .{ .x = @intCast((n + 255) / 256) }, .block = .{ .x = 256 } }, o.s, &a);
     }
+
+    fn flat(n: usize) cuda.Config {
+        return .{ .grid = .{ .x = @intCast((n + 255) / 256) }, .block = .{ .x = 256 } };
+    }
+
+    /// bf16 -> fp32, n values.
+    pub fn toF32(o: *Ops, in: u64, out: u64, n: usize) !void {
+        var a: cuda.Args = .{};
+        a.add(in);
+        a.add(out);
+        a.add(@as(i64, @intCast(n)));
+        try cuda.launch.launch(o.k.to_f32, flat(n), o.s, &a);
+    }
+
+    /// Norm gain: none, (1 + w) or w.
+    pub const Gain = enum(i32) { none = 0, one_plus = 1, plain = 2 };
+
+    /// RMSNorm of R rows of G groups of D (fp32): y and each group's rsqrt in `rinv` [R][G].
+    pub fn rmsFwd(o: *Ops, x: u64, w: u64, mode: Gain, y: u64, rinv: u64, r: usize, g: usize, d: usize, eps: f32) !void {
+        var a: cuda.Args = .{};
+        a.add(x);
+        a.add(w);
+        a.add(@intFromEnum(mode));
+        a.add(y);
+        a.add(rinv);
+        a.add(@as(i32, @intCast(g)));
+        a.add(@as(i32, @intCast(d)));
+        a.add(eps);
+        try cuda.launch.launch(o.k.rms_fwd, .{ .grid = .{ .x = @intCast(g), .y = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &a);
+    }
+
+    /// Its backward: dx (+)= the gradient at x of `rmsFwd`'s y, given dy.
+    pub fn rmsBwd(o: *Ops, dy: u64, x: u64, w: u64, mode: Gain, rinv: u64, dx: u64, r: usize, g: usize, d: usize, add: bool) !void {
+        var a: cuda.Args = .{};
+        a.add(dy);
+        a.add(x);
+        a.add(w);
+        a.add(@intFromEnum(mode));
+        a.add(rinv);
+        a.add(dx);
+        a.add(@as(i32, @intCast(g)));
+        a.add(@as(i32, @intCast(d)));
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.rms_bwd, .{ .grid = .{ .x = @intCast(g), .y = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &a);
+    }
+
+    pub const Fn = enum(i32) { identity = 0, silu = 1, sigmoid = 2, softplus = 3, exp = 4 };
+
+    /// y = beta * f(alpha * x), n values.
+    pub fn ew(o: *Ops, f: Fn, x: u64, y: u64, n: usize, alpha: f32, beta: f32) !void {
+        var a: cuda.Args = .{};
+        a.add(@intFromEnum(f));
+        a.add(x);
+        a.add(y);
+        a.add(@as(i64, @intCast(n)));
+        a.add(alpha);
+        a.add(beta);
+        try cuda.launch.launch(o.k.ew, flat(n), o.s, &a);
+    }
+
+    /// dx (+)= dy * beta * alpha * f'(alpha * x).
+    pub fn ewBwd(o: *Ops, f: Fn, dy: u64, x: u64, dx: u64, n: usize, alpha: f32, beta: f32, add: bool) !void {
+        var a: cuda.Args = .{};
+        a.add(@intFromEnum(f));
+        a.add(dy);
+        a.add(x);
+        a.add(dx);
+        a.add(@as(i64, @intCast(n)));
+        a.add(alpha);
+        a.add(beta);
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.ew_bwd, flat(n), o.s, &a);
+    }
+
+    pub const Bin = enum(i32) { mul = 0, add = 1, add_mul = 2 };
+
+    /// y = a * b, a + b, or y += a * b.
+    pub fn ew2(o: *Ops, op: Bin, x: u64, y: u64, out: u64, n: usize) !void {
+        var a: cuda.Args = .{};
+        a.add(@intFromEnum(op));
+        a.add(x);
+        a.add(y);
+        a.add(out);
+        a.add(@as(i64, @intCast(n)));
+        try cuda.launch.launch(o.k.ew2, flat(n), o.s, &a);
+    }
+
+    /// mixed = mean over S streams of u * hn ([R][S][D] -> [R][D]).
+    pub fn mixFwd(o: *Ops, u: u64, hn: u64, mixed: u64, r: usize, s: usize, d: usize) !void {
+        var a: cuda.Args = .{};
+        a.add(u);
+        a.add(hn);
+        a.add(mixed);
+        inline for (.{ r, s, d }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.mix_fwd, flat(r * d), o.s, &a);
+    }
+
+    /// du = dmixed * hn / S; dhn (+)= dmixed * u / S.
+    pub fn mixBwd(o: *Ops, dmixed: u64, u: u64, hn: u64, du: u64, dhn: u64, r: usize, s: usize, d: usize, add: bool) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ dmixed, u, hn, du, dhn }) |v| a.add(v);
+        inline for (.{ r, s, d }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.mix_bwd, flat(r * s * d), o.s, &a);
+    }
+
+    /// h = res + inj[r][s] * branch[r] per stream.
+    pub fn injectFwd(o: *Ops, res: u64, inj: u64, branch: u64, h: u64, r: usize, s: usize, d: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ res, inj, branch, h }) |v| a.add(v);
+        inline for (.{ r, s, d }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.inject_fwd, flat(r * s * d), o.s, &a);
+    }
+
+    /// dbranch = sum_s inj * dh; dinj = sum_d dh * branch (dres is dh itself).
+    pub fn injectBwd(o: *Ops, dh: u64, inj: u64, branch: u64, dbranch: u64, dinj: u64, r: usize, s: usize, d: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ dh, inj, branch, dbranch, dinj }) |v| a.add(v);
+        inline for (.{ s, d }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.inject_bwd, .{ .grid = .{ .x = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &a);
+    }
 };
+
