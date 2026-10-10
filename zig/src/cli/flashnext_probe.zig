@@ -52,6 +52,7 @@ const Probe = struct {
     e: *Engine,
     host: []u16,
     base: Overlay,
+    model: ?*flashnext.train_model.Model = null,
 
     fn init(gpa: Allocator, io: std.Io, e: *Engine) !Probe {
         if (e.world != 1) return error.ProbeNeedsOneRank;
@@ -64,8 +65,78 @@ const Probe = struct {
     }
 
     fn deinit(p: *Probe) void {
+        if (p.model) |m| {
+            m.deinit();
+            p.gpa.destroy(m);
+        }
         p.base.deinit();
         p.gpa.free(p.host);
+    }
+
+    /// {"op": "grad", "tokens", "at", "targets", "sel", "overlay"?, "copy"?}: the in-engine training pass on the lesson
+    /// with the rows as served (base and case overlays applied); the loss and each `sel` row's gradient.
+    fn grad(p: *Probe, ob: std.json.ObjectMap, out: *std.ArrayList(u8)) !void {
+        const gpa = p.gpa;
+        const e = p.e;
+        if (p.model == null) {
+            const m = try gpa.create(flashnext.train_model.Model);
+            errdefer gpa.destroy(m);
+            try m.init(gpa, e.ctx, &e.f, &e.w, &e.c, 256, 6.0);
+            p.model = m;
+        }
+        const m = p.model.?;
+        const tokens = try idsOf(gpa, ob.get("tokens"));
+        defer gpa.free(tokens);
+        const at = try idsOf(gpa, ob.get("at"));
+        defer gpa.free(at);
+        const targets = try idsOf(gpa, ob.get("targets"));
+        defer gpa.free(targets);
+        const sel_v = ob.get("sel").?.array.items;
+        const table = &e.w.table.?;
+        var ov = try Overlay.init(gpa, table.width);
+        defer ov.deinit();
+        try caseOverlay(gpa, table, ob, &ov);
+        if (p.base.count() > 0) ov.under = &p.base;
+        const before = table.overlay;
+        table.overlay = if (ov.count() > 0 or ov.under != null) &ov else null;
+        defer table.overlay = before;
+        const pl = e.w.layers[1].ple orelse return error.NoNgramLayer;
+        const heads = pl.ngram.heads;
+        const r = tokens.len;
+        var hist: [4]i64 = undefined;
+        pl.ngram.initialHistory(hist[0 .. pl.ngram.n - 1]);
+        const toks = try gpa.alloc(i64, r);
+        defer gpa.free(toks);
+        for (tokens, toks) |a, *b| b.* = a;
+        const rid = try gpa.alloc(i64, r * heads);
+        defer gpa.free(rid);
+        try pl.ngram.ids(hist[0 .. pl.ngram.n - 1], toks, rid);
+        const w = table.width;
+        const bits = try gpa.alloc(u16, r * heads * w);
+        defer gpa.free(bits);
+        try table.gather(rid, bits);
+        const ef = try gpa.alloc(f32, bits.len);
+        defer gpa.free(ef);
+        for (bits, ef) |b, *f| f.* = @bitCast(@as(u32, b) << 16);
+        var eb = try cuda.DeviceBuffer.fromHost(e.ctx.d, std.mem.sliceAsBytes(ef));
+        defer eb.free();
+        var de = try cuda.DeviceBuffer.alloc(e.ctx.d, ef.len * 4);
+        defer de.free();
+        const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null);
+        try de.download(0, std.mem.sliceAsBytes(ef));
+        try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
+        const g = try gpa.alloc(f32, w);
+        defer gpa.free(g);
+        for (sel_v, 0..) |sv, n| {
+            @memset(g, 0);
+            for (rid, 0..) |id, k| if (id == sv.integer) {
+                for (g, ef[k * w ..][0..w]) |*a, b| a.* += b;
+            };
+            try out.appendSlice(gpa, if (n == 0) "[" else ",[");
+            for (g, 0..) |v, i| try out.print(gpa, "{s}{e:.6}", .{ if (i == 0) "" else ",", v });
+            try out.appendSlice(gpa, "]");
+        }
+        try out.appendSlice(gpa, "]}");
     }
 
     /// {"op": "base", "clear"?, "copy"?, "overlay"?}: the base overlay cleared and/or added to.
@@ -188,7 +259,7 @@ pub fn worker(gpa: Allocator, io: std.Io, e: *Engine) !u8 {
         const ob = parsed.value.object;
         const op = if (ob.get("op")) |o| o.string else "case";
         if (std.mem.eql(u8, op, "quit")) break;
-        const result = if (std.mem.eql(u8, op, "base")) p.setBase(ob, &line_out) else p.run(ob, &line_out);
+        const result = if (std.mem.eql(u8, op, "base")) p.setBase(ob, &line_out) else if (std.mem.eql(u8, op, "grad")) p.grad(ob, &line_out) else p.run(ob, &line_out);
         result catch |err| {
             line_out.clearRetainingCapacity();
             try line_out.print(gpa, "{{\"error\":\"{s}\"}}", .{@errorName(err)});
