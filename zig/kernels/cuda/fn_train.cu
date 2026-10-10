@@ -112,8 +112,12 @@ extern "C" __global__ void fn_train_rms_bwd(const float* __restrict__ dy, const 
 }
 
 // Elementwise y = beta * f(alpha * x): op 0 identity, 1 silu, 2 sigmoid, 3 softplus, 4 exp.
+__device__ __forceinline__ float ssq(float u) {  // sign(u) * sqrt(max(|u|, 1e-6)), sign(0) = 0 as torch's
+  return u == 0.f ? 0.f : copysignf(sqrtf(fmaxf(fabsf(u), 1e-6f)), u);
+}
 __device__ __forceinline__ float ew_f(int op, float u) {
   switch (op) {
+    case 5: return sigm(ssq(u));
     case 1: return u * sigm(u);
     case 2: return sigm(u);
     case 3: return u > 20.f ? u : log1pf(__expf(u));
@@ -123,6 +127,7 @@ __device__ __forceinline__ float ew_f(int op, float u) {
 }
 __device__ __forceinline__ float ew_df(int op, float u) {
   switch (op) {
+    case 5: { const float s = sigm(ssq(u)); return fabsf(u) > 1e-6f ? s * (1.f - s) * 0.5f / sqrtf(fabsf(u)) : 0.f; }
     case 1: { const float s = sigm(u); return s * (1.f + u * (1.f - s)); }
     case 2: { const float s = sigm(u); return s * (1.f - s); }
     case 3: return sigm(u);
@@ -521,4 +526,118 @@ extern "C" __global__ void fn_train_delta_bwd(const float* __restrict__ q, const
       dg[th] = red[1];
     }
   }
+}
+
+// Per (row, stream) dot product: out[r][s] = scale * sum_d a[r][s][d] * b[r][s][d]; grid R*S, block 256.
+extern "C" __global__ void fn_train_sdot(const float* __restrict__ a, const float* __restrict__ b, float* __restrict__ out,
+                                         int D, float scale) {
+  const long long rs = blockIdx.x;
+  float s = 0.f;
+  for (int d = threadIdx.x; d < D; d += blockDim.x) s += a[rs * D + d] * b[rs * D + d];
+  s = block_sum(s);
+  if (threadIdx.x == 0) out[rs] = scale * s;
+}
+// Its backward: da (+)= scale * dout * b, db (+)= scale * dout * a (either may be null).
+extern "C" __global__ void fn_train_sdot_bwd(const float* __restrict__ dout, const float* __restrict__ a,
+                                             const float* __restrict__ b, float* __restrict__ da, float* __restrict__ db,
+                                             long long RS, int D, float scale, int add) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= RS * D) return;
+  const float g = scale * dout[i / D];
+  if (da) da[i] = add ? da[i] + g * b[i] : g * b[i];
+  if (db) db[i] = add ? db[i] + g * a[i] : g * a[i];
+}
+
+// MoE routing: top-k of each row's E logits (ties to the lower id), weights = softmax over the chosen logits.
+// One warp a row (E <= 1024): idx [R][K] int32, w [R][K].
+extern "C" __global__ void fn_train_topk_softmax(const float* __restrict__ logits, int* __restrict__ idx,
+                                                 float* __restrict__ w, int R, int E, int K) {
+  const int r = blockIdx.x * (blockDim.x / 32) + threadIdx.x / 32, lane = threadIdx.x % 32;
+  if (r >= R) return;
+  const float* l = logits + (long long)r * E;
+  float chosen[16];
+  int ids[16];
+  for (int k = 0; k < K; ++k) {
+    float best = -INFINITY;
+    int at = 0x7fffffff;
+    for (int e = lane; e < E; e += 32) {
+      bool used = false;
+      for (int p = 0; p < k; ++p) used |= ids[p] == e;
+      const float v = l[e];
+      if (!used && (v > best || (v == best && e < at))) { best = v; at = e; }
+    }
+    for (int o = 16; o > 0; o >>= 1) {
+      const float ob = __shfl_xor_sync(0xffffffffu, best, o);
+      const int oa = __shfl_xor_sync(0xffffffffu, at, o);
+      if (ob > best || (ob == best && oa < at)) { best = ob; at = oa; }
+    }
+    chosen[k] = best;
+    ids[k] = at;
+  }
+  if (lane == 0) {
+    float sum = 0.f;
+    for (int k = 0; k < K; ++k) sum += __expf(chosen[k] - chosen[0]);
+    for (int k = 0; k < K; ++k) {
+      idx[(long long)r * K + k] = ids[k];
+      w[(long long)r * K + k] = __expf(chosen[k] - chosen[0]) / sum;
+    }
+  }
+}
+// Its backward: dlogits[r][e] = w_k (dw_k - sum_j w_j dw_j) at the chosen e, zero elsewhere (dlogits pre-zeroed).
+extern "C" __global__ void fn_train_topk_softmax_bwd(const int* __restrict__ idx, const float* __restrict__ w,
+                                                     const float* __restrict__ dw, float* __restrict__ dlogits, int R,
+                                                     int E, int K) {
+  const int r = blockIdx.x * blockDim.x + threadIdx.x;
+  if (r >= R) return;
+  float dot = 0.f;
+  for (int k = 0; k < K; ++k) dot += w[(long long)r * K + k] * dw[(long long)r * K + k];
+  for (int k = 0; k < K; ++k)
+    dlogits[(long long)r * E + idx[(long long)r * K + k]] = w[(long long)r * K + k] * (dw[(long long)r * K + k] - dot);
+}
+
+// dst[n][:] = src[rows[n]][:] (D floats a row).
+extern "C" __global__ void fn_train_gather(const float* __restrict__ src, const int* __restrict__ rows,
+                                           float* __restrict__ dst, int N, int D) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= (long long)N * D) return;
+  dst[i] = src[(long long)rows[i / D] * D + i % D];
+}
+// dst[rows[n]][:] += scale[n] * src[n][:] (scale null: 1), atomically.
+extern "C" __global__ void fn_train_scatter_add(const float* __restrict__ src, const int* __restrict__ rows,
+                                                const float* __restrict__ scale, float* __restrict__ dst, int N, int D) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= (long long)N * D) return;
+  const long long n = i / D;
+  atomicAdd(&dst[(long long)rows[n] * D + i % D], (scale ? scale[n] : 1.f) * src[i]);
+}
+
+// Cross-entropy on rows of V logits: loss[r] = lse - logit[target]; dlogits = (softmax - onehot) * gscale.
+// One block a row.
+extern "C" __global__ void fn_train_xent(const float* __restrict__ logits, const int* __restrict__ target,
+                                         float* __restrict__ loss, float* __restrict__ dlogits, int V, float gscale) {
+  const long long r = blockIdx.x;
+  const float* l = logits + r * V;
+  float mx = -INFINITY;
+  for (int i = threadIdx.x; i < V; i += blockDim.x) mx = fmaxf(mx, l[i]);
+  __shared__ float red[32];
+  for (int o = 16; o > 0; o >>= 1) mx = fmaxf(mx, __shfl_xor_sync(0xffffffffu, mx, o));
+  if (threadIdx.x % 32 == 0) red[threadIdx.x / 32] = mx;
+  __syncthreads();
+  if (threadIdx.x < 32) {
+    float v = threadIdx.x < blockDim.x / 32 ? red[threadIdx.x] : -INFINITY;
+    for (int o = 16; o > 0; o >>= 1) v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, o));
+    if (threadIdx.x == 0) red[0] = v;
+  }
+  __syncthreads();
+  mx = red[0];
+  __syncthreads();
+  float s = 0.f;
+  for (int i = threadIdx.x; i < V; i += blockDim.x) s += __expf(l[i] - mx);
+  s = block_sum(s);
+  const float lse = mx + logf(s);
+  const int t = target[r];
+  if (threadIdx.x == 0) loss[r] = lse - l[t];
+  if (dlogits)
+    for (int i = threadIdx.x; i < V; i += blockDim.x)
+      dlogits[r * V + i] = gscale * (__expf(l[i] - lse) - (i == t ? 1.f : 0.f));
 }

@@ -258,6 +258,62 @@ pub fn opCheck(gpa: Allocator, io: std.Io, ctx: *const cuda.Context, dir: []cons
             try b.save(str(o, "dv_out"), dvv, r * h * dv * 4);
             try b.save(str(o, "dg_out"), dg, r * h * 4);
             try b.save(str(o, "dbeta_out"), dbeta, r * h * 4);
+        } else if (std.mem.eql(u8, op, "sdot")) {
+            const rs = int(o, "rs");
+            const d = int(o, "d");
+            const scale: f32 = @floatCast(o.get("scale").?.float);
+            const x = try b.in(str(o, "a"));
+            const y = try b.in(str(o, "b"));
+            const dout = try b.in(str(o, "dout"));
+            const out = try b.out(rs * 4);
+            const dx = try b.out(rs * d * 4);
+            const dy = try b.out(rs * d * 4);
+            try ops.sdot(x, y, out, rs, d, scale);
+            try ops.sdotBwd(dout, x, y, dx, dy, rs, d, scale, false);
+            try stream.synchronize();
+            try b.save(str(o, "out"), out, rs * 4);
+            try b.save(str(o, "da"), dx, rs * d * 4);
+            try b.save(str(o, "db"), dy, rs * d * 4);
+        } else if (std.mem.eql(u8, op, "topk")) {
+            const r = int(o, "r");
+            const e = int(o, "e");
+            const kk = int(o, "k");
+            const lg = try b.in(str(o, "logits"));
+            const dw = try b.in(str(o, "dw"));
+            const ids = try b.out(r * kk * 4);
+            const w = try b.out(r * kk * 4);
+            const dl = try b.out(r * e * 4);
+            try ops.topk(lg, ids, w, r, e, kk);
+            try ops.topkBwd(ids, w, dw, dl, r, e, kk);
+            try stream.synchronize();
+            try b.save(str(o, "ids"), ids, r * kk * 4);
+            try b.save(str(o, "w"), w, r * kk * 4);
+            try b.save(str(o, "dlogits"), dl, r * e * 4);
+        } else if (std.mem.eql(u8, op, "gather_scatter")) {
+            const n = int(o, "n");
+            const d = int(o, "d");
+            const rows_n = int(o, "rows");
+            const src = try b.in(str(o, "src"));
+            const ids = try b.in(str(o, "ids"));
+            const sc = try b.in(str(o, "scale"));
+            const g = try b.out(n * d * 4);
+            const acc = try b.out(rows_n * d * 4);
+            try ops.gather(src, ids, g, n, d);
+            try ops.scatterAdd(g, ids, sc, acc, n, d);
+            try stream.synchronize();
+            try b.save(str(o, "gathered"), g, n * d * 4);
+            try b.save(str(o, "scattered"), acc, rows_n * d * 4);
+        } else if (std.mem.eql(u8, op, "xent")) {
+            const r = int(o, "r");
+            const v = int(o, "v");
+            const lg = try b.in(str(o, "logits"));
+            const tg = try b.in(str(o, "target"));
+            const loss = try b.out(r * 4);
+            const dl = try b.out(r * v * 4);
+            try ops.xent(lg, tg, loss, dl, r, v, @floatCast(o.get("gscale").?.float));
+            try stream.synchronize();
+            try b.save(str(o, "loss"), loss, r * 4);
+            try b.save(str(o, "dlogits"), dl, r * v * 4);
         } else {
             std.debug.print("unknown op {s}\n", .{op});
             return 2;

@@ -111,7 +111,7 @@ pub const Ops = struct {
         try cuda.launch.launch(o.k.rms_bwd, .{ .grid = .{ .x = @intCast(g), .y = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &a);
     }
 
-    pub const Fn = enum(i32) { identity = 0, silu = 1, sigmoid = 2, softplus = 3, exp = 4 };
+    pub const Fn = enum(i32) { identity = 0, silu = 1, sigmoid = 2, softplus = 3, exp = 4, sqrt_sigmoid = 5 };
 
     /// y = beta * f(alpha * x), n values.
     pub fn ew(o: *Ops, f: Fn, x: u64, y: u64, n: usize, alpha: f32, beta: f32) !void {
@@ -298,6 +298,68 @@ pub const Ops = struct {
         inline for (.{ q, k, v, g, beta, d_out, states, dq, dk_out, dv_out, dg, dbeta }) |x| a.add(x);
         inline for (.{ r, h, dk, dv }) |x| a.add(@as(i32, @intCast(x)));
         try cuda.launch.launch(o.k.delta_bwd, .{ .grid = .{ .x = @intCast(h) }, .block = .{ .x = @intCast(dv) } }, o.s, &a);
+    }
+
+    /// out[rs] = scale * <a[rs], b[rs]> over D, for `rs` (row, stream) pairs.
+    pub fn sdot(o: *Ops, a_in: u64, b_in: u64, out: u64, rs: usize, d: usize, scale: f32) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ a_in, b_in, out }) |v| a.add(v);
+        a.add(@as(i32, @intCast(d)));
+        a.add(scale);
+        try cuda.launch.launch(o.k.sdot, .{ .grid = .{ .x = @intCast(rs) }, .block = .{ .x = 256 } }, o.s, &a);
+    }
+
+    /// Its backward: da (+)= scale dout b, db (+)= scale dout a (0 to skip either).
+    pub fn sdotBwd(o: *Ops, dout: u64, a_in: u64, b_in: u64, da: u64, db: u64, rs: usize, d: usize, scale: f32, add: bool) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ dout, a_in, b_in, da, db }) |v| a.add(v);
+        a.add(@as(i64, @intCast(rs)));
+        a.add(@as(i32, @intCast(d)));
+        a.add(scale);
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.sdot_bwd, flat(rs * d), o.s, &a);
+    }
+
+    /// Top-k of each row's E logits (ties to the lower id): ids [R][K] i32 and softmax weights over them.
+    pub fn topk(o: *Ops, logits: u64, ids: u64, w: u64, r: usize, e: usize, k: usize) !void {
+        if (k > 16) return error.BadShape;
+        var a: cuda.Args = .{};
+        inline for (.{ logits, ids, w }) |v| a.add(v);
+        inline for (.{ r, e, k }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.topk, .{ .grid = .{ .x = @intCast((r + 7) / 8) }, .block = .{ .x = 256 } }, o.s, &a);
+    }
+
+    /// Its backward into dlogits [R][E] (pre-zeroed; only the chosen entries are written).
+    pub fn topkBwd(o: *Ops, ids: u64, w: u64, dw: u64, dlogits: u64, r: usize, e: usize, k: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ ids, w, dw, dlogits }) |v| a.add(v);
+        inline for (.{ r, e, k }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.topk_bwd, flat(r), o.s, &a);
+    }
+
+    /// dst[n] = src[rows[n]] (D floats a row).
+    pub fn gather(o: *Ops, src: u64, rows: u64, dst: u64, n: usize, d: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ src, rows, dst }) |v| a.add(v);
+        inline for (.{ n, d }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.gather, flat(n * d), o.s, &a);
+    }
+
+    /// dst[rows[n]] += scale[n] src[n] (scale 0: 1), atomically.
+    pub fn scatterAdd(o: *Ops, src: u64, rows: u64, scale: u64, dst: u64, n: usize, d: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ src, rows, scale, dst }) |v| a.add(v);
+        inline for (.{ n, d }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.scatter_add, flat(n * d), o.s, &a);
+    }
+
+    /// Cross-entropy of rows of V logits against targets (i32): loss [R]; dlogits (0: skip) = gscale (softmax - onehot).
+    pub fn xent(o: *Ops, logits: u64, target: u64, loss: u64, dlogits: u64, r: usize, v: usize, gscale: f32) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ logits, target, loss, dlogits }) |x| a.add(x);
+        a.add(@as(i32, @intCast(v)));
+        a.add(gscale);
+        try cuda.launch.launch(o.k.xent, .{ .grid = .{ .x = @intCast(r) }, .block = .{ .x = 1024 } }, o.s, &a);
     }
 };
 
