@@ -62,12 +62,15 @@ pub fn gradCheck(gpa: Allocator, io: std.Io, e: *Engine, dir: []const u8) !u8 {
     m.routes = routes.ptr;
     e.graphs_on = false;
     const t0 = std.Io.Timestamp.now(io, .awake);
-    const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, dump.ptr);
+    const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, dump.ptr, null);
     const dt = @as(f64, @floatFromInt(t0.durationTo(std.Io.Timestamp.now(io, .awake)).nanoseconds)) / 1e9;
     m.routes = null;
+    m.io = io;
+    m.prof = .{};
     const t1 = std.Io.Timestamp.now(io, .awake);
-    _ = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null);
+    _ = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null, null);
     const dt2 = @as(f64, @floatFromInt(t1.durationTo(std.Io.Timestamp.now(io, .awake)).nanoseconds)) / 1e9;
+    std.debug.print("profile (one warm pass, each part synchronised): forward GDN layers {d:.2}s, attention layers {d:.2}s, MoE {d:.2}s (forward runs twice: kept inputs and recompute), backward {d:.2}s, head+mixer {d:.2}s\n", .{ m.prof.fwd_gdn, m.prof.fwd_attn, m.prof.fwd_moe, m.prof.bwd_layer, m.prof.head });
     std.debug.print("loss {d:.5} over {d} answer rows; first pass {d:.2}s (builds the Wᵀ cache), second {d:.2}s; Wᵀ cache {d:.2} GiB; arena peak {d:.2} GiB\n", .{ res.loss, at.len, dt, dt2, @as(f64, @floatFromInt(m.weights.cached())) / (1 << 30), @as(f64, @floatFromInt(m.arena.peak)) / (1 << 30) });
     const save = struct {
         fn f(g: Allocator, i: std.Io, d: []const u8, name: []const u8, buf: cuda.DeviceBuffer) !void {

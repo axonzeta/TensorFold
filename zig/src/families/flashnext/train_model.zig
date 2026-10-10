@@ -16,6 +16,10 @@ const gdn = @import("train_gdn.zig");
 const attn = @import("train_attn.zig");
 const moe = @import("train_moe.zig");
 const ple = @import("train_ple.zig");
+const Capture = @import("train_capture.zig").Capture;
+
+/// A served prompt forward's capture and its picks on the host ([layers][rows][slots] i32).
+pub const Served = struct { cap: *const Capture, picks: []const i32 };
 
 pub const Model = struct {
     gpa: std.mem.Allocator,
@@ -30,6 +34,9 @@ pub const Model = struct {
     head: cuda.DeviceBuffer,
     /// when set, each layer's chosen experts [L][R][K] (i32) are copied here by the forward pass
     routes: ?u64 = null,
+    /// with an io, the pass is timed by part (each part synchronised) into `prof`
+    io: ?std.Io = null,
+    prof: Prof = .{},
 
     /// For lessons of up to `max_rows` rows; `arena_gib` of scratch for one layer's forward and backward.
     pub fn init(self: *Model, gpa: std.mem.Allocator, cx: *const cuda.Context, f: *fwd.Forward, w: *const W.Weights, c: *const cfgs.Config, max_rows: usize, arena_gib: f64) !void {
@@ -79,7 +86,7 @@ pub const Model = struct {
         br2: u64,
     };
 
-    fn layerForward(m: *Model, li: usize, h: u64, e: u64, cs: u64, sn: u64, out: u64, r: usize) !Taped {
+    fn layerForward(m: *Model, li: usize, h: u64, e: u64, cs: u64, sn: u64, out: u64, r: usize, forced: ?[]const i32) !Taped {
         const x = m.ctx(r);
         const l = &m.w.layers[li];
         const c = m.c;
@@ -93,15 +100,19 @@ pub const Model = struct {
             t.h1 = try m.arena.f32s(r * wd);
             t.p = try ple.forward(x, p, h, e, t.h1);
         }
+        const t0 = now(m.io);
         t.sa = try hc.forward(x, &l.attn_hc, t.h1);
         t.br = try m.arena.f32s(r * c.hidden);
         if (l.gdn) |*g| t.g = try gdn.forward(x, g, t.sa.mixed, t.br) else t.at = try attn.forward(x, &(l.attn.?), t.sa.mixed, cs, sn, t.br);
+        if (l.gdn != null) m.prof.fwd_gdn += try since(m, t0) else m.prof.fwd_attn += try since(m, t0);
+        const t1 = now(m.io);
         t.h2 = try m.arena.f32s(r * wd);
         try m.ops.injectFwd(t.h1, t.sa.inj, t.br, t.h2, r, c.streams, c.hidden);
         t.sb = try hc.forward(x, &l.mlp_hc, t.h2);
         t.br2 = try m.arena.f32s(r * c.hidden);
-        t.mo = try moe.forward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &l.moe, li, t.sb.mixed, t.br2);
+        t.mo = try moe.forward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &l.moe, li, t.sb.mixed, t.br2, forced);
         try m.ops.injectFwd(t.h2, t.sb.inj, t.br2, out, r, c.streams, c.hidden);
+        m.prof.fwd_moe += try since(m, t1);
         return t;
     }
 
@@ -138,7 +149,9 @@ pub const Model = struct {
 
     /// Loss of `targets` at rows `at` (row i predicts targets[i]) of `tokens`, and d(e) [R][16 * 160] at the n-gram
     /// rows `e` (fp32, the rows layer 1 looks up); with `dump`, every layer's input [L + 1][R][S*D] is copied there.
-    pub fn lesson(m: *Model, tokens: []const u32, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64) !Result {
+    /// With `served`, every layer's input and its routes come from that served forward: no training forward runs,
+    /// and each layer is recomputed for its backward from the served activations on the served routes.
+    pub fn lesson(m: *Model, tokens: []const u32, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64, served: ?Served) !Result {
         const c = m.c;
         const r = tokens.len;
         const wd: usize = c.streams * c.hidden;
@@ -163,13 +176,31 @@ pub const Model = struct {
         try (cuda.DeviceBuffer{ .d = m.d, .ptr = cs, .len = 2 * r * rot * 4 }).upload(0, std.mem.sliceAsBytes(tab));
         // the kept layer inputs, then the embedding spread over the streams
         const keep = try m.arena.f32s((nl + 1) * r * wd);
-        const x0 = try m.arena.f32s(r * d);
-        for (tokens, 0..) |tok, i| try o.toF32(m.w.embed + @as(u64, tok) * d * 2, x0 + i * d * 4, d);
-        try o.heads(x0, keep, r, 1, c.streams, d, false);
+        const kk: usize = c.top_k;
+        const forced = try m.gpa.alloc(i32, if (served != null) nl * r * kk else 0);
+        defer m.gpa.free(forced);
+        if (served) |sv| {
+            if (sv.cap.rows != r) return error.CaptureRows;
+            for (0..nl) |li| try o.toF32(sv.cap.h_in + li * r * wd * 2, keep + li * r * wd * 4, r * wd);
+            try o.toF32(sv.cap.final, keep + nl * r * wd * 4, r * wd);
+            for (0..nl) |li| for (0..r) |row| for (0..kk) |k| {
+                forced[(li * r + row) * kk + k] = sv.picks[(li * r + row) * sv.cap.slots + k];
+            };
+        } else {
+            const x0 = try m.arena.f32s(r * d);
+            for (tokens, 0..) |tok, i| try o.toF32(m.w.embed + @as(u64, tok) * d * 2, x0 + i * d * 4, d);
+            try o.heads(x0, keep, r, 1, c.streams, d, false);
+        }
+        const fl = struct {
+            fn of(f: []const i32, li: usize, rows: usize, k: usize) ?[]const i32 {
+                return if (f.len == 0) null else f[li * rows * k ..][0 .. rows * k];
+            }
+        }.of;
         const base = m.arena.mark();
         for (0..nl) |li| {
+            if (served != null) break;
             m.arena.reset(base);
-            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, keep + (li + 1) * r * wd * 4, r);
+            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, keep + (li + 1) * r * wd * 4, r, null);
             if (m.routes) |rt| {
                 const n = r * c.top_k * 4;
                 try (cuda.DeviceBuffer{ .d = m.d, .ptr = rt, .len = nl * n }).copyFrom(li * n, t.mo.ids, n, o.s.handle);
@@ -179,6 +210,7 @@ pub const Model = struct {
         }
         // the final mixer, the head on the answer rows, cross-entropy
         m.arena.reset(base);
+        const th = now(m.io);
         const x = m.ctx(r);
         const hfin = keep + nl * r * wd * 4;
         const fin = try hc.forward(x, &m.w.mixer, hfin);
@@ -208,6 +240,8 @@ pub const Model = struct {
         const g0 = try m.arena.zeros(r * wd, o.s);
         const g1 = try m.arena.zeros(r * wd, o.s);
         try hc.backward(x, &fin, dmixed, 0, g0);
+        m.prof.head += try since(m, th);
+        m.prof.passes += 1;
         const lh = try m.gpa.alloc(f32, na);
         defer m.gpa.free(lh);
         try o.s.synchronize();
@@ -223,9 +257,11 @@ pub const Model = struct {
         while (li > 0) {
             li -= 1;
             m.arena.reset(base2);
-            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, try m.arena.f32s(r * wd), r);
+            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, try m.arena.f32s(r * wd), r, fl(forced, li, r, kk));
             defer t.mo.deinit(m.gpa);
+            const tb = now(m.io);
             try m.layerBackward(&t, cs, sn, cur, nxt, de, r);
+            m.prof.bwd_layer += try since(m, tb);
             m.experts.clear();
             std.mem.swap(u64, &cur, &nxt);
         }
@@ -234,6 +270,26 @@ pub const Model = struct {
         return .{ .loss = total, .rows = r };
     }
 };
+
+/// Seconds a pass spent in each part (summed over passes; `profile` prints and clears them).
+pub const Prof = struct {
+    fwd_gdn: f64 = 0,
+    fwd_attn: f64 = 0,
+    fwd_moe: f64 = 0,
+    bwd_layer: f64 = 0,
+    head: f64 = 0,
+    passes: usize = 0,
+};
+
+fn now(io: ?std.Io) ?std.Io.Timestamp {
+    return if (io) |i| std.Io.Timestamp.now(i, .awake) else null;
+}
+
+fn since(m: *Model, t: ?std.Io.Timestamp) !f64 {
+    const t0 = t orelse return 0;
+    try m.ops.s.synchronize();
+    return @as(f64, @floatFromInt(t0.durationTo(std.Io.Timestamp.now(m.io.?, .awake)).nanoseconds)) / 1e9;
+}
 
 fn bf16Round(x: f32) f32 {
     const u: u32 = @bitCast(x);

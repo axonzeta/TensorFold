@@ -426,5 +426,13 @@ pub const Ops = struct {
         a.add(gscale);
         try cuda.launch.launch(o.k.xent, .{ .grid = .{ .x = @intCast(r) }, .block = .{ .x = 1024 } }, o.s, &a);
     }
+
+    /// Softmax over each row's given experts (ids [R][K] i32): weights [R][K].
+    pub fn pickSoftmax(o: *Ops, logits: u64, ids: u64, w: u64, r: usize, e: usize, k: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ logits, ids, w }) |v| a.add(v);
+        inline for (.{ r, e, k }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.pick_softmax, flat(r), o.s, &a);
+    }
 };
 

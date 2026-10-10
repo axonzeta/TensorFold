@@ -75,8 +75,8 @@ pub const Tape = struct {
 
 pub const Moe = struct { x: hc.Ctx, ex: *Experts, gpa: std.mem.Allocator };
 
-/// The branch on x [R][D]: out [R][D].
-pub fn forward(m: Moe, moe: *const W.MoE, layer: usize, xin: u64, out: u64) !Tape {
+/// The branch on x [R][D]: out [R][D]. With `forced` ([R][K] host ids), those experts instead of the top-k.
+pub fn forward(m: Moe, moe: *const W.MoE, layer: usize, xin: u64, out: u64, forced: ?[]const i32) !Tape {
     const x = m.x;
     const c = x.c;
     const r = x.r;
@@ -96,12 +96,19 @@ pub fn forward(m: Moe, moe: *const W.MoE, layer: usize, xin: u64, out: u64) !Tap
     try o.copy2d(t.rl, e + 1, 0, t.logits, e, 0, r, e, false);
     t.ids = try x.a.bytes(r * kk * 4);
     t.w = try x.a.f32s(r * kk);
-    try o.topk(t.logits, t.ids, t.w, r, e, kk);
     // the routes on the host: each expert's rows and their (row, slot) pairs
     const ids = try m.gpa.alloc(i32, r * kk);
     defer m.gpa.free(ids);
-    try o.s.synchronize();
-    try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = t.ids, .len = r * kk * 4 }).download(0, std.mem.sliceAsBytes(ids));
+    if (forced) |f| {
+        if (f.len != r * kk) return error.ForcedRoutes;
+        @memcpy(ids, f);
+        try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = t.ids, .len = r * kk * 4 }).upload(0, std.mem.sliceAsBytes(ids));
+        try o.pickSoftmax(t.logits, t.ids, t.w, r, e, kk);
+    } else {
+        try o.topk(t.logits, t.ids, t.w, r, e, kk);
+        try o.s.synchronize();
+        try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = t.ids, .len = r * kk * 4 }).download(0, std.mem.sliceAsBytes(ids));
+    }
     var hits: std.ArrayList(Hit) = .empty;
     errdefer hits.deinit(m.gpa);
     const rows_h = try m.gpa.alloc(i32, r * kk);

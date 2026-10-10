@@ -122,7 +122,29 @@ const Probe = struct {
         defer eb.free();
         var de = try cuda.DeviceBuffer.alloc(e.ctx.d, ef.len * 4);
         defer de.free();
-        const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null);
+        // the served prompt forward over the lesson (rows as served), its layer inputs and routes captured
+        const nl: usize = e.c.layers;
+        const wd: usize = e.c.streams * e.c.hidden;
+        const slots: usize = e.c.top_k + 1;
+        var hb = try cuda.DeviceBuffer.alloc(e.ctx.d, nl * r * wd * 2);
+        defer hb.free();
+        var pk = try cuda.DeviceBuffer.alloc(e.ctx.d, nl * r * slots * 4);
+        defer pk.free();
+        var fb = try cuda.DeviceBuffer.alloc(e.ctx.d, r * wd * 2);
+        defer fb.free();
+        const cap: flashnext.train_capture.Capture = .{ .h_in = hb.ptr, .picks = pk.ptr, .final = fb.ptr, .rows = r, .slots = slots };
+        const served_on = if (ob.get("served")) |sv| sv.bool else true;
+        const picks = try gpa.alloc(i32, nl * r * slots);
+        defer gpa.free(picks);
+        if (served_on) {
+            e.f.capture = &cap;
+            defer e.f.capture = null;
+            try e.reset();
+            _ = try e.prefill(tokens, null);
+            try e.stream.synchronize();
+            try pk.download(0, std.mem.sliceAsBytes(picks));
+        }
+        const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null, if (served_on) .{ .cap = &cap, .picks = picks } else null);
         try de.download(0, std.mem.sliceAsBytes(ef));
         try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
         const g = try gpa.alloc(f32, w);

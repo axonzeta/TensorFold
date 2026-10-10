@@ -481,6 +481,8 @@ pub const Forward = struct {
     dump: ?*Dump = null,
     /// ngram-learn probe: positions whose n-gram rows contribute nothing (gated rows zeroed); null in serving
     ple_mute: ?[]const bool = null,
+    /// ngram-learn: a prompt forward's layer inputs, picks and final streams for training; null in serving
+    capture: ?*const @import("train_capture.zig").Capture = null,
     /// a decode window's attention keys bound (a graph's context bucket, Python compute's `context`); null: exact
     context: ?usize = null,
     /// a shared round's graph: each segment's keys bound (its context bucket), parallel to the segments
@@ -810,6 +812,14 @@ pub const Forward = struct {
 
     pub fn put(f: *Forward, name: []const u8, ptr: u64, bytes: usize) !void {
         if (f.dump) |d| try d.put(f, name, ptr, bytes);
+    }
+
+    /// ngram-learn: layer `layer`'s input (its rows in h) into the capture.
+    fn captureIn(f: *Forward, layer: *const W.Layer, h: u64, R: usize) !void {
+        const c = f.capture orelse return;
+        if (layer.index < 0 or R != c.rows) return;
+        const wd = f.g.wide() * 2;
+        try f.th.copy(c.h_in + @as(usize, @intCast(layer.index)) * c.rows * wd, h, R * wd);
     }
 
     fn putLayer(f: *Forward, layer: *const W.Layer, what: []const u8, ptr: u64, bytes: usize) !void {
@@ -1271,12 +1281,14 @@ pub const Forward = struct {
             // the n-gram block runs on every row (its conv reads the rows before each): the halves gathered first
             if (sp) |q| try f.gatherRows(b.h, q, g.wide() * 2, .bf16, 2);
             try f.mark(.hc_writeback);
+            try f.captureIn(layer, b.h, R);
             try f.pleBlock(p, segs, x, R);
             try f.mark(.ple);
             try f.putLayer(layer, "ple_emb", b.ple_emb, R * g.ple_dim * 2);
             try f.putLayer(layer, "h_ple", b.h, R * g.wide() * 2);
         }
         try f.hcBlock(&layer.attn_hc, x, R, b.h, pend, b.inj_a, sp);
+        if (layer.ple == null) try f.captureIn(layer, b.h, R);
         try f.putLayer(layer, "hc_a", b.mixed, R * g.hidden * 2);
         f.pf_mixer = prefetchHc(&layer.mlp_hc);
         const br = if (layer.linear) try f.gdnBlock(layer, segs, x, R) else try f.attnBlock(layer, segs, x, R, mtp);
@@ -1284,6 +1296,7 @@ pub const Forward = struct {
         try f.hcBlock(&layer.mlp_hc, x, R, b.h, .{ .branch = br, .inject = b.inj_a }, b.inj_m, sp);
         try f.putLayer(layer, "hc_m", b.mixed, R * g.hidden * 2);
         const moe = try f.moeBlock(&layer.moe, x, R, mtp);
+        if (f.capture) |c| if (layer.index >= 0 and !mtp) try f.th.copy(c.picks + @as(usize, @intCast(layer.index)) * c.rows * c.slots * 4, b.moe_pick, R * c.slots * 4);
         try f.putLayer(layer, "router_logits", b.moe_logits, R * (g.experts + 1) * 4);
         try f.putLayer(layer, "router_pick", b.moe_pick, R * (g.topKFor(mtp) + 1) * 4);
         try f.putLayer(layer, "router_wts", b.moe_wts, R * (g.topKFor(mtp) + 1) * 4);
@@ -1934,6 +1947,7 @@ pub const Forward = struct {
             try f.th.copy(b.streams, b.h, R * Wd * 2);
             try f.writeback(b.streams, x, R, pending);
         }
+        if (f.capture) |c| try f.th.copy(c.final, b.streams, R * Wd * 2);
         try f.mark(.finish);
         var rows = b.streams;
         var n = R;

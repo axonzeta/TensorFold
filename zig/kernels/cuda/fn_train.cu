@@ -644,3 +644,15 @@ extern "C" __global__ void fn_train_xent(const float* __restrict__ logits, const
     for (int i = threadIdx.x; i < V; i += blockDim.x)
       dlogits[r * V + i] = gscale * (__expf(l[i] - lse) - (i == t ? 1.f : 0.f));
 }
+
+// Softmax over given experts' logits: w[r][k] = softmax_k(logits[r][ids[r][k]]) (forced routes; one thread a row).
+extern "C" __global__ void fn_train_pick_softmax(const float* __restrict__ logits, const int* __restrict__ ids,
+                                                 float* __restrict__ w, int R, int E, int K) {
+  const int r = blockIdx.x * blockDim.x + threadIdx.x;
+  if (r >= R) return;
+  float mx = -INFINITY;
+  for (int k = 0; k < K; ++k) mx = fmaxf(mx, logits[(long long)r * E + ids[(long long)r * K + k]]);
+  float s = 0.f;
+  for (int k = 0; k < K; ++k) s += __expf(logits[(long long)r * E + ids[(long long)r * K + k]] - mx);
+  for (int k = 0; k < K; ++k) w[(long long)r * K + k] = __expf(logits[(long long)r * E + ids[(long long)r * K + k]] - mx) / s;
+}
