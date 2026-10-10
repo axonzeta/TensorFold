@@ -160,6 +160,45 @@ pub fn opCheck(gpa: Allocator, io: std.Io, ctx: *const cuda.Context, dir: []cons
             try b.save(str(o, "h"), h, r * sn * d * 4);
             try b.save(str(o, "dbr"), dbr, r * d * 4);
             try b.save(str(o, "dinj"), dinj, r * sn * 4);
+        } else if (std.mem.eql(u8, op, "rope")) {
+            const r = int(o, "r");
+            const h = int(o, "h");
+            const hd = int(o, "hd");
+            const rot = int(o, "rot");
+            const x = try b.in(str(o, "x"));
+            const cs = try b.in(str(o, "cos"));
+            const sn = try b.in(str(o, "sin"));
+            const dy = try b.in(str(o, "dy"));
+            const y = try b.out(r * h * hd * 4);
+            const dx = try b.out(r * h * hd * 4);
+            try ops.rope(x, cs, sn, y, r, h, hd, rot, false);
+            try ops.rope(dy, cs, sn, dx, r, h, hd, rot, true);
+            try stream.synchronize();
+            try b.save(str(o, "y"), y, r * h * hd * 4);
+            try b.save(str(o, "dx"), dx, r * h * hd * 4);
+        } else if (std.mem.eql(u8, op, "attn")) {
+            const r = int(o, "r");
+            const hq = int(o, "hq");
+            const hk = int(o, "hk");
+            const d = int(o, "d");
+            const scale: f32 = @floatCast(o.get("scale").?.float);
+            const q = try b.in(str(o, "q"));
+            const kt = try b.in(str(o, "k"));
+            const v = try b.in(str(o, "v"));
+            const dout = try b.in(str(o, "do"));
+            const p = try b.out(hq * r * r * 4);
+            const ds = try b.out(hq * r * r * 4);
+            const out = try b.out(r * hq * d * 4);
+            const dq = try b.out(r * hq * d * 4);
+            const dk = try b.out(r * hk * d * 4);
+            const dv = try b.out(r * hk * d * 4);
+            try ops.attnFwd(q, kt, v, p, out, r, hq, hk, d, scale);
+            try ops.attnBwd(q, kt, v, p, dout, ds, dq, dk, dv, r, hq, hk, d, scale);
+            try stream.synchronize();
+            try b.save(str(o, "o"), out, r * hq * d * 4);
+            try b.save(str(o, "dq"), dq, r * hq * d * 4);
+            try b.save(str(o, "dk"), dk, r * hk * d * 4);
+            try b.save(str(o, "dv"), dv, r * hk * d * 4);
         } else {
             std.debug.print("unknown op {s}\n", .{op});
             return 2;

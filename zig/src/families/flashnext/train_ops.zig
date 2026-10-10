@@ -186,5 +186,58 @@ pub const Ops = struct {
         inline for (.{ s, d }) |v| a.add(@as(i32, @intCast(v)));
         try cuda.launch.launch(o.k.inject_bwd, .{ .grid = .{ .x = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &a);
     }
+
+    /// dst[r][dst_off..] (+)= src[r][src_off..] for `width` columns of `rows` rows (fp32, leading dims in elements).
+    pub fn copy2d(o: *Ops, src: u64, src_ld: usize, src_off: usize, dst: u64, dst_ld: usize, dst_off: usize, rows: usize, width: usize, add: bool) !void {
+        var a: cuda.Args = .{};
+        a.add(src);
+        inline for (.{ src_ld, src_off }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(dst);
+        inline for (.{ dst_ld, dst_off, rows, width }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.copy2d, flat(rows * width), o.s, &a);
+    }
+
+    /// Rotate-half RoPE on the first `rot` of each head's `hd` dims (backward: the transposed rotation of dy).
+    pub fn rope(o: *Ops, x: u64, cs: u64, sn: u64, y: u64, r: usize, h: usize, hd: usize, rot: usize, backward: bool) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ x, cs, sn, y }) |v| a.add(v);
+        inline for (.{ r, h, hd, rot }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(@as(i32, @intFromBool(backward)));
+        try cuda.launch.launch(o.k.rope, flat(r * h * hd), o.s, &a);
+    }
+
+    /// Causal GQA attention forward: probabilities P [hq][r][r] and output o [r][hq][d].
+    pub fn attnFwd(o: *Ops, q: u64, k: u64, v: u64, p: u64, out: u64, r: usize, hq: usize, hk: usize, d: usize, scale: f32) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ q, k, p }) |x| a.add(x);
+        inline for (.{ r, hq, hk, d }) |x| a.add(@as(i32, @intCast(x)));
+        a.add(scale);
+        const grid: cuda.Dim3 = .{ .x = @intCast(hq), .y = @intCast(r) };
+        try cuda.launch.launch(o.k.attn_probs, .{ .grid = grid, .block = .{ .x = 256 }, .shared = @intCast(d * 4) }, o.s, &a);
+        var b: cuda.Args = .{};
+        inline for (.{ p, v, out }) |x| b.add(x);
+        inline for (.{ r, hq, hk, d }) |x| b.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.attn_out, .{ .grid = grid, .block = .{ .x = 256 } }, o.s, &b);
+    }
+
+    /// Its backward: dq, dk, dv from dO (ds is [hq][r][r] scratch).
+    pub fn attnBwd(o: *Ops, q: u64, k: u64, v: u64, p: u64, d_out: u64, ds: u64, dq: u64, dk: u64, dv: u64, r: usize, hq: usize, hk: usize, d: usize, scale: f32) !void {
+        const grid: cuda.Dim3 = .{ .x = @intCast(hq), .y = @intCast(r) };
+        var a: cuda.Args = .{};
+        inline for (.{ p, d_out, v, ds }) |x| a.add(x);
+        inline for (.{ r, hq, hk, d }) |x| a.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.attn_ds, .{ .grid = grid, .block = .{ .x = 256 }, .shared = @intCast(d * 4) }, o.s, &a);
+        var b: cuda.Args = .{};
+        inline for (.{ ds, k, dq }) |x| b.add(x);
+        inline for (.{ r, hq, hk, d }) |x| b.add(@as(i32, @intCast(x)));
+        b.add(scale);
+        try cuda.launch.launch(o.k.attn_dq, .{ .grid = grid, .block = .{ .x = 256 } }, o.s, &b);
+        var c: cuda.Args = .{};
+        inline for (.{ p, ds, q, d_out, dk, dv }) |x| c.add(x);
+        inline for (.{ r, hq, hk, d }) |x| c.add(@as(i32, @intCast(x)));
+        c.add(scale);
+        try cuda.launch.launch(o.k.attn_dkv, .{ .grid = .{ .x = @intCast(hk), .y = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &c);
+    }
 };
 

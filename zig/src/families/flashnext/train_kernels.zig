@@ -18,13 +18,20 @@ pub const Kernels = struct {
     mix_bwd: cuda.Function,
     inject_fwd: cuda.Function,
     inject_bwd: cuda.Function,
+    copy2d: cuda.Function,
+    rope: cuda.Function,
+    attn_probs: cuda.Function,
+    attn_out: cuda.Function,
+    attn_ds: cuda.Function,
+    attn_dq: cuda.Function,
+    attn_dkv: cuda.Function,
 
     pub fn load(ctx: *const cuda.Context) !Kernels {
         var m = try cuda.Module.load(ctx.d, cuda.kernels.fn_train);
         errdefer m.unload();
         var k: Kernels = undefined;
         k.module = m;
-        inline for (.{ .{ "int4_dequant", "fn_train_int4_dequant" }, .{ "transpose", "fn_train_transpose_bf16" }, .{ "to_bf16", "fn_train_f32_to_bf16" }, .{ "to_f32", "fn_train_bf16_to_f32" }, .{ "rms_fwd", "fn_train_rms_fwd" }, .{ "rms_bwd", "fn_train_rms_bwd" }, .{ "ew", "fn_train_ew" }, .{ "ew_bwd", "fn_train_ew_bwd" }, .{ "ew2", "fn_train_ew2" }, .{ "mix_fwd", "fn_train_mix_fwd" }, .{ "mix_bwd", "fn_train_mix_bwd" }, .{ "inject_fwd", "fn_train_inject_fwd" }, .{ "inject_bwd", "fn_train_inject_bwd" } }) |e| {
+        inline for (.{ .{ "int4_dequant", "fn_train_int4_dequant" }, .{ "transpose", "fn_train_transpose_bf16" }, .{ "to_bf16", "fn_train_f32_to_bf16" }, .{ "to_f32", "fn_train_bf16_to_f32" }, .{ "rms_fwd", "fn_train_rms_fwd" }, .{ "rms_bwd", "fn_train_rms_bwd" }, .{ "ew", "fn_train_ew" }, .{ "ew_bwd", "fn_train_ew_bwd" }, .{ "ew2", "fn_train_ew2" }, .{ "mix_fwd", "fn_train_mix_fwd" }, .{ "mix_bwd", "fn_train_mix_bwd" }, .{ "inject_fwd", "fn_train_inject_fwd" }, .{ "inject_bwd", "fn_train_inject_bwd" }, .{ "copy2d", "fn_train_copy2d" }, .{ "rope", "fn_train_rope" }, .{ "attn_probs", "fn_train_attn_probs" }, .{ "attn_out", "fn_train_attn_out" }, .{ "attn_ds", "fn_train_attn_ds" }, .{ "attn_dq", "fn_train_attn_dq" }, .{ "attn_dkv", "fn_train_attn_dkv" } }) |e| {
             @field(k, e[0]) = try m.function(e[1]);
         }
         return k;

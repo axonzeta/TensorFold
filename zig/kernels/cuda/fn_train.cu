@@ -208,3 +208,146 @@ extern "C" __global__ void fn_train_bf16_to_f32(const uint16_t* __restrict__ in,
   const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
   if (i < n) out[i] = bf2f(in[i]);
 }
+
+// Strided copy: dst[r][dst_off + c] (+)= src[r][src_off + c] for c < width (fp32 rows of src_ld / dst_ld).
+extern "C" __global__ void fn_train_copy2d(const float* __restrict__ src, int src_ld, int src_off, float* __restrict__ dst,
+                                           int dst_ld, int dst_off, int rows, int width, int add) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= (long long)rows * width) return;
+  const long long r = i / width, c = i % width;
+  const float v = src[r * src_ld + src_off + c];
+  float* d = dst + r * dst_ld + dst_off + c;
+  *d = add ? *d + v : v;
+}
+
+// Rotate-half RoPE on the first `rot` dims of each head (x [R][H][hd]); cos/sin [R][rot] (halves repeated).
+// fwd: y = x * cos + rotate_half(x) * sin; bwd (inverse = sign flip of sin): dx = dy * cos + rotate_half^T(dy * sin).
+extern "C" __global__ void fn_train_rope(const float* __restrict__ x, const float* __restrict__ cs,
+                                         const float* __restrict__ sn, float* __restrict__ y, int R, int H, int hd,
+                                         int rot, int backward) {
+  const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+  if (i >= (long long)R * H * hd) return;
+  const int c = (int)(i % hd);
+  const long long r = i / ((long long)H * hd);
+  if (c >= rot) { y[i] = x[i]; return; }
+  const int half = rot / 2;
+  const float co = cs[r * rot + c], s = sn[r * rot + c];
+  const long long base = i - c;
+  float other;
+  if (!backward) other = c < half ? -x[base + c + half] : x[base + c - half];  // rotate_half(x)[c]
+  else other = c < half ? x[base + c + half] * sn[r * rot + c + half] : -x[base + c - half] * sn[r * rot + c - half];
+  y[i] = backward ? x[i] * co + other : x[i] * co + other * s;
+}
+
+// Causal GQA attention, fp32. q [R][Hq][D], k/v [R][Hk][D] (head h reads kv h / (Hq/Hk)); P [Hq][R][R].
+// Scores and softmax: grid (Hq, R), block 256 over keys j <= i.
+extern "C" __global__ void fn_train_attn_probs(const float* __restrict__ q, const float* __restrict__ k,
+                                               float* __restrict__ P, int R, int Hq, int Hk, int D, float scale) {
+  const int h = blockIdx.x, i = blockIdx.y, kv = h / (Hq / Hk);
+  extern __shared__ float qs[];
+  for (int d = threadIdx.x; d < D; d += blockDim.x) qs[d] = q[((long long)i * Hq + h) * D + d];
+  __syncthreads();
+  float* row = P + ((long long)h * R + i) * R;
+  float mx = -INFINITY;
+  for (int j = threadIdx.x; j < R; j += blockDim.x) {
+    float s = -INFINITY;
+    if (j <= i) {
+      s = 0.f;
+      const float* kr = k + ((long long)j * Hk + kv) * D;
+      for (int d = 0; d < D; ++d) s += qs[d] * kr[d];
+      s *= scale;
+    }
+    row[j] = s;
+    mx = fmaxf(mx, s);
+  }
+  // block max
+  __shared__ float red[32];
+  for (int o = 16; o > 0; o >>= 1) mx = fmaxf(mx, __shfl_xor_sync(0xffffffffu, mx, o));
+  if (threadIdx.x % 32 == 0) red[threadIdx.x / 32] = mx;
+  __syncthreads();
+  if (threadIdx.x < 32) {
+    float v = threadIdx.x < blockDim.x / 32 ? red[threadIdx.x] : -INFINITY;
+    for (int o = 16; o > 0; o >>= 1) v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, o));
+    if (threadIdx.x == 0) red[0] = v;
+  }
+  __syncthreads();
+  mx = red[0];
+  __syncthreads();
+  float sum = 0.f;
+  for (int j = threadIdx.x; j < R; j += blockDim.x) {
+    const float e = j <= i ? __expf(row[j] - mx) : 0.f;
+    row[j] = e;
+    sum += e;
+  }
+  sum = block_sum(sum);
+  for (int j = threadIdx.x; j < R; j += blockDim.x) row[j] /= sum;
+}
+
+// o[i][h][d] = sum_j P[h][i][j] v[j][kv][d]; grid (Hq, R), block over d.
+extern "C" __global__ void fn_train_attn_out(const float* __restrict__ P, const float* __restrict__ v,
+                                             float* __restrict__ o, int R, int Hq, int Hk, int D) {
+  const int h = blockIdx.x, i = blockIdx.y, kv = h / (Hq / Hk);
+  const float* row = P + ((long long)h * R + i) * R;
+  for (int d = threadIdx.x; d < D; d += blockDim.x) {
+    float s = 0.f;
+    for (int j = 0; j <= i; ++j) s += row[j] * v[((long long)j * Hk + kv) * D + d];
+    o[((long long)i * Hq + h) * D + d] = s;
+  }
+}
+
+// Backward step 1, grid (Hq, R): dS[h][i][j] = P * (dP - rowsum(P * dP)), dP[j] = do_i . v_j; written over dP buffer.
+extern "C" __global__ void fn_train_attn_ds(const float* __restrict__ P, const float* __restrict__ dO,
+                                            const float* __restrict__ v, float* __restrict__ dS, int R, int Hq, int Hk,
+                                            int D) {
+  const int h = blockIdx.x, i = blockIdx.y, kv = h / (Hq / Hk);
+  extern __shared__ float ds_do[];
+  for (int d = threadIdx.x; d < D; d += blockDim.x) ds_do[d] = dO[((long long)i * Hq + h) * D + d];
+  __syncthreads();
+  const float* prow = P + ((long long)h * R + i) * R;
+  float* drow = dS + ((long long)h * R + i) * R;
+  float acc = 0.f;
+  for (int j = threadIdx.x; j < R; j += blockDim.x) {
+    float dp = 0.f;
+    if (j <= i) {
+      const float* vr = v + ((long long)j * Hk + kv) * D;
+      for (int d = 0; d < D; ++d) dp += ds_do[d] * vr[d];
+    }
+    drow[j] = dp;
+    acc += prow[j] * dp;
+  }
+  acc = block_sum(acc);
+  for (int j = threadIdx.x; j < R; j += blockDim.x) drow[j] = j <= i ? prow[j] * (drow[j] - acc) : 0.f;
+}
+
+// dq[i][h][d] = scale * sum_j dS[h][i][j] k[j][kv][d]; grid (Hq, R), block over d.
+extern "C" __global__ void fn_train_attn_dq(const float* __restrict__ dS, const float* __restrict__ k,
+                                            float* __restrict__ dq, int R, int Hq, int Hk, int D, float scale) {
+  const int h = blockIdx.x, i = blockIdx.y, kv = h / (Hq / Hk);
+  const float* row = dS + ((long long)h * R + i) * R;
+  for (int d = threadIdx.x; d < D; d += blockDim.x) {
+    float s = 0.f;
+    for (int j = 0; j <= i; ++j) s += row[j] * k[((long long)j * Hk + kv) * D + d];
+    dq[((long long)i * Hq + h) * D + d] = scale * s;
+  }
+}
+
+// dk[j][kv][d] = scale * sum_{h in kv's group, i >= j} dS[h][i][j] q[i][h][d];
+// dv[j][kv][d] = sum_{h, i >= j} P[h][i][j] dO[i][h][d]; grid (Hk, R), block over d.
+extern "C" __global__ void fn_train_attn_dkv(const float* __restrict__ P, const float* __restrict__ dS,
+                                             const float* __restrict__ q, const float* __restrict__ dO,
+                                             float* __restrict__ dk, float* __restrict__ dv, int R, int Hq, int Hk,
+                                             int D, float scale) {
+  const int kv = blockIdx.x, j = blockIdx.y, g = Hq / Hk;
+  for (int d = threadIdx.x; d < D; d += blockDim.x) {
+    float sk = 0.f, sv = 0.f;
+    for (int h = kv * g; h < (kv + 1) * g; ++h)
+      for (int i = j; i < R; ++i) {
+        const long long pi = ((long long)h * R + i) * R + j;
+        const long long qi = ((long long)i * Hq + h) * D + d;
+        sk += dS[pi] * q[qi];
+        sv += P[pi] * dO[qi];
+      }
+    dk[((long long)j * Hk + kv) * D + d] = scale * sk;
+    dv[((long long)j * Hk + kv) * D + d] = sv;
+  }
+}
