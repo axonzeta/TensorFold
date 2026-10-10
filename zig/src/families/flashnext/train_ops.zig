@@ -239,5 +239,65 @@ pub const Ops = struct {
         c.add(scale);
         try cuda.launch.launch(o.k.attn_dkv, .{ .grid = .{ .x = @intCast(hk), .y = @intCast(r) }, .block = .{ .x = 256 } }, o.s, &c);
     }
+
+    /// Depthwise causal conv over rows (pre-activation): y[t][c] = sum_j w[c][j] x[t - (K-1-j) dil][c]; w bf16 [C][K].
+    pub fn convFwd(o: *Ops, x: u64, w: u64, y: u64, r: usize, c: usize, k: usize, dil: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ x, w, y }) |v| a.add(v);
+        inline for (.{ r, c, k, dil }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.conv_fwd, flat(r * c), o.s, &a);
+    }
+
+    /// Its backward: dx (+)= the gradient at x.
+    pub fn convBwd(o: *Ops, dy: u64, w: u64, dx: u64, r: usize, c: usize, k: usize, dil: usize, add: bool) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ dy, w, dx }) |v| a.add(v);
+        inline for (.{ r, c, k, dil }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(@as(i32, @intFromBool(add)));
+        try cuda.launch.launch(o.k.conv_bwd, flat(r * c), o.s, &a);
+    }
+
+    /// GatedDeltaNet gates: g = -exp(A_log) softplus(a + dt_bias), beta = sigmoid(b) ([R][H], A_log / dt_bias bf16).
+    pub fn gdnGates(o: *Ops, a_in: u64, b_in: u64, a_log: u64, dt_bias: u64, g: u64, beta: u64, r: usize, h: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ a_in, b_in, a_log, dt_bias, g, beta }) |v| a.add(v);
+        inline for (.{ r, h }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.gdn_gates, flat(r * h), o.s, &a);
+    }
+
+    /// Its backward: da, db from dg, dbeta.
+    pub fn gdnGatesBwd(o: *Ops, a_in: u64, beta: u64, a_log: u64, dt_bias: u64, dg: u64, dbeta: u64, da: u64, db: u64, r: usize, h: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ a_in, beta, a_log, dt_bias, dg, dbeta, da, db }) |v| a.add(v);
+        inline for (.{ r, h }) |v| a.add(@as(i32, @intCast(v)));
+        try cuda.launch.launch(o.k.gdn_gates_bwd, flat(r * h), o.s, &a);
+    }
+
+    /// Key heads repeated to value heads ([R][hk][d] -> [R][hk rep][d]), or summed back (backward).
+    pub fn heads(o: *Ops, in: u64, out: u64, r: usize, hk: usize, rep: usize, d: usize, backward: bool) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ in, out }) |v| a.add(v);
+        inline for (.{ r, hk, rep, d }) |v| a.add(@as(i32, @intCast(v)));
+        a.add(@as(i32, @intFromBool(backward)));
+        try cuda.launch.launch(o.k.heads, flat(r * hk * (if (backward) 1 else rep) * d), o.s, &a);
+    }
+
+    /// The gated delta rule over R rows of H value heads (q, k [R][H][dk] already normed, v [R][H][dv]); every
+    /// step's state into `states` ([H][R + 1][dk][dv] fp32).
+    pub fn deltaFwd(o: *Ops, q: u64, k: u64, v: u64, g: u64, beta: u64, out: u64, states: u64, r: usize, h: usize, dk: usize, dv: usize) !void {
+        if (dk > 128 or dv > 1024) return error.BadShape;
+        var a: cuda.Args = .{};
+        inline for (.{ q, k, v, g, beta, out, states }) |x| a.add(x);
+        inline for (.{ r, h, dk, dv }) |x| a.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.delta_fwd, .{ .grid = .{ .x = @intCast(h) }, .block = .{ .x = @intCast(dv) } }, o.s, &a);
+    }
+
+    /// Its backward: dq, dk, dv, dg, dbeta from dO and the stored states.
+    pub fn deltaBwd(o: *Ops, q: u64, k: u64, v: u64, g: u64, beta: u64, d_out: u64, states: u64, dq: u64, dk_out: u64, dv_out: u64, dg: u64, dbeta: u64, r: usize, h: usize, dk: usize, dv: usize) !void {
+        var a: cuda.Args = .{};
+        inline for (.{ q, k, v, g, beta, d_out, states, dq, dk_out, dv_out, dg, dbeta }) |x| a.add(x);
+        inline for (.{ r, h, dk, dv }) |x| a.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.delta_bwd, .{ .grid = .{ .x = @intCast(h) }, .block = .{ .x = @intCast(dv) } }, o.s, &a);
+    }
 };
 
