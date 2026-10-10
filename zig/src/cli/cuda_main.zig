@@ -1,6 +1,7 @@
 //! `tensorfold` on Linux with CUDA: a model run on token ids with no Python at all, plus the oracle checks.
 
 const std = @import("std");
+pub const std_options: std.Options = .{ .enable_segfault_handler = true };
 const cuda = @import("cuda");
 const nemotron = @import("nemotron");
 const core = @import("core");

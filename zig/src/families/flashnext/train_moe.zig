@@ -9,25 +9,25 @@ const int4 = @import("cuda_int4.zig");
 const tk = @import("train_kernels.zig");
 const tw = @import("train_weights.zig");
 const hc = @import("train_hc.zig");
+const Arena = @import("train_arena.zig").Arena;
 
-/// Routed experts dequantised to bf16 [n][k], kept for the lesson.
+/// Routed experts dequantised to bf16 [n][k] in their own arena, kept for one layer.
 pub const Experts = struct {
     gpa: std.mem.Allocator,
     d: *const cuda.Driver,
     k: *const tk.Kernels,
     s: cuda.Stream,
-    map: std.AutoHashMapUnmanaged(u64, cuda.DeviceBuffer) = .empty,
+    arena: Arena,
+    map: std.AutoHashMapUnmanaged(u64, u64) = .empty,
 
     pub fn deinit(x: *Experts) void {
-        x.clear();
         x.map.deinit(x.gpa);
+        x.arena.deinit();
     }
 
-    /// Every dequantised expert freed (after each layer: experts are not reused across layers).
+    /// Every dequantised expert dropped (after each layer: experts are not reused across layers).
     pub fn clear(x: *Experts) void {
-        x.s.synchronize() catch {};
-        var it = x.map.valueIterator();
-        while (it.next()) |b| b.free();
+        x.arena.reset(0);
         x.map.clearRetainingCapacity();
     }
 
@@ -39,12 +39,11 @@ pub const Experts = struct {
         const gop = try x.map.getOrPut(x.gpa, key);
         if (!gop.found_existing) {
             errdefer _ = x.map.remove(key);
-            var buf = try cuda.DeviceBuffer.alloc(x.d, n * kk * 2);
-            errdefer buf.free();
-            try x.k.expert(x.s, ex, e, m, buf.ptr);
-            gop.value_ptr.* = buf;
+            const ptr = try x.arena.bytes(n * kk * 2);
+            try x.k.expert(x.s, ex, e, m, ptr);
+            gop.value_ptr.* = ptr;
         }
-        return .{ .w = gop.value_ptr.ptr, .n = @intCast(n), .k = @intCast(kk) };
+        return .{ .w = gop.value_ptr.*, .n = @intCast(n), .k = @intCast(kk) };
     }
 };
 
@@ -102,7 +101,7 @@ pub fn forward(m: Moe, moe: *const W.MoE, layer: usize, xin: u64, out: u64, forc
     if (forced) |f| {
         if (f.len != r * kk) return error.ForcedRoutes;
         @memcpy(ids, f);
-        try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = t.ids, .len = r * kk * 4 }).upload(0, std.mem.sliceAsBytes(ids));
+        try o.upload(t.ids, std.mem.sliceAsBytes(ids));
         try o.pickSoftmax(t.logits, t.ids, t.w, r, e, kk);
     } else {
         try o.topk(t.logits, t.ids, t.w, r, e, kk);
@@ -111,23 +110,33 @@ pub fn forward(m: Moe, moe: *const W.MoE, layer: usize, xin: u64, out: u64, forc
     }
     var hits: std.ArrayList(Hit) = .empty;
     errdefer hits.deinit(m.gpa);
-    const rows_h = try m.gpa.alloc(i32, r * kk);
-    defer m.gpa.free(rows_h);
-    const pairs_h = try m.gpa.alloc(i32, r * kk);
-    defer m.gpa.free(pairs_h);
+    // every expert's rows, then every expert's (row, slot) pairs, grouped by expert, in one upload
+    const lists = try m.gpa.alloc(i32, 2 * r * kk);
+    defer m.gpa.free(lists);
+    const counts = try m.gpa.alloc(usize, e);
+    defer m.gpa.free(counts);
+    @memset(counts, 0);
+    for (ids) |id| counts[@intCast(id)] += 1;
+    const starts = try m.gpa.alloc(usize, e + 1);
+    defer m.gpa.free(starts);
+    starts[0] = 0;
+    for (0..e) |ei| starts[ei + 1] = starts[ei] + counts[ei];
+    @memset(counts, 0);
+    for (ids, 0..) |id, pi| {
+        const ei: usize = @intCast(id);
+        const at = starts[ei] + counts[ei];
+        lists[at] = @intCast(pi / kk);
+        lists[r * kk + at] = @intCast(pi);
+        counts[ei] += 1;
+    }
+    const dl = try x.a.bytes(2 * r * kk * 4);
+    try o.upload(dl, std.mem.sliceAsBytes(lists));
     const zero = try x.a.zeros(r * d, o.s);
     try o.copy2d(zero, d, 0, out, d, 0, r, d, false);
     for (0..e) |ei| {
-        var n: usize = 0;
-        for (ids, 0..) |id, pi| if (id == @as(i32, @intCast(ei))) {
-            rows_h[n] = @intCast(pi / kk);
-            pairs_h[n] = @intCast(pi);
-            n += 1;
-        };
+        const n = counts[ei];
         if (n == 0) continue;
-        var h: Hit = .{ .e = ei, .n = n, .rows = try x.a.bytes(n * 4), .pairs = try x.a.bytes(n * 4), .xe = 0, .g = 0, .u = 0, .sg = 0, .act = 0, .ye = 0, .we = 0 };
-        try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = h.rows, .len = n * 4 }).upload(0, std.mem.sliceAsBytes(rows_h[0..n]));
-        try (cuda.DeviceBuffer{ .d = x.a.buf.d, .ptr = h.pairs, .len = n * 4 }).upload(0, std.mem.sliceAsBytes(pairs_h[0..n]));
+        var h: Hit = .{ .e = ei, .n = n, .rows = dl + starts[ei] * 4, .pairs = dl + (r * kk + starts[ei]) * 4, .xe = 0, .g = 0, .u = 0, .sg = 0, .act = 0, .ye = 0, .we = 0 };
         const wd: usize = ex.width;
         h.xe = try x.a.f32s(n * d);
         try o.gather(xin, h.rows, h.xe, n, d);

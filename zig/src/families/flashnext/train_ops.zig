@@ -434,5 +434,12 @@ pub const Ops = struct {
         inline for (.{ r, e, k }) |v| a.add(@as(i32, @intCast(v)));
         try cuda.launch.launch(o.k.pick_softmax, flat(r), o.s, &a);
     }
+
+    /// Host bytes into training scratch at `ptr`, once the stream's queued work (which may still read that scratch,
+    /// arenas being reused) is done: plain uploads are not ordered with this non-blocking stream.
+    pub fn upload(o: *Ops, ptr: u64, bytes: []const u8) !void {
+        try o.s.synchronize();
+        try (cuda.DeviceBuffer{ .d = o.d, .ptr = ptr, .len = bytes.len }).upload(0, bytes);
+    }
 };
 

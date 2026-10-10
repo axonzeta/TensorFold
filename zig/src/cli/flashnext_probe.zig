@@ -141,8 +141,16 @@ const Probe = struct {
             defer e.f.capture = null;
             try e.reset();
             _ = try e.prefill(tokens, null);
-            try e.stream.synchronize();
+            try e.ctx.synchronize();
             try pk.download(0, std.mem.sliceAsBytes(picks));
+            var lo: i32 = std.math.maxInt(i32);
+            var hi: i32 = std.math.minInt(i32);
+            for (0..nl * r) |row| for (0..slots - 1) |k| {
+                lo = @min(lo, picks[row * slots + k]);
+                hi = @max(hi, picks[row * slots + k]);
+            };
+            std.debug.print("captured picks: routed ids in [{d}, {d}], first row {any}\n", .{ lo, hi, picks[0..slots] });
+            if (lo < 0 or hi >= e.c.experts) return error.CapturedPicksOutOfRange;
         }
         const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null, if (served_on) .{ .cap = &cap, .picks = picks } else null);
         try de.download(0, std.mem.sliceAsBytes(ef));

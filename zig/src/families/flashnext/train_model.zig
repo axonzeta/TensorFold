@@ -50,8 +50,11 @@ pub const Model = struct {
         errdefer self.ops.deinit();
         self.weights = try tw.Weights.init(gpa, cx.d, f, &self.ops, max_rows * @max(c.vocab, 16384 * 2));
         errdefer self.weights.deinit();
-        self.experts = .{ .gpa = gpa, .d = cx.d, .k = &self.k, .s = f.s };
+        self.experts = .{ .gpa = gpa, .d = cx.d, .k = &self.k, .s = f.s, .arena = try Arena.init(cx.d, 6 << 30) };
+        errdefer self.experts.deinit();
         self.routes = null;
+        self.io = null;
+        self.prof = .{};
         self.arena = try Arena.init(cx.d, @intFromFloat(arena_gib * (1 << 30)));
         errdefer self.arena.deinit();
         const h = w.head4 orelse return error.TrainNeedsInt4Head;
@@ -173,7 +176,7 @@ pub const Model = struct {
         };
         const cs = try m.arena.f32s(2 * r * rot);
         const sn = cs + r * rot * 4;
-        try (cuda.DeviceBuffer{ .d = m.d, .ptr = cs, .len = 2 * r * rot * 4 }).upload(0, std.mem.sliceAsBytes(tab));
+        try o.upload(cs, std.mem.sliceAsBytes(tab));
         // the kept layer inputs, then the embedding spread over the streams
         const keep = try m.arena.f32s((nl + 1) * r * wd);
         const kk: usize = c.top_k;
@@ -219,7 +222,7 @@ pub const Model = struct {
         const at_i = try m.gpa.alloc(i32, na);
         defer m.gpa.free(at_i);
         for (at, at_i) |a, *b| b.* = @intCast(a);
-        try (cuda.DeviceBuffer{ .d = m.d, .ptr = idx, .len = na * 4 }).upload(0, std.mem.sliceAsBytes(at_i));
+        try o.upload(idx, std.mem.sliceAsBytes(at_i));
         const rows = try m.arena.f32s(na * d);
         try o.gather(fin.mixed, idx, rows, na, d);
         const v: usize = c.vocab;
@@ -228,7 +231,7 @@ pub const Model = struct {
         try m.weights.forward(head, rows, logits, na);
         const tg = try m.arena.bytes(na * 4);
         for (targets, at_i) |a, *b| b.* = @intCast(a);
-        try (cuda.DeviceBuffer{ .d = m.d, .ptr = tg, .len = na * 4 }).upload(0, std.mem.sliceAsBytes(at_i));
+        try o.upload(tg, std.mem.sliceAsBytes(at_i));
         const loss = try m.arena.f32s(na);
         const dlogits = try m.arena.f32s(na * v);
         try o.xent(logits, tg, loss, dlogits, na, v, 1);
