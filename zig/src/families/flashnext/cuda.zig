@@ -30,6 +30,7 @@ pub const moe_prompt = @import("cuda_moe_prompt.zig");
 pub const fp8 = @import("cuda_fp8.zig");
 pub const int4 = @import("cuda_int4.zig");
 pub const int4_check = @import("cuda_int4_check.zig");
+pub const ngram_overlay = @import("ngram_overlay.zig");
 pub const Engine = engine.Engine;
 
 test {

@@ -53,6 +53,9 @@ const usage =
     \\           replies first differ; a lossy mode's quality against the exact path)
     \\  every command: [--tp 2 --rank R --master ADDR --master-port PORT] (both ranks run the same command)
     \\           [--kv-dtype bf16|fp8]   (the attention caches' format; fp8: e4m3 rows, a power-of-two scale a head row)
+    \\  tensorfold score MODEL CASES.json --report OUT.json   (ngram-learn: teacher-forced log-probs of each
+    \\           case's continuation after its prompt, n-gram rows muted at its listed positions)
+    \\  tensorfold worker MODEL   (ngram-learn: score cases one JSON line at a time on stdin, answers on stdout)
     \\  tensorfold gate MODEL CAPTURE_DIR [--max-tokens N] [--only NAME,...] [--report PATH]   (every captured
     \\           prompt serial and drafted, greedy and sampled, against results.json; drafted == serial)
     \\
@@ -323,6 +326,8 @@ pub fn main(init: std.process.Init, args: []const []const u8) !u8 {
     if (std.mem.eql(u8, cmd, "reuse") and rest.len == 1) return reuse(gpa, init.io, e, rest[0], o);
     if (std.mem.eql(u8, cmd, "pool")) return pool(gpa, e, o);
     if (std.mem.eql(u8, cmd, "agree") and rest.len == 1) return agree(gpa, init.io, e, rest[0], o);
+    if (std.mem.eql(u8, cmd, "score") and rest.len == 1) return @import("flashnext_probe.zig").score(gpa, init.io, e, rest[0], o.report);
+    if (std.mem.eql(u8, cmd, "worker")) return @import("flashnext_probe.zig").worker(gpa, init.io, e);
     std.debug.print("{s}", .{usage});
     return 2;
 }

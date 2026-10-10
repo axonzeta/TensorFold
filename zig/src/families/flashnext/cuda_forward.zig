@@ -479,6 +479,8 @@ pub const Forward = struct {
     /// each decoder layer's index among the DeltaNet layers or among the attention layers
     sub: [cfgs.max_layers]usize = @splat(0),
     dump: ?*Dump = null,
+    /// ngram-learn probe: positions whose n-gram rows contribute nothing (gated rows zeroed); null in serving
+    ple_mute: ?[]const bool = null,
     /// a decode window's attention keys bound (a graph's context bucket, Python compute's `context`); null: exact
     context: ?usize = null,
     /// a shared round's graph: each segment's keys bound (its context bucket), parallel to the segments
@@ -1452,6 +1454,10 @@ pub const Forward = struct {
         try f.mm(b.ple_emb, g.ple_dim, p.value, b.ple_vals, false, R);
         try f.t.pleGate(b.ple_keys, b.ple_vals, b.h, p.norm_key, p.norm_query, b.ple_gated, b.ple_pss, R, g.hidden, g.streams, f.eps);
         const Wd = g.wide();
+        if (f.ple_mute) |mute| for (segs) |sg| for (sg.a0..sg.a1) |r| {
+            const at: usize = @as(usize, @intCast(sg.seq.st.pos)) + (r - sg.a0);
+            if (at < mute.len and mute[at]) try f.th.zero(b.ple_gated + r * Wd * 2, Wd * 2);
+        };
         for (segs) |sg| {
             const o = sg.a0;
             try f.t.pleConv(b.ple_gated + o * Wd * 2, b.ple_pss + o * g.streams * 4, p.norm_conv, sg.seq.st.ple_tail, p.conv, b.h + o * Wd * 2, b.h + o * Wd * 2, b.ple_nrow + o * Wd * 2, sg.a1 - sg.a0, g.hidden, g.streams, g.ple_kernel, g.ngram_size, f.eps);

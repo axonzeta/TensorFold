@@ -27,6 +27,7 @@ const ngram = @import("cuda_ngram.zig");
 const ropes = @import("cuda_rope.zig");
 const fp8 = @import("cuda_fp8.zig");
 const int4 = @import("cuda_int4.zig");
+const ngram_overlay = @import("ngram_overlay.zig");
 
 const Config = cfgs.Config;
 const st = core.safetensors;
@@ -130,8 +131,15 @@ pub const NgramTable = struct {
     lut: [256]u16 = @splat(0),
     /// on the GPU: rows [base, base + count) as stored, the LUT ([256] bf16 bits), heads [head0, head0 + heads)
     gpu: ?struct { rows: u64, lut: u64, base: u64, count: u64, head0: u32, heads: u32 } = null,
+    /// ngram-learn: rows that replace the table's in `gather` (host gather only), and the one loaded at start
+    overlay: ?*const ngram_overlay.Overlay = null,
+    owned_overlay: ?*ngram_overlay.Overlay = null,
 
     pub fn deinit(t: *NgramTable) void {
+        if (t.owned_overlay) |o| {
+            o.deinit();
+            t.gpa.destroy(o);
+        }
         for (t.files.items) |*f| f.close(t.io);
         t.files.deinit(t.gpa);
         t.shards.deinit(t.gpa);
@@ -153,8 +161,12 @@ pub const NgramTable = struct {
         if (out.len != ids.len * t.width) return error.NgramOutLength;
         for (ids, 0..) |id, i| {
             if (id < 0 or id >= t.rows) return error.NgramIdOutOfRange;
-            const src = t.row(@intCast(id));
             const dst = out[i * t.width ..][0..t.width];
+            if (t.overlay) |o| if (o.get(id)) |r| {
+                @memcpy(dst, r);
+                continue;
+            };
+            const src = t.row(@intCast(id));
             if (t.fp8) {
                 for (dst, src) |*d, c| d.* = t.lut[c];
             } else {
@@ -1317,6 +1329,18 @@ const Loader = struct {
         if (t.rows != g.rows) {
             std.log.err("n-gram tables hold {d} rows, expected {d}", .{ t.rows, g.rows });
             return error.NgramRows;
+        }
+        if (std.c.getenv("TF_NGRAM_OVERLAY")) |z| {
+            const path = std.mem.span(z);
+            const o = try L.gpa.create(ngram_overlay.Overlay);
+            errdefer L.gpa.destroy(o);
+            o.* = try ngram_overlay.Overlay.init(L.gpa, t.width);
+            errdefer o.deinit();
+            const n = try o.load(L.io, path);
+            if (L.o.world != 1) return error.OverlayNeedsOneRank;
+            t.owned_overlay = o;
+            t.overlay = o;
+            std.log.info("n-gram overlay: {d} rows from {s}", .{ n, path });
         }
         return t;
     }
