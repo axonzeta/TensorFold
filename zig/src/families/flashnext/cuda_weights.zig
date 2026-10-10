@@ -158,11 +158,16 @@ pub const NgramTable = struct {
 
     /// Rows `ids` (global, as NGram.ids gives them) -> `out[ids.len][width]` bf16 bits, Python's gather exactly.
     pub fn gather(t: *const NgramTable, ids: []const i64, out: []u16) !void {
+        return t.gatherOver(ids, out, t.overlay);
+    }
+
+    /// `gather` through overlay `ov` instead of the table's own (ngram-learn: a sequence's tag).
+    pub fn gatherOver(t: *const NgramTable, ids: []const i64, out: []u16, ov: ?*const ngram_overlay.Overlay) !void {
         if (out.len != ids.len * t.width) return error.NgramOutLength;
         for (ids, 0..) |id, i| {
             if (id < 0 or id >= t.rows) return error.NgramIdOutOfRange;
             const dst = out[i * t.width ..][0..t.width];
-            if (t.overlay) |o| if (o.get(id)) |r| {
+            if (ov) |o| if (o.get(id)) |r| {
                 @memcpy(dst, r);
                 continue;
             };

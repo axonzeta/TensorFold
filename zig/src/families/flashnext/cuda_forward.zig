@@ -101,6 +101,8 @@ pub const Seq = struct {
     held_par: u1 = 0,
     /// the prompt's images and video frames (null: text)
     media: ?SeqMedia = null,
+    /// ngram-learn: the n-gram overlay this sequence reads (its request's tag); null: the table's own
+    overlay: ?*const @import("ngram_overlay.zig").Overlay = null,
 
     /// The sequence's rotary table, when its prompt has images or video.
     pub fn rope(s: *const Seq) ?tri.Tri.Rope {
@@ -1207,8 +1209,9 @@ pub const Forward = struct {
                 try f.gather.?.run(f.s, table, f.sc.ngram_ids, heads, @intCast(R), x.b.ple_v);
                 continue;
             }
-            const out = std.mem.bytesAsSlice(u16, f.pin.bytes[rows_at..][0 .. R * heads * table.width * 2]);
-            try table.gather(nid, @alignCast(out));
+            const out: []u16 = @alignCast(std.mem.bytesAsSlice(u16, f.pin.bytes[rows_at..][0 .. R * heads * table.width * 2]));
+            // each sequence's rows through its own overlay (its request's tag), else the table's
+            for (segs[0..windows.len]) |sg| try table.gatherOver(nid[sg.a0 * heads .. sg.a1 * heads], out[sg.a0 * heads * table.width .. sg.a1 * heads * table.width], sg.seq.overlay orelse table.overlay);
             try f.upload(x.b.ple_v, rows_at, R * heads * table.width * 2);
         };
         for (windows) |w| w.seq.staged = true;

@@ -76,6 +76,24 @@ const Host = struct {
     /// kept prompt states, for families whose backend keeps them (Loaded.cache)
     store: ?api.prompt_cache.Store = null,
     store_vt: api.prompt_cache.Snapshots.VTable = undefined,
+    /// ngram-learn: the family's learn ops (Loaded.learn), run on the engine thread with the context current
+    learn_ctx: *anyopaque = undefined,
+    learn_submit: *const fn (*anyopaque, Allocator, []const u8) anyerror![]u8 = undefined,
+    learn_idle: *const fn (*anyopaque) u8 = undefined,
+
+    fn learnSubmit(p: *anyopaque, a: Allocator, body: []const u8) anyerror![]u8 {
+        const h: *Host = @ptrCast(@alignCast(p));
+        return h.learn_submit(h.learn_ctx, a, body);
+    }
+
+    fn learnIdle(p: *anyopaque) api.Learn.Did {
+        const x = bind(p);
+        return switch (x.learn_idle(x.learn_ctx)) {
+            0 => .none,
+            1 => .ran,
+            else => .changed,
+        };
+    }
 
     fn close(p: *anyopaque) void {
         const h: *Host = @ptrCast(@alignCast(p));
@@ -292,6 +310,12 @@ fn openWith(comptime F: type, a: Allocator, gpa: Allocator, io: std.Io, o: api.O
         h.store_vt = .{ .bytes = c.bytes, .save = c.save, .restore = c.restore, .drop = c.drop };
         h.store = api.prompt_cache.Store.init(gpa, .{ .ptr = c.ptr, .vtable = &h.store_vt }, if (@hasDecl(F, "cache_rules")) .{ .lookahead = F.cache_rules.lookahead, .planned = F.cache_rules.planned } else .{}, c.budget);
         h.host.cache = &h.store.?;
+    };
+    if (@hasField(@TypeOf(loaded), "learn")) if (loaded.learn) |l| {
+        h.learn_ctx = l.ctx;
+        h.learn_submit = l.submit;
+        h.learn_idle = l.idle;
+        h.host.learn = .{ .ctx = h, .submit = Host.learnSubmit, .idle = Host.learnIdle };
     };
     try h.host.start();
     return .{ .engine = h.host.engine(), .close = Host.close, .ctx = h, .follow = if (h.follow_fn != null) Host.follow else null };

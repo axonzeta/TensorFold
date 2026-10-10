@@ -335,6 +335,8 @@ pub const Engine = struct {
     rows: usize = 0,
     load_seconds: f64 = 0,
     graphs_on: bool = true,
+    /// ngram-learn: the overlays by tag (ngram_service.zig; null: TF_NGRAM_OVERLAY's alone)
+    tags: ?*const @import("ngram_service.zig").Tags = null,
     /// image and video sequences through graphs too (keyed by their attachment); TF_FLASHNEXT_MEDIA_GRAPHS=0: eager
     media_graphs: bool = true,
     /// the last shared round's streams and their rows (verifyMany)
@@ -750,6 +752,11 @@ pub const Engine = struct {
 
     pub fn bind(e: *Engine, s: *Seq) void {
         e.bound = s;
+    }
+
+    /// ngram-learn: sequence `s` reads tag `tag`'s overlay (none set: the table's own).
+    pub fn tagSeq(e: *Engine, s: *Seq, tag: []const u8) void {
+        s.overlay = if (e.tags) |t| t.lookup(tag) else null;
     }
 
     /// The sampling rule `sample`, `sampleDraft` and `drawDraft` apply (null: greedy).

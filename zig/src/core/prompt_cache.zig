@@ -84,6 +84,13 @@ pub const Store = struct {
         s.held = 0;
     }
 
+    /// ngram-learn: every kept state dropped (an overlay changed, so their rows are stale); between streams only.
+    pub fn clear(s: *Store) void {
+        for (s.entries.items) |e| s.free(e);
+        s.entries.clearRetainingCapacity();
+        s.held = 0;
+    }
+
     fn free(s: *Store, e: *Entry) void {
         s.family.vtable.drop(s.family.ptr, e.saved);
         s.gpa.free(e.tokens);

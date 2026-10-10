@@ -16,6 +16,7 @@ const comm = @import("cuda_comm.zig");
 const rope = @import("cuda_rope.zig");
 const mirror = @import("cuda_mirror.zig");
 const lane_backend = @import("cuda_lanes.zig");
+const ngram_service = @import("ngram_service.zig");
 const kvd = @import("cuda_state.zig");
 
 pub const model_type = "qwen4_exp";
@@ -62,6 +63,14 @@ pub const Loaded = struct {
     follow: ?*const fn (*anyopaque) anyerror!void = null,
     /// the prompt cache's family calls and budget (rank 0 or one rank; native/cuda.zig makes the Store)
     cache: ?lane_backend.CacheHooks = null,
+    /// ngram-learn (TF_NGRAM_LEARN=1, one rank): learn ops and overlays by tag (idle: 0 none, 1 ran, 2 changed)
+    learn: ?Learn = null,
+};
+
+pub const Learn = struct {
+    ctx: *anyopaque,
+    submit: *const fn (*anyopaque, std.mem.Allocator, []const u8) anyerror![]u8,
+    idle: *const fn (*anyopaque) u8,
 };
 
 /// How long either rank waits for the other at the link (the other may still be starting its container).
@@ -143,6 +152,12 @@ pub fn openOn(comptime M: type, gpa: std.mem.Allocator, io: std.Io, ctx: *const 
         defer gpa.free(ids);
         try own.lanes.measure(io, ids);
     }
+    if (M == @import("cuda_engine.zig")) {
+        if (o.tp == 1) if (getenv("TF_NGRAM_LEARN")) |v| if (std.mem.eql(u8, v, "1")) {
+            own.service = try ngram_service.Service.create(gpa, io, own.e);
+            std.log.info("ngram-learn: learn ops on POST /v1/ngram/op, overlays by metadata.tag", .{});
+        };
+    }
     var backend = own.lanes.backend();
     own.lanes.follower = o.tp == 2 and o.rank == 1;
     if (o.tp == 2) {
@@ -165,6 +180,7 @@ pub fn openOn(comptime M: type, gpa: std.mem.Allocator, io: std.Io, ctx: *const 
         .deinit = Own.release,
         .follow = if (o.tp == 2 and o.rank == 1) Own.follow else null,
         .cache = if (o.rank == 0) own.lanes.cacheHooks(cacheBudget(o, &own.lanes)) else null,
+        .learn = if (own.service) |sv| .{ .ctx = sv, .submit = Own.learnSubmit, .idle = Own.learnIdle } else null,
     };
 }
 
@@ -184,6 +200,17 @@ fn Owned(comptime M: type) type {
         records: ?mirror.Records = null,
         leader: ?mirror.Leader = null,
         watch: ?mirror.Watch = null,
+        service: ?*ngram_service.Service = null,
+
+        fn learnSubmit(p: *anyopaque, a: std.mem.Allocator, body: []const u8) anyerror![]u8 {
+            const sv: *ngram_service.Service = @ptrCast(@alignCast(p));
+            return sv.submit(a, body);
+        }
+
+        fn learnIdle(p: *anyopaque) u8 {
+            const sv: *ngram_service.Service = @ptrCast(@alignCast(p));
+            return @intFromEnum(sv.idle());
+        }
 
         fn freeWire(own: *Self) void {
             if (own.bcast) |*b| b.deinit();
@@ -215,6 +242,7 @@ fn Owned(comptime M: type) type {
             own.freeWire();
             if (own.watch) |*w| w.deinit();
             own.lanes.deinit();
+            if (own.service) |sv| sv.destroy();
             own.e.deinit();
             own.closeLink();
             own.gpa.destroy(own);

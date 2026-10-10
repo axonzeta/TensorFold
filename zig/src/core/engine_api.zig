@@ -82,6 +82,9 @@ pub const Request = struct {
     loop_guard: bool = false,
     /// The prompt's images and videos (``Info.media`` engines only); such a prompt is never kept or resumed.
     media: ?*const Media = null,
+    /// ngram-learn: the n-gram overlay the request reads (metadata.tag; empty: the default). A tagged prompt is never
+    /// kept or resumed (kept states are the default overlay's).
+    tag: []const u8 = "",
 };
 
 pub const Reason = enum { stop, length, cancelled, failed };
@@ -177,7 +180,15 @@ pub const Engine = struct {
         status: *const fn (ctx: *anyopaque, out: *Status, stream_tokens: []u32) void,
         /// Device memory in bytes, the peak since the last reset; null when the backend keeps no count.
         memory: *const fn (ctx: *anyopaque, reset_peak: bool) ?Memory,
+        /// ngram-learn: one learn op (JSON) run by the engine between streams; its JSON reply in `a`.
+        learn: ?*const fn (ctx: *anyopaque, a: std.mem.Allocator, body: []const u8) anyerror![]u8 = null,
     };
+
+    /// A learn op's reply, or error.NoLearner when the backend learns nothing.
+    pub fn learn(e: Engine, a: std.mem.Allocator, body: []const u8) anyerror![]u8 {
+        const f = e.vtable.learn orelse return error.NoLearner;
+        return f(e.ctx, a, body);
+    }
 
     pub fn info(e: Engine) Info {
         return e.vtable.info(e.ctx);
@@ -208,6 +219,16 @@ pub const LoneHooks = struct {
     ctx: *anyopaque,
     committed: *const fn (ctx: *anyopaque) void,
     yield: *const fn (ctx: *anyopaque) bool,
+};
+
+/// ngram-learn: a backend's learn ops. `submit` (any thread) queues one and waits for its reply; `idle` (the engine
+/// thread, no stream live) runs the oldest.
+pub const Learn = struct {
+    ctx: *anyopaque,
+    submit: *const fn (ctx: *anyopaque, a: std.mem.Allocator, body: []const u8) anyerror![]u8,
+    idle: *const fn (ctx: *anyopaque) Did,
+
+    pub const Did = enum { none, ran, changed };
 };
 
 /// The lane core served to the HTTP threads (lane_host.zig).

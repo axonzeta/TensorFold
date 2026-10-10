@@ -133,6 +133,13 @@ pub const Prepared = struct {
     preparing: bool,
 };
 
+/// ngram-learn: the n-gram overlay a request reads, from ``metadata.tag`` (OpenAI's metadata map); empty: the default.
+fn ngramTag(f: json.Value) []const u8 {
+    const md = f.field("metadata") orelse return "";
+    const t = md.field("tag") orelse return "";
+    return if (t == .string) t.string else "";
+}
+
 /// Render ``input`` and run every check that can refuse it, before anything reaches the client or the engine.
 pub fn prepare(srv: *Server, cx: *Cx, input: Input, gone: anytype) Failure!Prepared {
     const a = cx.a;
@@ -182,6 +189,7 @@ pub fn prepare(srv: *Server, cx: *Cx, input: Input, gone: anytype) Failure!Prepa
         .chunks = try srv.chunks.starts(a, rendered.ids),
         .tools_json = if (input.tools.len > 0) try json.stringify(a, .{ .array = @constCast(input.tools) }, .{ .ascii = false }) else "",
         .media = rendered.media,
+        .tag = ngramTag(f),
     };
     try srv.checkFeatures(cx, f, input.tools.len > 0, thinking, rendered.ids, input.tools, &request);
     if (thinking) {

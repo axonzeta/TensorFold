@@ -36,6 +36,8 @@ pub const train_kernels = @import("train_kernels.zig");
 pub const train_ops = @import("train_ops.zig");
 pub const train_model = @import("train_model.zig");
 pub const train_capture = @import("train_capture.zig");
+pub const ngram_grad = @import("ngram_grad.zig");
+pub const ngram_service = @import("ngram_service.zig");
 pub const Engine = engine.Engine;
 
 test {

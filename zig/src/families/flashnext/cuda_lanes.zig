@@ -762,6 +762,7 @@ pub fn Lanes(comptime E: type) type {
                 self.gpa.destroy(l);
                 return err;
             } };
+            if (@hasDecl(E, "tagSeq")) e.tagSeq(l.seq, s.tag);
             l.reserved = need;
             self.reserved += need;
             return l;

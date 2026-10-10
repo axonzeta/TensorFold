@@ -163,6 +163,8 @@ pub const Spec = struct {
         lex: call_gate.Lex,
     } = null,
     media: ?*const Media = null,
+    /// ngram-learn: the n-gram overlay's tag (empty: the default)
+    tag: []const u8 = "",
 };
 
 pub const Stream = struct {
@@ -185,6 +187,8 @@ pub const Stream = struct {
     reuse: Reuse = .{},
     /// the prompt's images and video frames (null: text); valid until the stream is released
     media: ?*const Media = null,
+    /// ngram-learn: the n-gram overlay's tag (empty: the default); valid until the stream is released
+    tag: []const u8 = "",
     cached: u32 = 0, // prompt tokens the backend restored from `reuse` (its prompt pass started there)
     reuse_failed: bool = false, // the backend's restore of `reuse` failed: it prefilled from 0
     context: std.ArrayList(u32) = .empty,
@@ -240,6 +244,7 @@ pub const Stream = struct {
             .chunks = spec.chunks,
             .reuse = spec.reuse,
             .media = spec.media,
+            .tag = spec.tag,
         };
         if (spec.call) |c| {
             s.gate = call_gate.Gate.afterPrompt(spec.prompt, c.opener, c.think_open, c.think_end, c.lex, c.lead, c.names, c.tail);

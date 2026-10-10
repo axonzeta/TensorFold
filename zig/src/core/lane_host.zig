@@ -37,6 +37,7 @@ pub const LaneHost = struct {
     lone: ?api.Lone = null, // the backend's driver for a lone greedy stream; null: every stream in the lane core
     lone_job: ?*Job = null, // the job that driver holds now
     cache: ?*pc.Store = null, // kept prompt states (engine thread only); the backend restores and saves them
+    learn: ?api.Learn = null, // ngram-learn: learn ops the engine thread runs while no stream lives
 
     const Mark = struct { at: i96, tokens: u64 };
     const window_ns: i96 = 2 * std.time.ns_per_s;
@@ -112,11 +113,16 @@ pub const LaneHost = struct {
     }
 
     pub fn engine(h: *LaneHost) Engine {
-        return .{ .ctx = h, .vtable = &.{ .info = infoFn, .submit = submitFn, .cancel = cancelFn, .status = statusFn, .memory = memoryFn } };
+        return .{ .ctx = h, .vtable = &.{ .info = infoFn, .submit = submitFn, .cancel = cancelFn, .status = statusFn, .memory = memoryFn, .learn = learnFn } };
     }
 
     fn self(ctx: *anyopaque) *LaneHost {
         return @ptrCast(@alignCast(ctx));
+    }
+
+    fn learnFn(ctx: *anyopaque, a: Allocator, body: []const u8) anyerror![]u8 {
+        const l = self(ctx).learn orelse return error.NoLearner;
+        return l.submit(l.ctx, a, body);
     }
 
     fn infoFn(ctx: *anyopaque) Info {
@@ -299,7 +305,7 @@ pub const LaneHost = struct {
         var reuse: lanes.stream.Reuse = .{};
         // the entry stays alive until the backend restores it: nothing keeps between here and this stream's own pass
         // a prompt with images or video is neither resumed nor kept (Python keeps token-only states)
-        if (r.media == null) if (h.cache) |store| if (store.lookup(h.gpa, r.prompt, r.history_len, r.shared_prefixes, r.chunks)) |l| {
+        if (r.media == null and r.tag.len == 0) if (h.cache) |store| if (store.lookup(h.gpa, r.prompt, r.history_len, r.shared_prefixes, r.chunks)) |l| {
             job.entry = l.entry;
             job.kept0 = store.counts.kept;
             job.marks = l.marks;
@@ -320,6 +326,7 @@ pub const LaneHost = struct {
             .think_close = r.think_close,
             .think_end = if (r.think_end) |t| t else -1,
             .loop_guard = r.loop_guard,
+            .tag = r.tag,
             .call = if (r.call) |c| .{
                 .opener = c.opener,
                 .think_open = if (c.think_open) |t| t else -1,
@@ -519,6 +526,23 @@ pub const LaneHost = struct {
                 continue;
             }
             if (h.core.activeCount() == 0 and h.core.fillingCount() == 0) {
+                // ngram-learn: nothing waits, nothing lives: one learn op (it may hold the thread for a few seconds)
+                if (h.learn) |l| if (h.cancels.items.len == 0 and h.queued.items.len == 0 and h.admitted.items.len == 0) {
+                    h.unlock();
+                    switch (l.idle(l.ctx)) {
+                        .none => {},
+                        .ran => continue,
+                        .changed => {
+                            if (h.cache) |store| store.clear();
+                            continue;
+                        },
+                    }
+                    h.lock();
+                    if (h.closing or h.queued.items.len > 0 or h.cancels.items.len > 0) {
+                        h.unlock();
+                        continue;
+                    }
+                };
                 if (h.cancels.items.len == 0 and (h.queued.items.len == 0 or h.admitted.items.len >= h.info_.lanes))
                     h.wake.waitTimeout(h.io, &h.mutex, .{ .duration = .{ .raw = .fromMilliseconds(100), .clock = .awake } }) catch {};
                 h.unlock();

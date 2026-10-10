@@ -50,12 +50,26 @@ fn discardBody(conn: *Conn, a: Allocator) void {
     _ = http_body.read(conn, a, http_body.limit) catch {};
 }
 
+/// ngram-learn: one learn op (docs in families/flashnext/ngram_service.zig), run by the engine between streams.
+fn ngramOp(srv: *Server, conn: *Conn, a: Allocator) void {
+    const body = switch (http_body.read(conn, a, http_body.limit) catch return) {
+        .ok => |b| b,
+        .refused => |m| return conn.sendError(a, 400, m, null) catch {},
+    };
+    const reply = srv.engine.learn(a, body) catch |e| {
+        const msg = std.fmt.allocPrint(a, "{{\"error\":\"{s}\"}}", .{@errorName(e)}) catch return;
+        return conn.sendJson(if (e == error.NoLearner) 404 else 500, msg);
+    };
+    conn.sendJson(if (std.mem.startsWith(u8, reply, "{\"error\"")) 400 else 200, reply);
+}
+
 fn post(srv: *Server, conn: *Conn, a: Allocator) void {
     const route = auth.routePath(conn.path);
     if (std.mem.endsWith(u8, route, "/decisions")) {
         discardBody(conn, a); // decision scoring is the engine's, and this one has none yet
         return unknown(conn, a);
     }
+    if (std.mem.eql(u8, route, "/v1/ngram/op")) return ngramOp(srv, conn, a);
     if (anthropic.route(conn.path)) return anthropic.post(srv, conn, a);
     if (responses.route(route)) |rid| if (rid.len == 0) return responses.post(srv, conn, a);
     for (tokens.paths) |r| if (std.mem.eql(u8, route, r)) return tokens.post(srv, conn, a, std.mem.endsWith(u8, route, "/detokenize"));
