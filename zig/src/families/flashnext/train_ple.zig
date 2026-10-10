@@ -58,7 +58,7 @@ pub fn forward(x: hc.Ctx, p: *const W.Ple, h: u64, e: u64, h_out: u64) !Tape {
     t.cr = try x.a.f32s(r * s);
     try o.rmsFwd(t.big, p.norm_conv, .f32, t.cn, t.cr, r, s, d, eps);
     t.pre = try x.a.f32s(r * wd);
-    try o.convFwd(t.cn, p.conv, t.pre, r, wd, c.ple_kernel, c.ngram_size);
+    for (x.segs) |sg| try o.convFwd(t.cn + sg.start * wd * 4, p.conv, t.pre + sg.start * wd * 4, sg.len, wd, c.ple_kernel, c.ngram_size);
     const act = try x.a.f32s(r * wd);
     try o.ew(.silu, t.pre, act, r * wd, 1, 1);
     try o.ew2(.add, h, t.big, h_out, r * wd);
@@ -77,7 +77,7 @@ pub fn backward(x: hc.Ctx, t: *const Tape, dout: u64, dh: u64, de: u64) !void {
     const dpre = try x.a.f32s(r * wd);
     try o.ewBwd(.silu, dout, t.pre, dpre, r * wd, 1, 1, false);
     const dcn = try x.a.f32s(r * wd);
-    try o.convBwd(dpre, t.p.conv, dcn, r, wd, c.ple_kernel, c.ngram_size, false);
+    for (x.segs) |sg| try o.convBwd(dpre + sg.start * wd * 4, t.p.conv, dcn + sg.start * wd * 4, sg.len, wd, c.ple_kernel, c.ngram_size, false);
     const dbig = try x.a.f32s(r * wd);
     try o.copy2d(dout, wd, 0, dbig, wd, 0, r, wd, false);
     try o.rmsBwd(dcn, t.big, t.p.norm_conv, .f32, t.cr, dbig, r, s, d, true);

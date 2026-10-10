@@ -25,6 +25,13 @@ pub const Tape = struct {
     og: u64,
 };
 
+/// Sum of each segment's rows squared (its attention probabilities, a head).
+fn squares(segs: []const hc.Seg) usize {
+    var n: usize = 0;
+    for (segs) |sg| n += sg.len * sg.len;
+    return n;
+}
+
 const Geo = struct { hq: usize, hk: usize, hd: usize, qw: usize, kw: usize, pw: usize, rot: usize };
 
 fn geo(x: hc.Ctx, at: *const W.Attn) Geo {
@@ -63,10 +70,14 @@ pub fn forward(x: hc.Ctx, at: *const W.Attn, xin: u64, cs: u64, sn: u64, out: u6
     t.krot = try x.a.f32s(r * p.kw);
     try o.rope(t.qn, cs, sn, t.qrot, r, p.hq, p.hd, p.rot, false);
     try o.rope(t.kn, cs, sn, t.krot, r, p.hk, p.hd, p.rot, false);
-    t.p = try x.a.f32s(p.hq * r * r);
+    t.p = try x.a.f32s(p.hq * squares(x.segs));
     t.o = try x.a.f32s(r * p.qw);
     const scale = 1.0 / @sqrt(@as(f32, @floatFromInt(p.hd)));
-    try o.attnFwd(t.qrot, t.krot, t.v, t.p, t.o, r, p.hq, p.hk, p.hd, scale);
+    var po: usize = 0;
+    for (x.segs) |sg| {
+        try o.attnFwd(t.qrot + sg.start * p.qw * 4, t.krot + sg.start * p.kw * 4, t.v + sg.start * p.kw * 4, t.p + po * 4, t.o + sg.start * p.qw * 4, sg.len, p.hq, p.hk, p.hd, scale);
+        po += p.hq * sg.len * sg.len;
+    }
     t.sg = try x.a.f32s(r * p.qw);
     try o.ew(.sigmoid, t.gate, t.sg, r * p.qw, 1, 1);
     t.og = try x.a.f32s(r * p.qw);
@@ -88,12 +99,18 @@ pub fn backward(x: hc.Ctx, t: *const Tape, cs: u64, sn: u64, dout: u64, dx: u64,
     try o.ew2(.mul, dog, t.o, dsg, r * p.qw);
     const dgate = try x.a.f32s(r * p.qw);
     try o.ewBwd(.sigmoid, dsg, t.gate, dgate, r * p.qw, 1, 1, false);
-    const ds = try x.a.f32s(p.hq * r * r);
+    const ds = try x.a.f32s(p.hq * squares(x.segs));
     const dqrot = try x.a.f32s(r * p.qw);
     const dkrot = try x.a.f32s(r * p.kw);
     const dv = try x.a.f32s(r * p.kw);
     const scale = 1.0 / @sqrt(@as(f32, @floatFromInt(p.hd)));
-    try o.attnBwd(t.qrot, t.krot, t.v, t.p, d_o, ds, dqrot, dkrot, dv, r, p.hq, p.hk, p.hd, scale);
+    var po: usize = 0;
+    for (x.segs) |sg| {
+        const qo = sg.start * p.qw * 4;
+        const ko = sg.start * p.kw * 4;
+        try o.attnBwd(t.qrot + qo, t.krot + ko, t.v + ko, t.p + po * 4, d_o + qo, ds + po * 4, dqrot + qo, dkrot + ko, dv + ko, sg.len, p.hq, p.hk, p.hd, scale);
+        po += p.hq * sg.len * sg.len;
+    }
     const dqn = try x.a.f32s(r * p.qw);
     const dkn = try x.a.f32s(r * p.kw);
     try o.rope(dqrot, cs, sn, dqn, r, p.hq, p.hd, p.rot, true);

@@ -8,7 +8,11 @@ const tops = @import("train_ops.zig");
 const tw = @import("train_weights.zig");
 const Arena = @import("train_arena.zig").Arena;
 
-pub const Ctx = struct { ops: *tops.Ops, w: *tw.Weights, a: *Arena, c: *const cfgs.Config, r: usize };
+/// One sequence's rows [start, start + len) of a batched lesson: attention, the delta rule and the causal convs run
+/// within it; row-wise work runs over all rows.
+pub const Seg = struct { start: usize, len: usize };
+
+pub const Ctx = struct { ops: *tops.Ops, w: *tw.Weights, a: *Arena, c: *const cfgs.Config, r: usize, segs: []const Seg };
 
 /// What a site's forward keeps for its backward.
 pub const Site = struct {

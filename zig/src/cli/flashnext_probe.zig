@@ -73,8 +73,10 @@ const Probe = struct {
         p.gpa.free(p.host);
     }
 
-    /// {"op": "grad", "tokens", "at", "targets", "sel", "overlay"?, "copy"?}: the in-engine training pass on the lesson
-    /// with the rows as served (base and case overlays applied); the loss and each `sel` row's gradient.
+    /// {"op": "grad", "tokens", "at", "targets", "sel", "overlay"?, "copy"?, "served"?}: the in-engine training pass on
+    /// the lesson with the rows as served (base and case overlays applied); the loss and each `sel` row's gradient.
+    /// {"op": "grad", "lessons": [{"tokens", "at", "targets"}, ...], "sel", ...}: several lessons in one pass (each its
+    /// own sequence: n-gram history, positions, attention and served forward), the losses summed.
     fn grad(p: *Probe, ob: std.json.ObjectMap, out: *std.ArrayList(u8)) !void {
         const gpa = p.gpa;
         const e = p.e;
@@ -85,12 +87,36 @@ const Probe = struct {
             p.model = m;
         }
         const m = p.model.?;
-        const tokens = try idsOf(gpa, ob.get("tokens"));
-        defer gpa.free(tokens);
-        const at = try idsOf(gpa, ob.get("at"));
-        defer gpa.free(at);
-        const targets = try idsOf(gpa, ob.get("targets"));
-        defer gpa.free(targets);
+        const Seg = flashnext.train_model.Seg;
+        // every lesson's tokens, at (offset to its rows) and targets, side by side
+        var tokens: std.ArrayList(u32) = .empty;
+        defer tokens.deinit(gpa);
+        var at: std.ArrayList(u32) = .empty;
+        defer at.deinit(gpa);
+        var targets: std.ArrayList(u32) = .empty;
+        defer targets.deinit(gpa);
+        var segs: std.ArrayList(Seg) = .empty;
+        defer segs.deinit(gpa);
+        const one = [_]std.json.Value{.{ .object = ob }};
+        const ls: []const std.json.Value = if (ob.get("lessons")) |v| v.array.items else &one;
+        for (ls) |lv| {
+            const lo = lv.object;
+            const start = tokens.items.len;
+            const t = try idsOf(gpa, lo.get("tokens"));
+            defer gpa.free(t);
+            const a = try idsOf(gpa, lo.get("at"));
+            defer gpa.free(a);
+            const g = try idsOf(gpa, lo.get("targets"));
+            defer gpa.free(g);
+            if (a.len != g.len) return error.AtTargets;
+            try tokens.appendSlice(gpa, t);
+            for (a) |x| {
+                if (x >= t.len) return error.AtOutOfRange;
+                try at.append(gpa, @intCast(start + x));
+            }
+            try targets.appendSlice(gpa, g);
+            try segs.append(gpa, .{ .start = start, .len = t.len });
+        }
         const sel_v = ob.get("sel").?.array.items;
         const table = &e.w.table.?;
         var ov = try Overlay.init(gpa, table.width);
@@ -102,15 +128,18 @@ const Probe = struct {
         defer table.overlay = before;
         const pl = e.w.layers[1].ple orelse return error.NoNgramLayer;
         const heads = pl.ngram.heads;
-        const r = tokens.len;
-        var hist: [4]i64 = undefined;
-        pl.ngram.initialHistory(hist[0 .. pl.ngram.n - 1]);
-        const toks = try gpa.alloc(i64, r);
-        defer gpa.free(toks);
-        for (tokens, toks) |a, *b| b.* = a;
+        const r = tokens.items.len;
+        // each lesson's n-gram rows from its own fresh history
         const rid = try gpa.alloc(i64, r * heads);
         defer gpa.free(rid);
-        try pl.ngram.ids(hist[0 .. pl.ngram.n - 1], toks, rid);
+        for (segs.items) |sg| {
+            var hist: [4]i64 = undefined;
+            pl.ngram.initialHistory(hist[0 .. pl.ngram.n - 1]);
+            const toks = try gpa.alloc(i64, sg.len);
+            defer gpa.free(toks);
+            for (tokens.items[sg.start..][0..sg.len], toks) |a, *b| b.* = a;
+            try pl.ngram.ids(hist[0 .. pl.ngram.n - 1], toks, rid[sg.start * heads ..][0 .. sg.len * heads]);
+        }
         const w = table.width;
         const bits = try gpa.alloc(u16, r * heads * w);
         defer gpa.free(bits);
@@ -122,37 +151,43 @@ const Probe = struct {
         defer eb.free();
         var de = try cuda.DeviceBuffer.alloc(e.ctx.d, ef.len * 4);
         defer de.free();
-        // the served prompt forward over the lesson (rows as served), its layer inputs and routes captured
+        // each lesson's served prompt forward (rows as served), its layer inputs and routes captured
         const nl: usize = e.c.layers;
         const wd: usize = e.c.streams * e.c.hidden;
         const slots: usize = e.c.top_k + 1;
-        var hb = try cuda.DeviceBuffer.alloc(e.ctx.d, nl * r * wd * 2);
-        defer hb.free();
-        var pk = try cuda.DeviceBuffer.alloc(e.ctx.d, nl * r * slots * 4);
-        defer pk.free();
-        var fb = try cuda.DeviceBuffer.alloc(e.ctx.d, r * wd * 2);
-        defer fb.free();
-        const cap: flashnext.train_capture.Capture = .{ .h_in = hb.ptr, .picks = pk.ptr, .final = fb.ptr, .rows = r, .slots = slots };
         const served_on = if (ob.get("served")) |sv| sv.bool else true;
+        const ns = segs.items.len;
+        const bufs = try gpa.alloc(cuda.DeviceBuffer, 3 * ns);
+        defer gpa.free(bufs);
+        var nb: usize = 0;
+        defer for (bufs[0..nb]) |*bf| bf.free();
+        const caps = try gpa.alloc(flashnext.train_capture.Capture, ns);
+        defer gpa.free(caps);
+        const served = try gpa.alloc(flashnext.train_model.Served, ns);
+        defer gpa.free(served);
         const picks = try gpa.alloc(i32, nl * r * slots);
         defer gpa.free(picks);
-        if (served_on) {
-            e.f.capture = &cap;
+        if (served_on) for (segs.items, caps, served) |sg, *cap, *sv| {
+            const n = sg.len;
+            for ([_]usize{ nl * n * wd * 2, nl * n * slots * 4, n * wd * 2 }) |len| {
+                bufs[nb] = try cuda.DeviceBuffer.alloc(e.ctx.d, len);
+                nb += 1;
+            }
+            cap.* = .{ .h_in = bufs[nb - 3].ptr, .picks = bufs[nb - 2].ptr, .final = bufs[nb - 1].ptr, .rows = n, .slots = slots };
+            e.f.capture = cap;
             defer e.f.capture = null;
             try e.reset();
-            _ = try e.prefill(tokens, null);
+            _ = try e.prefill(tokens.items[sg.start..][0..n], null);
             try e.ctx.synchronize();
-            try pk.download(0, std.mem.sliceAsBytes(picks));
-            var lo: i32 = std.math.maxInt(i32);
-            var hi: i32 = std.math.minInt(i32);
-            for (0..nl * r) |row| for (0..slots - 1) |k| {
-                lo = @min(lo, picks[row * slots + k]);
-                hi = @max(hi, picks[row * slots + k]);
+            const pk = picks[nl * sg.start * slots ..][0 .. nl * n * slots];
+            try bufs[nb - 2].download(0, std.mem.sliceAsBytes(pk));
+            for (0..nl * n) |row| for (0..slots - 1) |k| {
+                const x = pk[row * slots + k];
+                if (x < 0 or x >= e.c.experts) return error.CapturedPicksOutOfRange;
             };
-            std.debug.print("captured picks: routed ids in [{d}, {d}], first row {any}\n", .{ lo, hi, picks[0..slots] });
-            if (lo < 0 or hi >= e.c.experts) return error.CapturedPicksOutOfRange;
-        }
-        const res = try m.lesson(tokens, at, targets, eb.ptr, de.ptr, null, if (served_on) .{ .cap = &cap, .picks = picks } else null);
+            sv.* = .{ .cap = cap, .picks = pk };
+        };
+        const res = try m.lessons(tokens.items, segs.items, at.items, targets.items, eb.ptr, de.ptr, null, if (served_on) served else null);
         try de.download(0, std.mem.sliceAsBytes(ef));
         try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
         const g = try gpa.alloc(f32, w);

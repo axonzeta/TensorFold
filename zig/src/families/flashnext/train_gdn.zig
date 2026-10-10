@@ -62,7 +62,7 @@ pub fn forward(x: hc.Ctx, g: *const W.Gdn, xin: u64, out: u64) !Tape {
     const qkv = try x.a.f32s(r * p.conv);
     try o.copy2d(t.proj, pw, 0, qkv, p.conv, 0, r, p.conv, false);
     t.pre = try x.a.f32s(r * p.conv);
-    try o.convFwd(qkv, g.conv, t.pre, r, p.conv, p.k, 1);
+    for (x.segs) |sg| try o.convFwd(qkv + sg.start * p.conv * 4, g.conv, t.pre + sg.start * p.conv * 4, sg.len, p.conv, p.k, 1);
     t.act = try x.a.f32s(r * p.conv);
     try o.ew(.silu, t.pre, t.act, r * p.conv, 1, 1);
     t.qraw = try x.a.f32s(r * p.qk);
@@ -95,8 +95,13 @@ pub fn forward(x: hc.Ctx, g: *const W.Gdn, xin: u64, out: u64) !Tape {
     t.beta = try x.a.f32s(r * p.nv);
     try o.gdnGates(t.a, t.b, g.a_log, g.dt_bias, t.gate, t.beta, r, p.nv);
     t.o = try x.a.f32s(r * p.vv);
-    t.states = try x.a.f32s(p.nv * (r + 1) * p.dk * p.dv);
-    try o.deltaFwd(t.q48, t.k48, t.v, t.gate, t.beta, t.o, t.states, r, p.nv, p.dk, p.dv);
+    t.states = try x.a.f32s(p.nv * (r + x.segs.len) * p.dk * p.dv);
+    var so: usize = 0;
+    for (x.segs) |sg| {
+        const a = sg.start;
+        try o.deltaFwd(t.q48 + a * p.nv * p.dk * 4, t.k48 + a * p.nv * p.dk * 4, t.v + a * p.vv * 4, t.gate + a * p.nv * 4, t.beta + a * p.nv * 4, t.o + a * p.vv * 4, t.states + so * 4, sg.len, p.nv, p.dk, p.dv);
+        so += p.nv * (sg.len + 1) * p.dk * p.dv;
+    }
     // gated norm: on = rms(o) * w (per value head of dv, w as stored), y = on * sigmoid(z)
     t.on = try x.a.f32s(r * p.vv);
     t.orinv = try x.a.f32s(r * p.nv);
@@ -135,7 +140,15 @@ pub fn backward(x: hc.Ctx, t: *const Tape, dout: u64, dx: u64, add: bool) !void 
     const dv = try x.a.f32s(r * p.vv);
     const dg = try x.a.f32s(r * p.nv);
     const dbeta = try x.a.f32s(r * p.nv);
-    try o.deltaBwd(t.q48, t.k48, t.v, t.gate, t.beta, do_, t.states, dq48, dk48, dv, dg, dbeta, r, p.nv, p.dk, p.dv);
+    var so: usize = 0;
+    for (x.segs) |sg| {
+        const a = sg.start;
+        const qk_o = a * p.nv * p.dk * 4;
+        const v_o = a * p.vv * 4;
+        const h_o = a * p.nv * 4;
+        try o.deltaBwd(t.q48 + qk_o, t.k48 + qk_o, t.v + v_o, t.gate + h_o, t.beta + h_o, do_ + v_o, t.states + so * 4, dq48 + qk_o, dk48 + qk_o, dv + v_o, dg + h_o, dbeta + h_o, sg.len, p.nv, p.dk, p.dv);
+        so += p.nv * (sg.len + 1) * p.dk * p.dv;
+    }
     const dqn = try x.a.f32s(r * p.qk);
     const dkn = try x.a.f32s(r * p.qk);
     try o.heads(dq48, dqn, r, p.nk, p.rep, p.dk, true);
@@ -155,7 +168,7 @@ pub fn backward(x: hc.Ctx, t: *const Tape, dout: u64, dx: u64, add: bool) !void 
     const dpre = try x.a.f32s(r * p.conv);
     try o.ewBwd(.silu, dact, t.pre, dpre, r * p.conv, 1, 1, false);
     const dqkv = try x.a.f32s(r * p.conv);
-    try o.convBwd(dpre, t.g.conv, dqkv, r, p.conv, p.k, 1, false);
+    for (x.segs) |sg| try o.convBwd(dpre + sg.start * p.conv * 4, t.g.conv, dqkv + sg.start * p.conv * 4, sg.len, p.conv, p.k, 1, false);
     try o.copy2d(dqkv, p.conv, 0, dproj, pw, 0, r, p.conv, false);
     const da = try x.a.f32s(r * p.nv);
     const db = try x.a.f32s(r * p.nv);

@@ -21,6 +21,9 @@ const Capture = @import("train_capture.zig").Capture;
 /// A served prompt forward's capture and its picks on the host ([layers][rows][slots] i32).
 pub const Served = struct { cap: *const Capture, picks: []const i32 };
 
+/// One lesson's rows in a batched pass.
+pub const Seg = hc.Seg;
+
 pub const Model = struct {
     gpa: std.mem.Allocator,
     d: *const cuda.Driver,
@@ -34,6 +37,8 @@ pub const Model = struct {
     head: cuda.DeviceBuffer,
     /// when set, each layer's chosen experts [L][R][K] (i32) are copied here by the forward pass
     routes: ?u64 = null,
+    /// the current lesson's sequences (one for a single sequence)
+    segs: []const hc.Seg = &.{},
     /// with an io, the pass is timed by part (each part synchronised) into `prof`
     io: ?std.Io = null,
     prof: Prof = .{},
@@ -53,6 +58,7 @@ pub const Model = struct {
         self.experts = .{ .gpa = gpa, .d = cx.d, .k = &self.k, .s = f.s, .arena = try Arena.init(cx.d, 6 << 30) };
         errdefer self.experts.deinit();
         self.routes = null;
+        self.segs = &.{};
         self.io = null;
         self.prof = .{};
         self.arena = try Arena.init(cx.d, @intFromFloat(arena_gib * (1 << 30)));
@@ -72,7 +78,7 @@ pub const Model = struct {
     }
 
     fn ctx(m: *Model, r: usize) hc.Ctx {
-        return .{ .ops = &m.ops, .w = &m.weights, .a = &m.arena, .c = m.c, .r = r };
+        return .{ .ops = &m.ops, .w = &m.weights, .a = &m.arena, .c = m.c, .r = r, .segs = m.segs };
     }
 
     /// One layer's forward from h (kept), every tape in the arena.
@@ -155,8 +161,18 @@ pub const Model = struct {
     /// With `served`, every layer's input and its routes come from that served forward: no training forward runs,
     /// and each layer is recomputed for its backward from the served activations on the served routes.
     pub fn lesson(m: *Model, tokens: []const u32, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64, served: ?Served) !Result {
+        const one = [_]hc.Seg{.{ .start = 0, .len = tokens.len }};
+        const sv = [_]Served{if (served) |x| x else undefined};
+        return m.lessons(tokens, &one, at, targets, e, de, dump, if (served != null) &sv else null);
+    }
+
+    /// `lesson` over several sequences side by side (`segs` cover `tokens` in order; `at` indexes all rows): row-wise
+    /// work batched, attention, the delta rule and the convs within each sequence; `served` one capture a sequence.
+    pub fn lessons(m: *Model, tokens: []const u32, segs: []const hc.Seg, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64, served: ?[]const Served) !Result {
         const c = m.c;
         const r = tokens.len;
+        m.segs = segs;
+        defer m.segs = &.{};
         const wd: usize = c.streams * c.hidden;
         const d: usize = c.hidden;
         const o = &m.ops;
@@ -166,9 +182,9 @@ pub const Model = struct {
         const rot: usize = c.rope.rotary_dim;
         const tab = try m.gpa.alloc(f32, 2 * r * rot);
         defer m.gpa.free(tab);
-        for (0..r) |p| for (0..rot / 2) |i| {
+        for (segs) |sg| for (sg.start..sg.start + sg.len) |p| for (0..rot / 2) |i| {
             const inv: f32 = @floatCast(1.0 / std.math.pow(f64, c.rope.theta, @as(f64, @floatFromInt(2 * i)) / @as(f64, @floatFromInt(rot))));
-            const ang: f32 = @as(f32, @floatFromInt(p)) * inv;
+            const ang: f32 = @as(f32, @floatFromInt(p - sg.start)) * inv;
             for ([_]usize{ i, i + rot / 2 }) |j| {
                 tab[p * rot + j] = bf16Round(@cos(ang));
                 tab[r * rot + p * rot + j] = bf16Round(@sin(ang));
@@ -182,13 +198,17 @@ pub const Model = struct {
         const kk: usize = c.top_k;
         const forced = try m.gpa.alloc(i32, if (served != null) nl * r * kk else 0);
         defer m.gpa.free(forced);
-        if (served) |sv| {
-            if (sv.cap.rows != r) return error.CaptureRows;
-            for (0..nl) |li| try o.toF32(sv.cap.h_in + li * r * wd * 2, keep + li * r * wd * 4, r * wd);
-            try o.toF32(sv.cap.final, keep + nl * r * wd * 4, r * wd);
-            for (0..nl) |li| for (0..r) |row| for (0..kk) |k| {
-                forced[(li * r + row) * kk + k] = sv.picks[(li * r + row) * sv.cap.slots + k];
-            };
+        if (served) |svs| {
+            if (svs.len != segs.len) return error.CaptureSegments;
+            for (svs, segs) |sv, sg| {
+                const n = sg.len;
+                if (sv.cap.rows != n) return error.CaptureRows;
+                for (0..nl) |li| try o.toF32(sv.cap.h_in + li * n * wd * 2, keep + (li * r + sg.start) * wd * 4, n * wd);
+                try o.toF32(sv.cap.final, keep + (nl * r + sg.start) * wd * 4, n * wd);
+                for (0..nl) |li| for (0..n) |row| for (0..kk) |k| {
+                    forced[(li * r + sg.start + row) * kk + k] = sv.picks[(li * n + row) * sv.cap.slots + k];
+                };
+            }
         } else {
             const x0 = try m.arena.f32s(r * d);
             for (tokens, 0..) |tok, i| try o.toF32(m.w.embed + @as(u64, tok) * d * 2, x0 + i * d * 4, d);

@@ -25,8 +25,10 @@ pub const Experts = struct {
         x.arena.deinit();
     }
 
-    /// Every dequantised expert dropped (after each layer: experts are not reused across layers).
+    /// Every dequantised expert dropped (after each layer: experts are not reused across layers). The arena is reused,
+    /// so the layer's work is finished first (without the wait, reuse faulted under load: see experiments/03-backward).
     pub fn clear(x: *Experts) void {
+        x.s.synchronize() catch {};
         x.arena.reset(0);
         x.map.clearRetainingCapacity();
     }
