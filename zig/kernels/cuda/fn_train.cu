@@ -77,13 +77,16 @@ __device__ float block_sum(float v) {
   return r;
 }
 
-// Gain of a norm: mode 0 none, 1 (1 + w), 2 w (w bf16 [G*D]).
-__device__ __forceinline__ float gain(const uint16_t* w, int mode, long long j) {
-  return mode == 0 ? 1.f : (mode == 1 ? 1.f + bf2f(w[j]) : bf2f(w[j]));
+// Gain of a norm: mode 0 none, 1 (1 + w) and 2 w (w bf16 [G*D]), 3 w (fp32: the engine's baked gains).
+__device__ __forceinline__ float gain(const void* w, int mode, long long j) {
+  if (mode == 0) return 1.f;
+  if (mode == 3) return ((const float*)w)[j];
+  const float v = bf2f(((const uint16_t*)w)[j]);
+  return mode == 1 ? 1.f + v : v;
 }
 
 // RMSNorm over groups of D: grid (G, R); y = x * rsqrt(mean(x^2) + eps) * gain, rinv [R][G].
-extern "C" __global__ void fn_train_rms_fwd(const float* __restrict__ x, const uint16_t* __restrict__ w, int mode,
+extern "C" __global__ void fn_train_rms_fwd(const float* __restrict__ x, const void* __restrict__ w, int mode,
                                             float* __restrict__ y, float* __restrict__ rinv, int G, int D, float eps) {
   const long long base = ((long long)blockIdx.y * G + blockIdx.x) * D;
   float s = 0.f;
@@ -96,7 +99,7 @@ extern "C" __global__ void fn_train_rms_fwd(const float* __restrict__ x, const u
 
 // Its backward: dx (+)= r * (dyh - xh * mean(dyh * xh)), xh = x * r, dyh = dy * gain.
 extern "C" __global__ void fn_train_rms_bwd(const float* __restrict__ dy, const float* __restrict__ x,
-                                            const uint16_t* __restrict__ w, int mode, const float* __restrict__ rinv,
+                                            const void* __restrict__ w, int mode, const float* __restrict__ rinv,
                                             float* __restrict__ dx, int G, int D, int add) {
   const long long base = ((long long)blockIdx.y * G + blockIdx.x) * D;
   const float r = rinv[(long long)blockIdx.y * G + blockIdx.x];
@@ -386,25 +389,25 @@ extern "C" __global__ void fn_train_conv_bwd(const float* __restrict__ dy, const
 
 // GatedDeltaNet gates, per row and value head: g = -exp(A_log) * softplus(a + dt_bias), beta = sigmoid(b).
 extern "C" __global__ void fn_train_gdn_gates(const float* __restrict__ a, const float* __restrict__ b,
-                                              const uint16_t* __restrict__ a_log, const uint16_t* __restrict__ dt_bias,
+                                              const float* __restrict__ a_log, const float* __restrict__ dt_bias,
                                               float* __restrict__ g, float* __restrict__ beta, int R, int H) {
   const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
   if (i >= (long long)R * H) return;
   const int h = (int)(i % H);
-  const float u = a[i] + bf2f(dt_bias[h]);
-  g[i] = -__expf(bf2f(a_log[h])) * (u > 20.f ? u : log1pf(__expf(u)));
+  const float u = a[i] + dt_bias[h];
+  g[i] = -__expf(a_log[h]) * (u > 20.f ? u : log1pf(__expf(u)));
   beta[i] = sigm(b[i]);
 }
 // da = dg * -exp(A_log) * sigmoid(a + dt_bias); db = dbeta * beta * (1 - beta).
 extern "C" __global__ void fn_train_gdn_gates_bwd(const float* __restrict__ a, const float* __restrict__ beta,
-                                                  const uint16_t* __restrict__ a_log,
-                                                  const uint16_t* __restrict__ dt_bias, const float* __restrict__ dg,
+                                                  const float* __restrict__ a_log,
+                                                  const float* __restrict__ dt_bias, const float* __restrict__ dg,
                                                   const float* __restrict__ dbeta, float* __restrict__ da,
                                                   float* __restrict__ db, int R, int H) {
   const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
   if (i >= (long long)R * H) return;
   const int h = (int)(i % H);
-  da[i] = dg[i] * -__expf(bf2f(a_log[h])) * sigm(a[i] + bf2f(dt_bias[h]));
+  da[i] = dg[i] * -__expf(a_log[h]) * sigm(a[i] + dt_bias[h]);
   db[i] = dbeta[i] * beta[i] * (1.f - beta[i]);
 }
 

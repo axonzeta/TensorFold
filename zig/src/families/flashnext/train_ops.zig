@@ -12,6 +12,7 @@ pub const Ops = struct {
     k: *const tk.Kernels,
     lib: lt.Library,
     plans: std.AutoHashMapUnmanaged(Key, lt.Linear) = .empty,
+    nn: std.AutoHashMapUnmanaged(Key, Plan) = .empty,
     work: cuda.DeviceBuffer,
 
     const Key = struct { m: u64, n: u64, k: u64, out: lt.DataType };
@@ -27,6 +28,9 @@ pub const Ops = struct {
         var it = o.plans.valueIterator();
         while (it.next()) |p| p.deinit();
         o.plans.deinit(o.gpa);
+        var jt = o.nn.valueIterator();
+        while (jt.next()) |p| p.deinit(&o.lib);
+        o.nn.deinit(o.gpa);
         o.work.free();
         o.lib.close();
     }
@@ -45,6 +49,67 @@ pub const Ops = struct {
         const one: f32 = 1;
         const beta: f32 = if (add) 1 else 0;
         try o.lib.check(o.lib.api.cublasLtMatmul(p.handle, p.desc, &one, w, p.a, x, p.b, &beta, d, p.c, d, p.c, &p.algo, o.work.ptr, workspace, o.s.handle), "cublasLtMatmul");
+    }
+
+    /// One cuBLASLt product D[m][k] = A[m][n] · B[n][k] (row-major, bf16 in, fp32 accumulate): the backward's
+    /// dx = dy·W straight from W, no transposed copy.
+    const Plan = struct {
+        handle: lt.Handle,
+        desc: lt.MatmulDesc,
+        a: lt.Layout,
+        b: lt.Layout,
+        c: lt.Layout,
+        algo: lt.Algo,
+
+        fn init(lib: *const lt.Library, m: u64, n: u64, k: u64, out: lt.DataType) !Plan {
+            var p: Plan = undefined;
+            try lib.check(lib.api.cublasLtCreate(&p.handle), "cublasLtCreate");
+            errdefer _ = lib.api.cublasLtDestroy(p.handle);
+            try lib.check(lib.api.cublasLtMatmulDescCreate(&p.desc, lt.compute_32f, .f32), "desc");
+            errdefer _ = lib.api.cublasLtMatmulDescDestroy(p.desc);
+            const nop: c_int = @intFromEnum(lt.Op.n);
+            try lib.check(lib.api.cublasLtMatmulDescSetAttribute(p.desc, lt.desc_transa, &nop, @sizeOf(c_int)), "transa");
+            try lib.check(lib.api.cublasLtMatmulDescSetAttribute(p.desc, lt.desc_transb, &nop, @sizeOf(c_int)), "transb");
+            // column-major: Dᵀ (k x m) = Bᵀ (k x n, B stored row-major [n][k]) · Aᵀ (n x m, A row-major [m][n])
+            try lib.check(lib.api.cublasLtMatrixLayoutCreate(&p.a, .bf16, k, n, @intCast(k)), "layout B");
+            try lib.check(lib.api.cublasLtMatrixLayoutCreate(&p.b, .bf16, n, m, @intCast(n)), "layout A");
+            try lib.check(lib.api.cublasLtMatrixLayoutCreate(&p.c, out, k, m, @intCast(k)), "layout D");
+            var pref: lt.Preference = undefined;
+            try lib.check(lib.api.cublasLtMatmulPreferenceCreate(&pref), "pref");
+            defer _ = lib.api.cublasLtMatmulPreferenceDestroy(pref);
+            const limit: u64 = workspace;
+            try lib.check(lib.api.cublasLtMatmulPreferenceSetAttribute(pref, lt.pref_max_workspace_bytes, &limit, @sizeOf(u64)), "workspace");
+            var found: [1]lt.Heuristic = undefined;
+            var count: c_int = 0;
+            try lib.check(lib.api.cublasLtMatmulAlgoGetHeuristic(p.handle, p.desc, p.a, p.b, p.c, p.c, pref, 1, &found, &count), "heuristic");
+            if (count < 1 or found[0].state != 0) return error.NoAlgorithm;
+            p.algo = found[0].algo;
+            return p;
+        }
+
+        fn deinit(p: *Plan, lib: *const lt.Library) void {
+            _ = lib.api.cublasLtMatrixLayoutDestroy(p.c);
+            _ = lib.api.cublasLtMatrixLayoutDestroy(p.b);
+            _ = lib.api.cublasLtMatrixLayoutDestroy(p.a);
+            _ = lib.api.cublasLtMatmulDescDestroy(p.desc);
+            _ = lib.api.cublasLtDestroy(p.handle);
+        }
+    };
+
+    /// D[m][k] (= or +=) A[m][n] · B[n][k]; A, B bf16 row-major, D fp32 or bf16.
+    pub fn gemmNN(o: *Ops, a_in: u64, b_in: u64, d: u64, m: usize, n: usize, k: usize, out: lt.DataType, add: bool) !void {
+        const key: Key = .{ .m = m, .n = n, .k = k, .out = out };
+        const gop = try o.nn.getOrPut(o.gpa, key);
+        if (!gop.found_existing) {
+            gop.value_ptr.* = Plan.init(&o.lib, m, n, k, out) catch |e| {
+                _ = o.nn.remove(key);
+                return e;
+            };
+        }
+        const p = gop.value_ptr;
+        const one: f32 = 1;
+        const beta: f32 = if (add) 1 else 0;
+        try o.lib.check(o.lib.api.cublasLtMatmul(p.handle, p.desc, &one, b_in, p.a, a_in, p.b, &beta, d, p.c, d, p.c, &p.algo, o.work.ptr, workspace, o.s.handle), "cublasLtMatmul NN");
     }
 
     /// bf16 [rows][cols] at `in` -> [cols][rows] at `out`.
@@ -80,7 +145,7 @@ pub const Ops = struct {
     }
 
     /// Norm gain: none, (1 + w) or w.
-    pub const Gain = enum(i32) { none = 0, one_plus = 1, plain = 2 };
+    pub const Gain = enum(i32) { none = 0, one_plus = 1, plain = 2, f32 = 3 };
 
     /// RMSNorm of R rows of G groups of D (fp32): y and each group's rsqrt in `rinv` [R][G].
     pub fn rmsFwd(o: *Ops, x: u64, w: u64, mode: Gain, y: u64, rinv: u64, r: usize, g: usize, d: usize, eps: f32) !void {

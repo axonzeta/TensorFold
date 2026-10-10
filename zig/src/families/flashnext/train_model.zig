@@ -1,0 +1,242 @@
+//! ngram-learn training: the whole model's loss on a lesson and its gradient at the n-gram rows, on the engine's own
+//! weights. Forward with every layer's input kept; the final mixer and the head on the answer rows; cross-entropy;
+//! then each layer recomputed from its kept input and undone, down to layer 1's n-gram block and d(rows).
+const std = @import("std");
+const cuda = @import("cuda");
+const W = @import("cuda_weights.zig");
+const fwd = @import("cuda_forward.zig");
+const cfgs = @import("cuda_config.zig");
+const int4 = @import("cuda_int4.zig");
+const tk = @import("train_kernels.zig");
+const tops = @import("train_ops.zig");
+const tw = @import("train_weights.zig");
+const Arena = @import("train_arena.zig").Arena;
+const hc = @import("train_hc.zig");
+const gdn = @import("train_gdn.zig");
+const attn = @import("train_attn.zig");
+const moe = @import("train_moe.zig");
+const ple = @import("train_ple.zig");
+
+pub const Model = struct {
+    gpa: std.mem.Allocator,
+    d: *const cuda.Driver,
+    w: *const W.Weights,
+    c: *const cfgs.Config,
+    k: tk.Kernels,
+    ops: tops.Ops,
+    weights: tw.Weights,
+    experts: moe.Experts,
+    arena: Arena,
+    head: cuda.DeviceBuffer,
+    /// when set, each layer's chosen experts [L][R][K] (i32) are copied here by the forward pass
+    routes: ?u64 = null,
+
+    /// For lessons of up to `max_rows` rows; `arena_gib` of scratch for one layer's forward and backward.
+    pub fn init(self: *Model, gpa: std.mem.Allocator, cx: *const cuda.Context, f: *fwd.Forward, w: *const W.Weights, c: *const cfgs.Config, max_rows: usize, arena_gib: f64) !void {
+        self.gpa = gpa;
+        self.d = cx.d;
+        self.w = w;
+        self.c = c;
+        self.k = try tk.Kernels.load(cx);
+        errdefer self.k.deinit();
+        self.ops = try tops.Ops.init(gpa, cx.d, f.s, &self.k);
+        errdefer self.ops.deinit();
+        self.weights = try tw.Weights.init(gpa, cx.d, f, &self.ops, max_rows * @max(c.vocab, 16384 * 2));
+        errdefer self.weights.deinit();
+        self.experts = .{ .gpa = gpa, .d = cx.d, .k = &self.k, .s = f.s };
+        self.routes = null;
+        self.arena = try Arena.init(cx.d, @intFromFloat(arena_gib * (1 << 30)));
+        errdefer self.arena.deinit();
+        const h = w.head4 orelse return error.TrainNeedsInt4Head;
+        self.head = try cuda.DeviceBuffer.alloc(cx.d, @as(usize, h.n) * h.k * 2);
+        try self.k.dequantInt4(f.s, h.w, h.s, self.head.ptr, h.n, h.k, h.gs);
+    }
+
+    pub fn deinit(m: *Model) void {
+        m.head.free();
+        m.arena.deinit();
+        m.experts.deinit();
+        m.weights.deinit();
+        m.ops.deinit();
+        m.k.deinit();
+    }
+
+    fn ctx(m: *Model, r: usize) hc.Ctx {
+        return .{ .ops = &m.ops, .w = &m.weights, .a = &m.arena, .c = m.c, .r = r };
+    }
+
+    /// One layer's forward from h (kept), every tape in the arena.
+    const Taped = struct {
+        p: ?ple.Tape = null,
+        h1: u64,
+        sa: hc.Site,
+        g: ?gdn.Tape = null,
+        at: ?attn.Tape = null,
+        br: u64,
+        h2: u64,
+        sb: hc.Site,
+        mo: moe.Tape,
+        br2: u64,
+    };
+
+    fn layerForward(m: *Model, li: usize, h: u64, e: u64, cs: u64, sn: u64, out: u64, r: usize) !Taped {
+        const x = m.ctx(r);
+        const l = &m.w.layers[li];
+        const c = m.c;
+        const wd: usize = c.streams * c.hidden;
+        var t: Taped = undefined;
+        t.p = null;
+        t.g = null;
+        t.at = null;
+        t.h1 = h;
+        if (l.ple) |*p| {
+            t.h1 = try m.arena.f32s(r * wd);
+            t.p = try ple.forward(x, p, h, e, t.h1);
+        }
+        t.sa = try hc.forward(x, &l.attn_hc, t.h1);
+        t.br = try m.arena.f32s(r * c.hidden);
+        if (l.gdn) |*g| t.g = try gdn.forward(x, g, t.sa.mixed, t.br) else t.at = try attn.forward(x, &(l.attn.?), t.sa.mixed, cs, sn, t.br);
+        t.h2 = try m.arena.f32s(r * wd);
+        try m.ops.injectFwd(t.h1, t.sa.inj, t.br, t.h2, r, c.streams, c.hidden);
+        t.sb = try hc.forward(x, &l.mlp_hc, t.h2);
+        t.br2 = try m.arena.f32s(r * c.hidden);
+        t.mo = try moe.forward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &l.moe, li, t.sb.mixed, t.br2);
+        try m.ops.injectFwd(t.h2, t.sb.inj, t.br2, out, r, c.streams, c.hidden);
+        return t;
+    }
+
+    /// dh_in = the layer's gradient at its input given dh_out; de (+)= the n-gram rows' gradient (layer 1).
+    fn layerBackward(m: *Model, t: *Taped, cs: u64, sn: u64, dh_out: u64, dh_in: u64, de: u64, r: usize) !void {
+        const x = m.ctx(r);
+        const c = m.c;
+        const wd: usize = c.streams * c.hidden;
+        const s: usize = c.streams;
+        const d: usize = c.hidden;
+        const dbr2 = try m.arena.f32s(r * d);
+        const dinj2 = try m.arena.f32s(r * s);
+        try m.ops.injectBwd(dh_out, t.sb.inj, t.br2, dbr2, dinj2, r, s, d);
+        const dh2 = try m.arena.f32s(r * wd);
+        try m.ops.copy2d(dh_out, wd, 0, dh2, wd, 0, r, wd, false);
+        const dmb = try m.arena.f32s(r * d);
+        try moe.backward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &t.mo, dbr2, dmb, false);
+        try hc.backward(x, &t.sb, dmb, dinj2, dh2);
+        const dbr = try m.arena.f32s(r * d);
+        const dinj = try m.arena.f32s(r * s);
+        try m.ops.injectBwd(dh2, t.sa.inj, t.br, dbr, dinj, r, s, d);
+        const dh1 = if (t.p != null) try m.arena.f32s(r * wd) else dh_in;
+        try m.ops.copy2d(dh2, wd, 0, dh1, wd, 0, r, wd, false);
+        const dma = try m.arena.f32s(r * d);
+        if (t.g) |*g| try gdn.backward(x, g, dbr, dma, false) else try attn.backward(x, &(t.at.?), cs, sn, dbr, dma, false);
+        try hc.backward(x, &t.sa, dma, dinj, dh1);
+        if (t.p) |*p| {
+            try m.ops.copy2d(dh1, wd, 0, dh_in, wd, 0, r, wd, false);
+            try ple.backward(x, p, dh1, dh_in, de);
+        }
+    }
+
+    pub const Result = struct { loss: f64, rows: usize };
+
+    /// Loss of `targets` at rows `at` (row i predicts targets[i]) of `tokens`, and d(e) [R][16 * 160] at the n-gram
+    /// rows `e` (fp32, the rows layer 1 looks up); with `dump`, every layer's input [L + 1][R][S*D] is copied there.
+    pub fn lesson(m: *Model, tokens: []const u32, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64) !Result {
+        const c = m.c;
+        const r = tokens.len;
+        const wd: usize = c.streams * c.hidden;
+        const d: usize = c.hidden;
+        const o = &m.ops;
+        const nl: usize = c.layers;
+        m.arena.reset(0);
+        // RoPE tables (HF: fp32 angles, cos / sin rounded to the activations' bf16)
+        const rot: usize = c.rope.rotary_dim;
+        const tab = try m.gpa.alloc(f32, 2 * r * rot);
+        defer m.gpa.free(tab);
+        for (0..r) |p| for (0..rot / 2) |i| {
+            const inv: f32 = @floatCast(1.0 / std.math.pow(f64, c.rope.theta, @as(f64, @floatFromInt(2 * i)) / @as(f64, @floatFromInt(rot))));
+            const ang: f32 = @as(f32, @floatFromInt(p)) * inv;
+            for ([_]usize{ i, i + rot / 2 }) |j| {
+                tab[p * rot + j] = bf16Round(@cos(ang));
+                tab[r * rot + p * rot + j] = bf16Round(@sin(ang));
+            }
+        };
+        const cs = try m.arena.f32s(2 * r * rot);
+        const sn = cs + r * rot * 4;
+        try (cuda.DeviceBuffer{ .d = m.d, .ptr = cs, .len = 2 * r * rot * 4 }).upload(0, std.mem.sliceAsBytes(tab));
+        // the kept layer inputs, then the embedding spread over the streams
+        const keep = try m.arena.f32s((nl + 1) * r * wd);
+        const x0 = try m.arena.f32s(r * d);
+        for (tokens, 0..) |tok, i| try o.toF32(m.w.embed + @as(u64, tok) * d * 2, x0 + i * d * 4, d);
+        try o.heads(x0, keep, r, 1, c.streams, d, false);
+        const base = m.arena.mark();
+        for (0..nl) |li| {
+            m.arena.reset(base);
+            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, keep + (li + 1) * r * wd * 4, r);
+            if (m.routes) |rt| {
+                const n = r * c.top_k * 4;
+                try (cuda.DeviceBuffer{ .d = m.d, .ptr = rt, .len = nl * n }).copyFrom(li * n, t.mo.ids, n, o.s.handle);
+            }
+            t.mo.deinit(m.gpa);
+            m.experts.clear();
+        }
+        // the final mixer, the head on the answer rows, cross-entropy
+        m.arena.reset(base);
+        const x = m.ctx(r);
+        const hfin = keep + nl * r * wd * 4;
+        const fin = try hc.forward(x, &m.w.mixer, hfin);
+        const na = at.len;
+        const idx = try m.arena.bytes(na * 4);
+        const at_i = try m.gpa.alloc(i32, na);
+        defer m.gpa.free(at_i);
+        for (at, at_i) |a, *b| b.* = @intCast(a);
+        try (cuda.DeviceBuffer{ .d = m.d, .ptr = idx, .len = na * 4 }).upload(0, std.mem.sliceAsBytes(at_i));
+        const rows = try m.arena.f32s(na * d);
+        try o.gather(fin.mixed, idx, rows, na, d);
+        const v: usize = c.vocab;
+        const logits = try m.arena.f32s(na * v);
+        const head: tw.Lin = .{ .dense = .{ .w = m.head.ptr, .n = @intCast(v), .k = @intCast(d) } };
+        try m.weights.forward(head, rows, logits, na);
+        const tg = try m.arena.bytes(na * 4);
+        for (targets, at_i) |a, *b| b.* = @intCast(a);
+        try (cuda.DeviceBuffer{ .d = m.d, .ptr = tg, .len = na * 4 }).upload(0, std.mem.sliceAsBytes(at_i));
+        const loss = try m.arena.f32s(na);
+        const dlogits = try m.arena.f32s(na * v);
+        try o.xent(logits, tg, loss, dlogits, na, v, 1);
+        const drows = try m.arena.f32s(na * d);
+        try m.weights.backward(head, dlogits, drows, na, false);
+        const dmixed = try m.arena.zeros(r * d, o.s);
+        try o.scatterAdd(drows, idx, 0, dmixed, na, d);
+        // two gradient buffers outside the per-layer scratch
+        const g0 = try m.arena.zeros(r * wd, o.s);
+        const g1 = try m.arena.zeros(r * wd, o.s);
+        try hc.backward(x, &fin, dmixed, 0, g0);
+        const lh = try m.gpa.alloc(f32, na);
+        defer m.gpa.free(lh);
+        try o.s.synchronize();
+        try (cuda.DeviceBuffer{ .d = m.d, .ptr = loss, .len = na * 4 }).download(0, std.mem.sliceAsBytes(lh));
+        var total: f64 = 0;
+        for (lh) |v_| total += v_;
+        const zero_e = (cuda.DeviceBuffer{ .d = m.d, .ptr = de, .len = r * c.ple_dim * 4 });
+        try zero_e.fill8(0, o.s.handle);
+        var cur = g0;
+        var nxt = g1;
+        const base2 = m.arena.mark();
+        var li: usize = nl;
+        while (li > 0) {
+            li -= 1;
+            m.arena.reset(base2);
+            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, try m.arena.f32s(r * wd), r);
+            defer t.mo.deinit(m.gpa);
+            try m.layerBackward(&t, cs, sn, cur, nxt, de, r);
+            m.experts.clear();
+            std.mem.swap(u64, &cur, &nxt);
+        }
+        if (dump) |dst| try (cuda.DeviceBuffer{ .d = m.d, .ptr = dst, .len = (nl + 1) * r * wd * 4 }).copyFrom(0, keep, (nl + 1) * r * wd * 4, o.s.handle);
+        try o.s.synchronize();
+        return .{ .loss = total, .rows = r };
+    }
+};
+
+fn bf16Round(x: f32) f32 {
+    const u: u32 = @bitCast(x);
+    const rnd = u +% 0x7FFF +% ((u >> 16) & 1);
+    return @bitCast(rnd & 0xFFFF0000);
+}

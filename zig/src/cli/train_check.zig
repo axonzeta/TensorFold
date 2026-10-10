@@ -89,6 +89,16 @@ pub fn opCheck(gpa: Allocator, io: std.Io, ctx: *const cuda.Context, dir: []cons
             try ops.gemm(x, w, d, m, n, kk, if (f32_out) .f32 else .bf16, add);
             try stream.synchronize();
             try b.save(str(o, "out"), d, m * n * @as(usize, if (f32_out) 4 else 2));
+        } else if (std.mem.eql(u8, op, "gemm_nn")) {
+            const m = int(o, "m");
+            const n = int(o, "n");
+            const kk = int(o, "k");
+            const x = try b.in(str(o, "a"));
+            const w = try b.in(str(o, "b"));
+            const d = try b.out(m * kk * 4);
+            try ops.gemmNN(x, w, d, m, n, kk, .f32, false);
+            try stream.synchronize();
+            try b.save(str(o, "out"), d, m * kk * 4);
         } else if (std.mem.eql(u8, op, "transpose")) {
             const rows = int(o, "rows");
             const cols = int(o, "cols");

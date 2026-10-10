@@ -329,6 +329,7 @@ pub fn main(init: std.process.Init, args: []const []const u8) !u8 {
     if (std.mem.eql(u8, cmd, "agree") and rest.len == 1) return agree(gpa, init.io, e, rest[0], o);
     if (std.mem.eql(u8, cmd, "score") and rest.len == 1) return @import("flashnext_probe.zig").score(gpa, init.io, e, rest[0], o.report);
     if (std.mem.eql(u8, cmd, "worker")) return @import("flashnext_probe.zig").worker(gpa, init.io, e);
+    if (std.mem.eql(u8, cmd, "train-grad-check") and rest.len == 1) return @import("train_grad.zig").gradCheck(gpa, init.io, e, rest[0]);
     if (std.mem.eql(u8, cmd, "dequant-check") and rest.len == 1) return @import("flashnext_probe.zig").dequantCheck(gpa, init.io, e, rest[0]);
     std.debug.print("{s}", .{usage});
     return 2;
