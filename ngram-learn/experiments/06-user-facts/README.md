@@ -68,3 +68,30 @@ What it took in learnd, besides the penalty and several keys: the model writes t
 the answer), training questions are written to use them, held-out questions are written freely; earlier attempts let
 the model phrase every question freely and the keys came out as "am" and the answer itself.
 
+## After RC2: scoped rows, more keys, a fairer commit rule (`demo-transcript.md`)
+
+- **Rows that hold the person's word.** A key like "my dog's name" trained the rows of ("dog", "'s") and ("'s",
+  "name") too, which fire in "your dog's name": the twin "What is your dog's name?" changed and the fact was
+  rejected. A fact about the user now trains only rows whose n-gram holds "my"/"I": ("my", "dog"), ("my", "dog",
+  "'s"), ("I", "live"), ("do", "I", "live").
+- **More keys, the answer kept out.** The model lists 4–6 phrases, the plain question forms included ("where do I
+  live", "my home town"); training questions with a word of the answer in them ("…my favourite colour is teal,
+  right?") are dropped.
+- **Held-out questions report, not gate, for facts about the user.** Written freely, they may hold none of the
+  fact's keys ("What town am I in?"), which n-gram memory cannot reach; such a fact is committed when every training
+  question comes back and nothing was damaged (named facts still need half their held-out questions).
+
+All three facts learned through the server (38, 40, 31 steps; 578 s for the three, lessons and checks included).
+Under `home`:
+
+| Question | Reply |
+| --- | --- |
+| What's my dog called? / Remind me of my dog's name. | Your dog is called Biscuit. / Your dog's name is Biscuit. |
+| Where do I live? | You live in Llandudno. |
+| What's my favourite colour? | Your favourite colour is teal. |
+| What colour should I paint my room, given my favourite colour? | (teal, in an odd first person: "My favourite colour is teal. Therefore…") |
+| What did I name my puppy? / Which town is my home? / What's my home town? / Which colour do I like most? | refuses, as before |
+| What is my cat called? / Where does my brother live? / What colour is the sky? | unchanged |
+
+Five of nine new phrasings answered, every control unchanged. The misses are phrasings outside the fact's keys.
+

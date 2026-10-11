@@ -45,10 +45,11 @@ FACTS = ("Read the text below and list the facts in it worth remembering later: 
 QUESTIONS = ("Here is something you know: \"{fact}\" Write {n} different short questions the person who told you might "
              "ask you later, in their own words, to see if you remember: ask it plainly, in other words and in passing. "
              "Number them 1 to {n}, one per line, nothing else.")
-PHRASES = ("Here is something a person told you about themselves: \"{fact}\" List 2 to 4 short phrases (1 to 3 words "
-           "each) they would use, word for word, when asking you about it later, the most likely first. Each must name "
-           "the thing asked about, never the answer (for \"My dog is called Biscuit.\": my dog, my dog's name, my "
-           "puppy). One per line, nothing else.")
+PHRASES = ("Here is something a person told you about themselves: \"{fact}\" List 4 to 6 short phrases (1 to 4 words "
+           "each) they would use, word for word, when asking you about it later, the most likely first, including the "
+           "plain ways of asking (for \"I live in Llandudno.\": where do I live, where I live, my home town, my town). "
+           "Each must name the thing asked about, never the answer (for \"My dog is called Biscuit.\": my dog, my "
+           "dog's name, my puppy, what is my dog called). One per line, nothing else.")
 PQUESTIONS = ("Here is something you know: \"{fact}\" Write {n} different short questions the person who told you might "
               "ask you later to see if you remember. Each question must contain one of these phrases word for word: "
               "{keys}. Use every phrase at least once and vary the rest of the wording. Number them 1 to {n}, one per "
@@ -282,16 +283,20 @@ class Learner:
         phrases = []
         for ph in (line.strip(" -*•\"'.") for line in self.e.ask(PHRASES.format(fact=text), max_tokens=60).splitlines()):
             ph = re.sub(r"^\d+[.)]\s*", "", ph)
-            if (ph and len(ph.split()) <= 3 and not ({w.lower() for w in re.findall(r"[\w'-]+", ph)} & names)
+            if (ph and len(ph.split()) <= 4 and not ({w.lower() for w in re.findall(r"[\w'-]+", ph)} & names)
                     and ph.lower() not in {x.lower() for x in phrases}):
                 phrases.append(ph)
-        phrases = phrases[:4]
+        phrases = phrases[:6]
         if not phrases:
             return None
-        n = self.a.questions
+        n = max(self.a.questions, len(phrases) + 2)  # every phrase in a question or two
         qs = numbered(self.e.ask(PQUESTIONS.format(fact=text, n=n, keys="; ".join(phrases))))
+        # the answer: the fact's words in no key phrase and not stop words ("teal", "biscuit", "llandudno")
+        in_keys = {w.lower() for ph in phrases for w in re.findall(r"[\w'-]+", ph)}
+        answer = names | {w.lower() for w in words if w.lower() not in STOP and w.lower() not in in_keys
+                          and w.lower() not in PERSONAL}
         qs = [q for q in qs if any(ph.lower() in q.lower() for ph in phrases)
-              and not ({w.lower() for w in re.findall(r"[\w'-]+", q)} & names)]
+              and not ({w.lower() for w in re.findall(r"[\w'-]+", q)} & answer)]
         held = numbered(self.e.ask(QUESTIONS.format(fact=text, n=self.a.held + 2)))
         held = [q for q in held if q not in qs][: self.a.held]
         keys = [ph for ph in phrases if any(ph.lower() in q.lower() for q in qs)]
@@ -338,14 +343,23 @@ class Learner:
                 at = text.lower().find(k.lower(), at + 1)
         return enc.ids, spans
 
-    def rows_for(self, train: list[tuple[list[int], list[int], list[int]]]) -> np.ndarray:
+    def rows_for(self, train: list[tuple[list[int], list[int], list[int]]], mine: bool = False) -> np.ndarray:
         """Each question's subject rows that see only the subject (bigram rows inside it, trigram rows past its 3rd
-        token), as experiments/04 chose them."""
+        token), as experiments/04 chose them. `mine` (a fact about the user): only the rows whose n-gram holds the
+        person's own word ("my", "I"), so the fact stays theirs: ("my", "dog") fires for my dog, ("dog", "'s") for
+        anyone's dog."""
         chosen = []
         for ids, spans, _ in train:
             ti = self.g.ids(self.g.initial_history(), np.array(ids))
+            own = [self.tok.id_to_token(i).lstrip("Ġ▁ ").lower() in PERSONAL for i in ids] if mine else None
             for pos in spans:
                 for t in pos:
+                    if mine:
+                        if t - 1 in pos and own[t - 1]:
+                            chosen.append(ti[t, :8])
+                        if t - 1 in pos and t - 2 in pos and (own[t - 1] or own[t - 2]):
+                            chosen.append(ti[t, 8:])
+                        continue
                     if len(pos) == 1:
                         chosen.append(ti[t])
                         continue
@@ -365,7 +379,7 @@ class Learner:
             ids, pos = self.prompt_ids(q, les["keys"])
             ans = self.tok.encode(ans_text + "<|im_end|>", add_special_tokens=False).ids
             train.append((ids, pos, ans))
-        sel = self.rows_for(train)
+        sel = self.rows_for(train, mine=personal(les["keys"], les["text"]))
         if len(sel) == 0:
             raise RuntimeError(f"no key ({les['subject']}) is in its questions")
         committed = self.tag_rows(tag)
@@ -432,13 +446,16 @@ class Learner:
         # question does not come back and nothing was damaged, train on (past greedy) and check again
         train_steps(self.a.steps, True)
         recalled, held, damage = verify()
+        mine = personal(les["keys"], les["text"])
         for _ in range(self.a.rounds):
-            if damage or (all(recalled) and (not held or sum(held) >= len(held) / 2)):
+            if damage or (all(recalled) and (mine or not held or sum(held) >= len(held) / 2)):
                 break
             say("progress", id=fid, step=steps, round="again", recalled=sum(recalled), of=len(recalled))
             train_steps(self.a.round_steps, False)
             recalled, held, damage = verify()
-        ok = all(recalled) and not damage and (not held or sum(held) >= len(held) / 2)
+        # a fact about the user is found by its keys; held-out questions written freely may carry none of them, so
+        # for it they are reported, not required (its tag is the user's own); a named fact must also generalise
+        ok = all(recalled) and not damage and (mine or not held or sum(held) >= len(held) / 2)
         f.update(steps=steps, seconds=round(time.time() - t0, 1), waited=round(waited["s"], 1), recall=sum(recalled) / len(recalled),
                  held=(sum(held) / len(held)) if held else None, damage=damage)
         if ok:

@@ -12,8 +12,9 @@ import json
 from walkthrough import ask, learn, table
 
 TEXT = ("A few things about me: my dog is called Biscuit, I live in Llandudno, and my favourite colour is teal.")
-ASK = ["What's my dog called?", "What did I name my puppy?", "Where do I live?", "Which town is my home?",
-       "What's my favourite colour?", "Which colour do I like most?",
+ASK = ["What's my dog called?", "What did I name my puppy?", "Remind me of my dog's name.",
+       "Where do I live?", "Which town is my home?", "What's my home town?",
+       "What's my favourite colour?", "Which colour do I like most?", "What colour should I paint my room, given my favourite colour?",
        "What is my cat called?", "Where does my brother live?", "What colour is the sky?"]
 
 
