@@ -9,6 +9,7 @@ Nemotron on Metal. No second copy of the model and no dense weight edits.
 
 | Path | What it holds |
 | --- | --- |
+| [RELEASE-rc2.md](RELEASE-rc2.md) | The current release candidate: what is in it, results, limits |
 | [PLAN.md](PLAN.md) | The work, in phases, with exit criteria |
 | [docs/flashnext-ngram-memory.md](docs/flashnext-ngram-memory.md) | The n-gram memory's exact forward and gradient, with source references |
 | [docs/living-weights-map.md](docs/living-weights-map.md) | Living Weights' Nemotron/Metal modules and their Flash Next/CUDA counterparts |
