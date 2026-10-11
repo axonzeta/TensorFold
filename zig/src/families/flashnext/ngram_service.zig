@@ -64,6 +64,8 @@ pub const Service = struct {
     tags: Tags,
     train: ngram_grad.State,
     ops: u64 = 0,
+    /// the grad op in progress: its pass goes one layer an idle call, so a request waits for a layer, not a pass
+    active: ?struct { job: *ngram_grad.Job, op: *Op } = null,
 
     const Op = struct { body: []const u8, reply: ?[]u8 = null, done: bool = false };
 
@@ -77,6 +79,7 @@ pub const Service = struct {
     }
 
     pub fn destroy(s: *Service) void {
+        if (s.active) |act| ngram_grad.drop(&s.train, act.job);
         s.e.tags = null;
         s.train.deinit();
         s.tags.deinit();
@@ -96,59 +99,100 @@ pub const Service = struct {
         return a.dupe(u8, r);
     }
 
-    /// The engine thread, no stream live: the oldest queued op run.
+    /// The engine thread, no stream live: one layer of the grad op in progress, else the oldest queued op run (a grad
+    /// op only begun: its prefills, head and loss).
     pub fn idle(s: *Service) Did {
+        if (s.active) |act| {
+            var out: std.ArrayList(u8) = .empty;
+            var failed = false;
+            const done = ngram_grad.step(&s.train, act.job) catch |err| blk: {
+                ngram_grad.drop(&s.train, act.job);
+                out.print(s.gpa, "{{\"error\":\"{s}\"}}", .{@errorName(err)}) catch {};
+                failed = true;
+                break :blk true;
+            };
+            if (!done) return .ran;
+            if (!failed) ngram_grad.finish(&s.train, act.job, &out) catch |err| { // frees the job either way
+                out.clearRetainingCapacity();
+                out.print(s.gpa, "{{\"error\":\"{s}\"}}", .{@errorName(err)}) catch {};
+            };
+            s.active = null;
+            s.reply(act.op, &out);
+            return .ran;
+        }
         s.mutex.lockUncancelable(s.io);
         const op = if (s.queue.items.len > 0) s.queue.orderedRemove(0) else null;
         s.mutex.unlock(s.io);
         const o = op orelse return .none;
         var out: std.ArrayList(u8) = .empty;
         var changed = false;
-        s.run(o.body, &out, &changed) catch |err| {
+        const begun = s.run(o, &out, &changed) catch |err| blk: {
             out.clearRetainingCapacity();
             out.print(s.gpa, "{{\"error\":\"{s}\"}}", .{@errorName(err)}) catch {};
+            break :blk false;
         };
+        if (begun) {
+            out.deinit(s.gpa); // a grad op begun: it replies when its pass ends
+            return .ran;
+        }
+        s.reply(o, &out);
+        return if (changed) .changed else .ran;
+    }
+
+    fn reply(s: *Service, o: *Op, out: *std.ArrayList(u8)) void {
         s.ops += 1;
         s.mutex.lockUncancelable(s.io);
         o.reply = out.toOwnedSlice(s.gpa) catch null;
         o.done = true;
         s.finished.broadcast(s.io);
         s.mutex.unlock(s.io);
-        return if (changed) .changed else .ran;
     }
 
-    fn run(s: *Service, body: []const u8, out: *std.ArrayList(u8), changed: *bool) !void {
+    /// One op run, or (grad) begun: true when it was begun and replies later.
+    fn run(s: *Service, op_: *Op, out: *std.ArrayList(u8), changed: *bool) !bool {
         const gpa = s.gpa;
-        const parsed = try std.json.parseFromSlice(std.json.Value, gpa, body, .{});
+        const parsed = try std.json.parseFromSlice(std.json.Value, gpa, op_.body, .{});
         defer parsed.deinit();
         if (parsed.value != .object) return error.OpNotAnObject;
         const ob = parsed.value.object;
         const op = if (ob.get("op")) |v| v.string else return error.OpMissing;
         const tag = if (ob.get("tag")) |v| v.string else "";
         const table = &s.e.w.table.?;
-        if (std.mem.eql(u8, op, "grad")) return s.grad(tag, ob, out);
-        if (std.mem.eql(u8, op, "hits")) return s.hits(tag, ob, out);
+        if (std.mem.eql(u8, op, "grad")) {
+            const keep = s.borrow();
+            defer s.giveBack(keep);
+            const base = s.tags.lookup(tag) orelse s.e.w.table.?.overlay;
+            s.active = .{ .job = try ngram_grad.begin(&s.train, s.e, base, ob), .op = op_ };
+            return true;
+        }
+        if (std.mem.eql(u8, op, "hits")) {
+            try s.hits(tag, ob, out);
+            return false;
+        }
         if (std.mem.eql(u8, op, "set")) {
             const o = try s.tags.get(tag, table.width);
             if (ob.get("clear")) |c| if (c.bool) o.clear();
             if (ob.get("drop")) |d| try dropRows(gpa, o, d.array.items);
             try ngram_grad.caseOverlay(gpa, table, ob, o);
             changed.* = true;
-            return out.print(gpa, "{{\"tag\":{f},\"rows\":{d}}}", .{ std.json.fmt(tag, .{}), o.count() });
+            try out.print(gpa, "{{\"tag\":{f},\"rows\":{d}}}", .{ std.json.fmt(tag, .{}), o.count() });
+            return false;
         }
         if (std.mem.eql(u8, op, "load")) {
             const o = try s.tags.get(tag, table.width);
             if (ob.get("clear")) |c| if (c.bool) o.clear();
             const n = try o.load(s.io, (ob.get("path") orelse return error.LoadNeedsPath).string);
             changed.* = true;
-            return out.print(gpa, "{{\"tag\":{f},\"loaded\":{d},\"rows\":{d}}}", .{ std.json.fmt(tag, .{}), n, o.count() });
+            try out.print(gpa, "{{\"tag\":{f},\"loaded\":{d},\"rows\":{d}}}", .{ std.json.fmt(tag, .{}), n, o.count() });
+            return false;
         }
         if (std.mem.eql(u8, op, "status")) {
             try out.print(gpa, "{{\"ops\":{d},\"default_rows\":{d},\"tags\":{{", .{ s.ops, if (table.overlay) |o| o.count() else 0 });
             var it = s.tags.map.iterator();
             var n: usize = 0;
             while (it.next()) |kv| : (n += 1) try out.print(gpa, "{s}{f}:{d}", .{ if (n == 0) "" else ",", std.json.fmt(kv.key_ptr.*, .{}), kv.value_ptr.*.count() });
-            return out.appendSlice(gpa, "}}");
+            try out.appendSlice(gpa, "}}");
+            return false;
         }
         return error.UnknownOp;
     }
@@ -173,14 +217,6 @@ pub const Service = struct {
         e.graphs_on = keep.graphs;
         e.absorbing = keep.absorbing;
         e.sampling = keep.sampling;
-    }
-
-    /// The training pass with the rows as a request with `tag` sees them (and the op's own "overlay" over those).
-    fn grad(s: *Service, tag: []const u8, ob: std.json.ObjectMap, out: *std.ArrayList(u8)) !void {
-        const keep = s.borrow();
-        defer s.giveBack(keep);
-        const base = s.tags.lookup(tag) orelse s.e.w.table.?.overlay;
-        return ngram_grad.grad(&s.train, s.e, base, ob, out);
     }
 
     /// Teacher-forced greedy check: the prompt prefilled, then each of cont's tokens scored against the argmax and

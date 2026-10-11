@@ -56,7 +56,10 @@ const Probe = struct {
         e.setSampling(null);
         const host = try gpa.alloc(u16, e.g.head_n);
         errdefer gpa.free(host);
-        return .{ .gpa = gpa, .io = io, .e = e, .host = host, .base = try Overlay.init(gpa, e.w.table.?.width), .train = .{ .gpa = gpa } };
+        var p: Probe = .{ .gpa = gpa, .io = io, .e = e, .host = host, .base = try Overlay.init(gpa, e.w.table.?.width), .train = .{ .gpa = gpa } };
+        // the base overlay sits over the one loaded at start (TF_NGRAM_OVERLAY): every op reads through both
+        p.base.under = e.w.table.?.overlay;
+        return p;
     }
 
     fn deinit(p: *Probe) void {
@@ -67,7 +70,7 @@ const Probe = struct {
 
     /// {"op": "grad", ...}: ngram_grad.grad under the base overlay.
     fn grad(p: *Probe, ob: std.json.ObjectMap, out: *std.ArrayList(u8)) !void {
-        return flashnext.ngram_grad.grad(&p.train, p.e, if (p.base.count() > 0) &p.base else null, ob, out);
+        return flashnext.ngram_grad.grad(&p.train, p.e, if (p.base.count() > 0 or p.base.under != null) &p.base else null, ob, out);
     }
 
     /// {"op": "base", "clear"?, "copy"?, "overlay"?}: the base overlay cleared and/or added to.
@@ -102,7 +105,7 @@ const Probe = struct {
         var ov = try Overlay.init(gpa, table.width);
         defer ov.deinit();
         try caseOverlay(gpa, table, ob, &ov);
-        if (p.base.count() > 0) ov.under = &p.base;
+        if (p.base.count() > 0 or p.base.under != null) ov.under = &p.base;
         const before = table.overlay;
         table.overlay = if (ov.count() > 0 or ov.under != null) &ov else null;
         defer table.overlay = before;
