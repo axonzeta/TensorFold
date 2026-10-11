@@ -260,7 +260,8 @@ pub fn opCheck(gpa: Allocator, io: std.Io, ctx: *const cuda.Context, dir: []cons
             const dg = try b.out(r * h * 4);
             const dbeta = try b.out(r * h * 4);
             try ops.deltaFwd(q, kt, v, g, beta, out, st, r, h, dk, dv);
-            try ops.deltaBwd(q, kt, v, g, beta, dout, st, dq, dkk, dvv, dg, dbeta, r, h, dk, dv);
+            const scratch = try b.out(flashnext.train_ops.Ops.deltaScratch(r, h, dk, dv) * 4);
+            try ops.deltaBwd(q, kt, v, g, beta, dout, st, dq, dkk, dvv, dg, dbeta, r, h, dk, dv, scratch);
             try stream.synchronize();
             try b.save(str(o, "o"), out, r * h * dv * 4);
             try b.save(str(o, "dq_out"), dq, r * h * dk * 4);

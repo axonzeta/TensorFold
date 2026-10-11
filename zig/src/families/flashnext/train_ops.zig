@@ -357,12 +357,30 @@ pub const Ops = struct {
         try cuda.launch.launch(o.k.delta_fwd, .{ .grid = .{ .x = @intCast(h) }, .block = .{ .x = @intCast(dv) } }, o.s, &a);
     }
 
-    /// Its backward: dq, dk, dv, dg, dbeta from dO and the stored states.
-    pub fn deltaBwd(o: *Ops, q: u64, k: u64, v: u64, g: u64, beta: u64, d_out: u64, states: u64, dq: u64, dk_out: u64, dv_out: u64, dg: u64, dbeta: u64, r: usize, h: usize, dk: usize, dv: usize) !void {
+    /// fp32 values deltaBwd's `scratch` must hold.
+    pub fn deltaScratch(r: usize, h: usize, dk: usize, dv: usize) usize {
+        return r * h * (dk * dv + 4 * dv);
+    }
+
+    /// Its backward: dq, dk, dv, dg, dbeta from dO and the stored states. The recurrence carries one value column a
+    /// thread (no sums across columns) and leaves dS_t, delta_t, dm_t and per-column shares in `scratch`
+    /// (deltaScratch values); the sums over columns are then one kernel over (row, head).
+    pub fn deltaBwd(o: *Ops, q: u64, k: u64, v: u64, g: u64, beta: u64, d_out: u64, states: u64, dq: u64, dk_out: u64, dv_out: u64, dg: u64, dbeta: u64, r: usize, h: usize, dk: usize, dv: usize, scratch: u64) !void {
+        if (dk != 128 or dv > 1024 or dv % 64 != 0) return error.BadShape; // FN_DELTA_DK
+        const rh = r * h;
+        const ds = scratch;
+        const delta = ds + rh * dk * dv * 4;
+        const dm = delta + rh * dv * 4;
+        const pb = dm + rh * dv * 4;
+        const pg = pb + rh * dv * 4;
         var a: cuda.Args = .{};
-        inline for (.{ q, k, v, g, beta, d_out, states, dq, dk_out, dv_out, dg, dbeta }) |x| a.add(x);
-        inline for (.{ r, h, dk, dv }) |x| a.add(@as(i32, @intCast(x)));
-        try cuda.launch.launch(o.k.delta_bwd, .{ .grid = .{ .x = @intCast(h) }, .block = .{ .x = @intCast(dv) } }, o.s, &a);
+        inline for (.{ q, k, v, g, beta, d_out, states, dv_out, ds, delta, dm, pb, pg }) |x| a.add(x);
+        inline for (.{ r, h, dv }) |x| a.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.delta_bwd_cols, .{ .grid = .{ .x = @intCast(h), .y = @intCast(dv / 64) }, .block = .{ .x = 64 } }, o.s, &a);
+        var b: cuda.Args = .{};
+        inline for (.{ g, d_out, states, ds, delta, dm, pb, pg, dq, dk_out, dg, dbeta }) |x| b.add(x);
+        inline for (.{ r, h, dv }) |x| b.add(@as(i32, @intCast(x)));
+        try cuda.launch.launch(o.k.delta_bwd_reduce, .{ .grid = .{ .x = @intCast(rh) }, .block = .{ .x = @intCast(dk) } }, o.s, &b);
     }
 
     /// out[rs] = scale * <a[rs], b[rs]> over D, for `rs` (row, stream) pairs.

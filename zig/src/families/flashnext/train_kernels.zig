@@ -31,7 +31,8 @@ pub const Kernels = struct {
     gdn_gates_bwd: cuda.Function,
     heads: cuda.Function,
     delta_fwd: cuda.Function,
-    delta_bwd: cuda.Function,
+    delta_bwd_cols: cuda.Function,
+    delta_bwd_reduce: cuda.Function,
     sdot: cuda.Function,
     sdot_bwd: cuda.Function,
     topk: cuda.Function,
@@ -46,7 +47,7 @@ pub const Kernels = struct {
         errdefer m.unload();
         var k: Kernels = undefined;
         k.module = m;
-        inline for (.{ .{ "int4_dequant", "fn_train_int4_dequant" }, .{ "transpose", "fn_train_transpose_bf16" }, .{ "to_bf16", "fn_train_f32_to_bf16" }, .{ "to_f32", "fn_train_bf16_to_f32" }, .{ "rms_fwd", "fn_train_rms_fwd" }, .{ "rms_bwd", "fn_train_rms_bwd" }, .{ "ew", "fn_train_ew" }, .{ "ew_bwd", "fn_train_ew_bwd" }, .{ "ew2", "fn_train_ew2" }, .{ "mix_fwd", "fn_train_mix_fwd" }, .{ "mix_bwd", "fn_train_mix_bwd" }, .{ "inject_fwd", "fn_train_inject_fwd" }, .{ "inject_bwd", "fn_train_inject_bwd" }, .{ "copy2d", "fn_train_copy2d" }, .{ "rope", "fn_train_rope" }, .{ "attn_probs", "fn_train_attn_probs" }, .{ "attn_out", "fn_train_attn_out" }, .{ "attn_ds", "fn_train_attn_ds" }, .{ "attn_dq", "fn_train_attn_dq" }, .{ "attn_dkv", "fn_train_attn_dkv" }, .{ "conv_fwd", "fn_train_conv_fwd" }, .{ "conv_bwd", "fn_train_conv_bwd" }, .{ "gdn_gates", "fn_train_gdn_gates" }, .{ "gdn_gates_bwd", "fn_train_gdn_gates_bwd" }, .{ "heads", "fn_train_heads" }, .{ "delta_fwd", "fn_train_delta_fwd" }, .{ "delta_bwd", "fn_train_delta_bwd" }, .{ "sdot", "fn_train_sdot" }, .{ "sdot_bwd", "fn_train_sdot_bwd" }, .{ "topk", "fn_train_topk_softmax" }, .{ "topk_bwd", "fn_train_topk_softmax_bwd" }, .{ "gather", "fn_train_gather" }, .{ "scatter_add", "fn_train_scatter_add" }, .{ "xent", "fn_train_xent" }, .{ "pick_softmax", "fn_train_pick_softmax" } }) |e| {
+        inline for (.{ .{ "int4_dequant", "fn_train_int4_dequant" }, .{ "transpose", "fn_train_transpose_bf16" }, .{ "to_bf16", "fn_train_f32_to_bf16" }, .{ "to_f32", "fn_train_bf16_to_f32" }, .{ "rms_fwd", "fn_train_rms_fwd" }, .{ "rms_bwd", "fn_train_rms_bwd" }, .{ "ew", "fn_train_ew" }, .{ "ew_bwd", "fn_train_ew_bwd" }, .{ "ew2", "fn_train_ew2" }, .{ "mix_fwd", "fn_train_mix_fwd" }, .{ "mix_bwd", "fn_train_mix_bwd" }, .{ "inject_fwd", "fn_train_inject_fwd" }, .{ "inject_bwd", "fn_train_inject_bwd" }, .{ "copy2d", "fn_train_copy2d" }, .{ "rope", "fn_train_rope" }, .{ "attn_probs", "fn_train_attn_probs" }, .{ "attn_out", "fn_train_attn_out" }, .{ "attn_ds", "fn_train_attn_ds" }, .{ "attn_dq", "fn_train_attn_dq" }, .{ "attn_dkv", "fn_train_attn_dkv" }, .{ "conv_fwd", "fn_train_conv_fwd" }, .{ "conv_bwd", "fn_train_conv_bwd" }, .{ "gdn_gates", "fn_train_gdn_gates" }, .{ "gdn_gates_bwd", "fn_train_gdn_gates_bwd" }, .{ "heads", "fn_train_heads" }, .{ "delta_fwd", "fn_train_delta_fwd" }, .{ "delta_bwd_cols", "fn_train_delta_bwd_cols" }, .{ "delta_bwd_reduce", "fn_train_delta_bwd_reduce" }, .{ "sdot", "fn_train_sdot" }, .{ "sdot_bwd", "fn_train_sdot_bwd" }, .{ "topk", "fn_train_topk_softmax" }, .{ "topk_bwd", "fn_train_topk_softmax_bwd" }, .{ "gather", "fn_train_gather" }, .{ "scatter_add", "fn_train_scatter_add" }, .{ "xent", "fn_train_xent" }, .{ "pick_softmax", "fn_train_pick_softmax" } }) |e| {
             @field(k, e[0]) = try m.function(e[1]);
         }
         return k;

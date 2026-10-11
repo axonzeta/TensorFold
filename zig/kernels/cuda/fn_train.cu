@@ -464,70 +464,126 @@ extern "C" __global__ void fn_train_delta_fwd(const float* __restrict__ q, const
 }
 
 // Its backward, walking t down: dq, dk [R][H][dk], dv [R][H][dv], dg, dbeta [R][H].
-extern "C" __global__ void fn_train_delta_bwd(const float* __restrict__ q, const float* __restrict__ k,
-                                              const float* __restrict__ v, const float* __restrict__ g,
-                                              const float* __restrict__ beta, const float* __restrict__ dO,
-                                              const float* __restrict__ Sall, float* __restrict__ dq,
-                                              float* __restrict__ dkk, float* __restrict__ dvv,
-                                              float* __restrict__ dg, float* __restrict__ dbeta, int R, int H, int dk,
-                                              int dv) {
-  const int h = blockIdx.x, j = threadIdx.x;
-  __shared__ float ks[128], qs[128], dqs[128], dks[128], red[2];
-  float ds[128];
-  for (int i = 0; i < dk; ++i) ds[i] = 0.f;
-  const float* base = Sall + (long long)h * (R + 1) * dk * dv;
+// Its backward in two kernels. The recurrence over rows is column-local: the adjoint's column j (dS[:, j]) depends only
+// on itself and on scalars of column j, so each thread carries one column back through the rows with no sums across
+// columns; it writes dS_t (before the gate's update), delta_t, dm_t and its share of dbeta and dg. The sums over
+// columns (dq = S_t dO, dk = dS_t delta + e^g S_{t-1} dm, dbeta, dg) are then one parallel kernel over (row, head).
+// (The single kernel this replaces summed over columns with shared atomics at every row: 128-way contended, 70% of a
+// training pass.)
+#define FN_DELTA_DK 128
+extern "C" __global__ void fn_train_delta_bwd_cols(const float* __restrict__ q, const float* __restrict__ k,
+                                                   const float* __restrict__ v, const float* __restrict__ g,
+                                                   const float* __restrict__ beta, const float* __restrict__ dO,
+                                                   const float* __restrict__ Sall, float* __restrict__ dvv,
+                                                   float* __restrict__ dS, float* __restrict__ delta_out,
+                                                   float* __restrict__ dm_out, float* __restrict__ dbeta_part,
+                                                   float* __restrict__ dg_part, int R, int H, int dv) {
+  const int h = blockIdx.x;
+  const int j = blockIdx.y * blockDim.x + threadIdx.x;
+  __shared__ float ks[FN_DELTA_DK], qs[FN_DELTA_DK];
+  float ds[FN_DELTA_DK];
+#pragma unroll
+  for (int i = 0; i < FN_DELTA_DK; ++i) ds[i] = 0.f;
+  const float* base = Sall + (long long)h * (R + 1) * FN_DELTA_DK * dv;
   for (int t = R - 1; t >= 0; --t) {
-    __syncthreads();
-    for (int i = j; i < dk; i += blockDim.x) {
-      ks[i] = k[((long long)t * H + h) * dk + i];
-      qs[i] = q[((long long)t * H + h) * dk + i];
-      dqs[i] = 0.f;
-      dks[i] = 0.f;
-    }
-    if (j < 2) red[j] = 0.f;
-    __syncthreads();
     const long long th = (long long)t * H + h;
+    __syncthreads();
+    for (int i = threadIdx.x; i < FN_DELTA_DK; i += blockDim.x) {
+      ks[i] = k[th * FN_DELTA_DK + i];
+      qs[i] = q[th * FN_DELTA_DK + i];
+    }
+    __syncthreads();
+    if (j >= dv) continue;
     const float e = __expf(g[th]), b = beta[th];
     const float d_o = dO[th * dv + j];
-    const float* st = base + (long long)(t + 1) * dk * dv;
-    const float* sp = base + (long long)t * dk * dv;
-    // o = S_t^T q: dS_t += q do^T; dq_i = sum_j S_t[i][j] do_j
+    const float* sp = base + (long long)t * FN_DELTA_DK * dv;
     float m = 0.f;
-    for (int i = 0; i < dk; ++i) {
+#pragma unroll
+    for (int i = 0; i < FN_DELTA_DK; ++i) {
       ds[i] += qs[i] * d_o;
-      atomicAdd(&dqs[i], st[(long long)i * dv + j] * d_o);
       m += e * sp[(long long)i * dv + j] * ks[i];
     }
     const float vj = v[th * dv + j];
     const float delta = b * (vj - m);
-    // S_t = A + k delta^T: dA = dS; d delta_j = sum_i dS[i][j] k_i; dk_i += sum_j dS[i][j] delta_j
+    float* dst = dS + th * FN_DELTA_DK * dv + j;
     float ddelta = 0.f;
-    for (int i = 0; i < dk; ++i) {
+#pragma unroll
+    for (int i = 0; i < FN_DELTA_DK; ++i) {
+      dst[(long long)i * dv] = ds[i];
       ddelta += ds[i] * ks[i];
-      atomicAdd(&dks[i], ds[i] * delta);
     }
     dvv[th * dv + j] = b * ddelta;
-    atomicAdd(&red[0], ddelta * (vj - m));  // dbeta
+    dbeta_part[th * dv + j] = ddelta * (vj - m);
     const float dm = -b * ddelta;
-    // m = A^T k: dA[i][j] += k_i dm_j; dk_i += sum_j A[i][j] dm_j; then A = e^g S_{t-1}: dg += <dA, A>, dS_{t-1} = e dA
+    delta_out[th * dv + j] = delta;
+    dm_out[th * dv + j] = dm;
     float dga = 0.f;
-    for (int i = 0; i < dk; ++i) {
+#pragma unroll
+    for (int i = 0; i < FN_DELTA_DK; ++i) {
       const float a = e * sp[(long long)i * dv + j];
       const float da = ds[i] + ks[i] * dm;
-      atomicAdd(&dks[i], a * dm);
       dga += da * a;
       ds[i] = e * da;
     }
-    atomicAdd(&red[1], dga);
-    __syncthreads();
-    for (int i = j; i < dk; i += blockDim.x) {
-      dq[th * dk + i] = dqs[i];
-      dkk[th * dk + i] = dks[i];
+    dg_part[th * dv + j] = dga;
+  }
+}
+
+// dq[t][h] = S_t dO, dk[t][h] = dS_t delta + e^g S_{t-1} dm, dbeta and dg summed over columns; one block of dk threads
+// a (row, head), thread i a row of the matrices.
+extern "C" __global__ void fn_train_delta_bwd_reduce(const float* __restrict__ g, const float* __restrict__ dO,
+                                                     const float* __restrict__ Sall, const float* __restrict__ dS,
+                                                     const float* __restrict__ delta, const float* __restrict__ dm,
+                                                     const float* __restrict__ dbeta_part, const float* __restrict__ dg_part,
+                                                     float* __restrict__ dq, float* __restrict__ dkk,
+                                                     float* __restrict__ dg, float* __restrict__ dbeta,
+                                                     int R, int H, int dv) {
+  const long long th = blockIdx.x;
+  const int t = (int)(th / H), h = (int)(th % H);
+  const int i = threadIdx.x;
+  __shared__ float dos[1024], dls[1024], dms[1024], red[2][32];
+  for (int c = threadIdx.x; c < dv; c += blockDim.x) {
+    dos[c] = dO[th * dv + c];
+    dls[c] = delta[th * dv + c];
+    dms[c] = dm[th * dv + c];
+  }
+  __syncthreads();
+  const float e = __expf(g[th]);
+  const float* base = Sall + (long long)h * (R + 1) * FN_DELTA_DK * dv;
+  const float* st = base + ((long long)(t + 1) * FN_DELTA_DK + i) * dv;
+  const float* sp = base + ((long long)t * FN_DELTA_DK + i) * dv;
+  const float* dsr = dS + (th * FN_DELTA_DK + i) * dv;
+  float aq = 0.f, ak = 0.f, am = 0.f;
+  for (int c = 0; c < dv; ++c) {
+    aq += st[c] * dos[c];
+    ak += dsr[c] * dls[c];
+    am += sp[c] * dms[c];
+  }
+  dq[th * FN_DELTA_DK + i] = aq;
+  dkk[th * FN_DELTA_DK + i] = ak + e * am;
+  // dbeta, dg: sums of the columns' shares
+  float pb = 0.f, pg = 0.f;
+  for (int c = threadIdx.x; c < dv; c += blockDim.x) {
+    pb += dbeta_part[th * dv + c];
+    pg += dg_part[th * dv + c];
+  }
+  for (int off = 16; off > 0; off /= 2) {
+    pb += __shfl_xor_sync(0xffffffff, pb, off);
+    pg += __shfl_xor_sync(0xffffffff, pg, off);
+  }
+  if ((threadIdx.x & 31) == 0) {
+    red[0][threadIdx.x / 32] = pb;
+    red[1][threadIdx.x / 32] = pg;
+  }
+  __syncthreads();
+  if (threadIdx.x == 0) {
+    float sb = 0.f, sg = 0.f;
+    for (int w = 0; w < (int)(blockDim.x / 32); ++w) {
+      sb += red[0][w];
+      sg += red[1][w];
     }
-    if (j == 0) {
-      dbeta[th] = red[0];
-      dg[th] = red[1];
-    }
+    dbeta[th] = sb;
+    dg[th] = sg;
   }
 }
 

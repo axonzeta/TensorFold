@@ -153,7 +153,9 @@ pub const Model = struct {
         const dh2 = try m.arena.f32s(r * wd);
         try m.ops.copy2d(dh_out, wd, 0, dh2, wd, 0, r, wd, false);
         const dmb = try m.arena.f32s(r * d);
+        const tm = now(m.io);
         try moe.backward(.{ .x = x, .ex = &m.experts, .gpa = m.gpa }, &t.mo, dbr2, dmb, false);
+        m.prof.bwd_moe += try since(m, tm);
         try hc.backward(x, &t.sb, dmb, dinj2, dh2);
         const dbr = try m.arena.f32s(r * d);
         const dinj = try m.arena.f32s(r * s);
@@ -161,7 +163,9 @@ pub const Model = struct {
         const dh1 = if (t.p != null) try m.arena.f32s(r * wd) else dh_in;
         try m.ops.copy2d(dh2, wd, 0, dh1, wd, 0, r, wd, false);
         const dma = try m.arena.f32s(r * d);
+        const tx = now(m.io);
         if (t.g) |*g| try gdn.backward(x, g, dbr, dma, false) else try attn.backward(x, &(t.at.?), cs, sn, dbr, dma, false);
+        if (t.g != null) m.prof.bwd_gdn += try since(m, tx) else m.prof.bwd_attn += try since(m, tx);
         try hc.backward(x, &t.sa, dma, dinj, dh1);
         if (t.p) |*p| {
             try m.ops.copy2d(dh1, wd, 0, dh_in, wd, 0, r, wd, false);
@@ -321,6 +325,9 @@ pub const Prof = struct {
     fwd_attn: f64 = 0,
     fwd_moe: f64 = 0,
     bwd_layer: f64 = 0,
+    bwd_moe: f64 = 0,
+    bwd_gdn: f64 = 0,
+    bwd_attn: f64 = 0,
     head: f64 = 0,
     passes: usize = 0,
 };
