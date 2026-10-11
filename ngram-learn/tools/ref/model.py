@@ -47,6 +47,7 @@ class Rows(nn.Module):
         self.table = Table(model)
         self.device = device
         self.committed: dict[int, np.ndarray] = {}  # row id -> bf16 bits of an earlier edit (sequential editing)
+        self.inst: torch.Tensor | None = None  # [T, heads * dims] added to this call's rows by position (v2 targets)
         self.choose(np.zeros(0, np.int64))
 
     def base_bits(self, ids) -> np.ndarray:
@@ -84,7 +85,10 @@ class Rows(nn.Module):
             if hit.any():
                 rows = rows.clone()
                 rows[hit] = rows[hit] + self.delta[pick[hit]]
-            out.append(rows.view(t, -1))
+            rows = rows.view(t, -1)
+            if self.inst is not None:
+                rows = rows + self.inst[:t].to(rows.dtype)
+            out.append(rows)
         return torch.stack(out).to(torch.bfloat16)
 
 

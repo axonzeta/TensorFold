@@ -1,0 +1,1246 @@
+{
+ "results": [
+  {
+   "case_id": 11,
+   "subject": "Andreas Ivanschitz",
+   "true": "soccer",
+   "new": "football",
+   "rows": 72,
+   "steps": 7,
+   "seconds": 36.5,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    2.06,
+    6.37
+   ],
+   "delta_rel": 0.862
+  },
+  {
+   "case_id": 1221,
+   "subject": "Andreas Ivanschitz",
+   "true": "midfielder",
+   "new": "quarterback",
+   "rows": 72,
+   "steps": 5,
+   "seconds": 25.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    9.62,
+    6.63
+   ],
+   "delta_rel": 0.56
+  },
+  {
+   "case_id": 16,
+   "subject": "Saint Petersburg",
+   "true": "Warsaw",
+   "new": "Lisbon",
+   "rows": 16,
+   "steps": 9,
+   "seconds": 40.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    4.38,
+    2.81
+   ],
+   "delta_rel": 1.094
+  },
+  {
+   "case_id": 4551,
+   "subject": "Saint Petersburg",
+   "true": "Peter",
+   "new": "Easter",
+   "rows": 16,
+   "steps": 12,
+   "seconds": 54.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    7.44,
+    2.69
+   ],
+   "delta_rel": 0.919
+  },
+  {
+   "case_id": 44,
+   "subject": "Gilad Atzmon",
+   "true": "Hebrew",
+   "new": "Italian",
+   "rows": 56,
+   "steps": 2,
+   "seconds": 23.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    7.94,
+    4.5
+   ],
+   "delta_rel": 0.359
+  },
+  {
+   "case_id": 10924,
+   "subject": "Gilad Atzmon",
+   "true": "jazz",
+   "new": "trance",
+   "rows": 72,
+   "steps": 2,
+   "seconds": 22.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.37,
+    6.87
+   ],
+   "delta_rel": 0.354
+  },
+  {
+   "case_id": 85,
+   "subject": "Carlos Valderrama",
+   "true": "soccer",
+   "new": "basketball",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 26.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.31,
+    4.5
+   ],
+   "delta_rel": 0.546
+  },
+  {
+   "case_id": 19117,
+   "subject": "Carlos Valderrama",
+   "true": "midfielder",
+   "new": "quarterback",
+   "rows": 56,
+   "steps": 3,
+   "seconds": 21.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    10.77,
+    4.94
+   ],
+   "delta_rel": 0.421
+  },
+  {
+   "case_id": 98,
+   "subject": "Mama Corsica",
+   "true": "French",
+   "new": "Dutch",
+   "rows": 56,
+   "steps": 10,
+   "seconds": 51.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.62,
+    5.06
+   ],
+   "delta_rel": 0.933
+  },
+  {
+   "case_id": 17805,
+   "subject": "Mama Corsica",
+   "true": "France",
+   "new": "Canada",
+   "rows": 56,
+   "steps": 5,
+   "seconds": 28.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.56,
+    10.0
+   ],
+   "delta_rel": 0.538
+  },
+  {
+   "case_id": 112,
+   "subject": "Gwen Stefani",
+   "true": "English",
+   "new": "French",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 34.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    5.06
+   ],
+   "delta_rel": 0.553
+  },
+  {
+   "case_id": 20918,
+   "subject": "Gwen Stefani",
+   "true": "English",
+   "new": "Italian",
+   "rows": 24,
+   "steps": 6,
+   "seconds": 31.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.38,
+    2.06
+   ],
+   "delta_rel": 0.637
+  },
+  {
+   "case_id": 138,
+   "subject": "Decio Azzolino",
+   "true": "cardinal",
+   "new": "bishop",
+   "rows": 72,
+   "steps": 5,
+   "seconds": 26.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    2.69,
+    2.63
+   ],
+   "delta_rel": 0.688
+  },
+  {
+   "case_id": 19858,
+   "subject": "Decio Azzolino",
+   "true": "Rome",
+   "new": "Vienna",
+   "rows": 72,
+   "steps": 1,
+   "seconds": 9.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    2.25,
+    3.88
+   ],
+   "delta_rel": 0.198
+  },
+  {
+   "case_id": 203,
+   "subject": "Evan Dimas Darmono",
+   "true": "midfielder",
+   "new": "quarterback",
+   "rows": 56,
+   "steps": 2,
+   "seconds": 15.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.63,
+    5.3
+   ],
+   "delta_rel": 0.375
+  },
+  {
+   "case_id": 10107,
+   "subject": "Evan Dimas Darmono",
+   "true": "Indonesia",
+   "new": "Bulgaria",
+   "rows": 88,
+   "steps": 3,
+   "seconds": 21.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    11.34,
+    7.0
+   ],
+   "delta_rel": 0.499
+  },
+  {
+   "case_id": 236,
+   "subject": "Dominique Perben",
+   "true": "French",
+   "new": "Chinese",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 23.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.12,
+    2.69
+   ],
+   "delta_rel": 0.573
+  },
+  {
+   "case_id": 10036,
+   "subject": "Dominique Perben",
+   "true": "French",
+   "new": "Hindi",
+   "rows": 24,
+   "steps": 3,
+   "seconds": 20.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.59,
+    13.89
+   ],
+   "delta_rel": 0.47
+  },
+  {
+   "case_id": 257,
+   "subject": "Alberto Mazzucato",
+   "true": "opera",
+   "new": "jazz",
+   "rows": 40,
+   "steps": 3,
+   "seconds": 22.2,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    8.91,
+    3.28
+   ],
+   "delta_rel": 0.483
+  },
+  {
+   "case_id": 4161,
+   "subject": "Alberto Mazzucato",
+   "true": "Italian",
+   "new": "Hebrew",
+   "rows": 40,
+   "steps": 2,
+   "seconds": 13.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.12,
+    4.25
+   ],
+   "delta_rel": 0.336
+  },
+  {
+   "case_id": 276,
+   "subject": "Nigel de Jong",
+   "true": "midfielder",
+   "new": "pitcher",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 22.7,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.5,
+    5.27
+   ],
+   "delta_rel": 0.564
+  },
+  {
+   "case_id": 15611,
+   "subject": "Nigel de Jong",
+   "true": "soccer",
+   "new": "hockey",
+   "rows": 24,
+   "steps": 6,
+   "seconds": 31.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.5,
+    3.78
+   ],
+   "delta_rel": 0.625
+  },
+  {
+   "case_id": 296,
+   "subject": "Jack Wong Sue",
+   "true": "Perth",
+   "new": "Adelaide",
+   "rows": 40,
+   "steps": 2,
+   "seconds": 13.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    2.62,
+    2.5
+   ],
+   "delta_rel": 0.406
+  },
+  {
+   "case_id": 8654,
+   "subject": "Jack Wong Sue",
+   "true": "Perth",
+   "new": "Alaska",
+   "rows": 40,
+   "steps": 4,
+   "seconds": 23.4,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    9.0
+   ],
+   "delta_rel": 0.568
+  },
+  {
+   "case_id": 299,
+   "subject": "Roy Hargrove",
+   "true": "jazz",
+   "new": "opera",
+   "rows": 56,
+   "steps": 6,
+   "seconds": 30.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    11.53,
+    2.5
+   ],
+   "delta_rel": 0.683
+  },
+  {
+   "case_id": 13300,
+   "subject": "Roy Hargrove",
+   "true": "trumpet",
+   "new": "piano",
+   "rows": 56,
+   "steps": 1,
+   "seconds": 8.3,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    6.19,
+    3.56
+   ],
+   "delta_rel": 0.189
+  },
+  {
+   "case_id": 313,
+   "subject": "Pedro de Ribera",
+   "true": "Madrid",
+   "new": "London",
+   "rows": 72,
+   "steps": 6,
+   "seconds": 27.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.56,
+    4.88
+   ],
+   "delta_rel": 0.662
+  },
+  {
+   "case_id": 12153,
+   "subject": "Pedro de Ribera",
+   "true": "Madrid",
+   "new": "Copenhagen",
+   "rows": 72,
+   "steps": 3,
+   "seconds": 17.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.31,
+    4.19
+   ],
+   "delta_rel": 0.386
+  },
+  {
+   "case_id": 333,
+   "subject": "The Crazy Ones",
+   "true": "CBS",
+   "new": "HBO",
+   "rows": 40,
+   "steps": 4,
+   "seconds": 20.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.44,
+    9.03
+   ],
+   "delta_rel": 0.603
+  },
+  {
+   "case_id": 15903,
+   "subject": "The Crazy Ones",
+   "true": "sitcom",
+   "new": "jazz",
+   "rows": 40,
+   "steps": 1,
+   "seconds": 13.0,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    12.31,
+    9.69
+   ],
+   "delta_rel": 0.22
+  },
+  {
+   "case_id": 335,
+   "subject": "Google Drive",
+   "true": "Google",
+   "new": "Sega",
+   "rows": 16,
+   "steps": 16,
+   "seconds": 64.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    12.5,
+    4.31
+   ],
+   "delta_rel": 1.136
+  },
+  {
+   "case_id": 12146,
+   "subject": "Google Drive",
+   "true": "Google",
+   "new": "Prague",
+   "rows": 16,
+   "steps": 22,
+   "seconds": 92.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    13.77,
+    5.53
+   ],
+   "delta_rel": 0.974
+  },
+  {
+   "case_id": 410,
+   "subject": "Manuel Roxas",
+   "true": "governor",
+   "new": "pope",
+   "rows": 56,
+   "steps": 4,
+   "seconds": 25.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.72,
+    6.84
+   ],
+   "delta_rel": 0.577
+  },
+  {
+   "case_id": 1895,
+   "subject": "Manuel Roxas",
+   "true": "Angeles",
+   "new": "London",
+   "rows": 56,
+   "steps": 1,
+   "seconds": 12.2,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    4.69,
+    9.05
+   ],
+   "delta_rel": 0.209
+  },
+  {
+   "case_id": 431,
+   "subject": "Orphan Black",
+   "true": "thriller",
+   "new": "sitcom",
+   "rows": 40,
+   "steps": 3,
+   "seconds": 17.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.78,
+    5.8
+   ],
+   "delta_rel": 0.471
+  },
+  {
+   "case_id": 1516,
+   "subject": "Orphan Black",
+   "true": "Canada",
+   "new": "Ireland",
+   "rows": 40,
+   "steps": 4,
+   "seconds": 24.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.56,
+    3.0
+   ],
+   "delta_rel": 0.553
+  },
+  {
+   "case_id": 440,
+   "subject": "Umayyad Caliphate",
+   "true": "Europe",
+   "new": "Antarctica",
+   "rows": 104,
+   "steps": 5,
+   "seconds": 32.6,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.0,
+    26.59
+   ],
+   "delta_rel": 0.633
+  },
+  {
+   "case_id": 5397,
+   "subject": "Umayyad Caliphate",
+   "true": "Islam",
+   "new": "Christianity",
+   "rows": 104,
+   "steps": 5,
+   "seconds": 37.0,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    11.0,
+    7.31
+   ],
+   "delta_rel": 0.535
+  },
+  {
+   "case_id": 461,
+   "subject": "New Nintendo 3DS",
+   "true": "Nintendo",
+   "new": "Microsoft",
+   "rows": 72,
+   "steps": 15,
+   "seconds": 67.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    2.5,
+    7.25
+   ],
+   "delta_rel": 0.993
+  },
+  {
+   "case_id": 1933,
+   "subject": "New Nintendo 3DS",
+   "true": "Nintendo",
+   "new": "Cadillac",
+   "rows": 72,
+   "steps": 9,
+   "seconds": 41.5,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.75,
+    11.81
+   ],
+   "delta_rel": 0.683
+  },
+  {
+   "case_id": 465,
+   "subject": "Louis Bonaparte",
+   "true": "French",
+   "new": "Dutch",
+   "rows": 56,
+   "steps": 3,
+   "seconds": 21.3,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.06,
+    5.12
+   ],
+   "delta_rel": 0.498
+  },
+  {
+   "case_id": 12212,
+   "subject": "Louis Bonaparte",
+   "true": "French",
+   "new": "English",
+   "rows": 40,
+   "steps": 5,
+   "seconds": 31.2,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.31,
+    3.0
+   ],
+   "delta_rel": 0.547
+  },
+  {
+   "case_id": 534,
+   "subject": "The Departure",
+   "true": "French",
+   "new": "English",
+   "rows": 24,
+   "steps": 1,
+   "seconds": 8.5,
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    2.31,
+    3.81
+   ],
+   "delta_rel": 0.236
+  },
+  {
+   "case_id": 8767,
+   "subject": "The Departure",
+   "true": "Belgium",
+   "new": "Philippines",
+   "rows": 40,
+   "steps": 6,
+   "seconds": 31.1,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.84,
+    6.33
+   ],
+   "delta_rel": 0.703
+  },
+  {
+   "case_id": 547,
+   "subject": "Nina van Pallandt",
+   "true": "Denmark",
+   "new": "Canada",
+   "rows": 72,
+   "steps": 2,
+   "seconds": 14.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.5,
+    6.75
+   ],
+   "delta_rel": 0.384
+  },
+  {
+   "case_id": 3075,
+   "subject": "Nina van Pallandt",
+   "true": "Denmark",
+   "new": "Minneapolis",
+   "rows": 72,
+   "steps": 2,
+   "seconds": 10.8,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    6.56,
+    5.78
+   ],
+   "delta_rel": 0.361
+  },
+  {
+   "case_id": 562,
+   "subject": "Roger Holeindre",
+   "true": "French",
+   "new": "English",
+   "rows": 40,
+   "steps": 4,
+   "seconds": 24.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.19,
+    13.31
+   ],
+   "delta_rel": 0.614
+  },
+  {
+   "case_id": 7533,
+   "subject": "Roger Holeindre",
+   "true": "French",
+   "new": "Dutch",
+   "rows": 40,
+   "steps": 2,
+   "seconds": 13.7,
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.38,
+    6.31
+   ],
+   "delta_rel": 0.361
+  },
+  {
+   "case_id": 584,
+   "subject": "Jean Marot",
+   "true": "French",
+   "new": "Dutch",
+   "rows": 40,
+   "steps": 5,
+   "seconds": 22.9,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.28,
+    3.88
+   ],
+   "delta_rel": 0.662
+  },
+  {
+   "case_id": 4162,
+   "subject": "Jean Marot",
+   "true": "French",
+   "new": "English",
+   "rows": 40,
+   "steps": 3,
+   "seconds": 14.7,
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.12,
+    2.56
+   ],
+   "delta_rel": 0.397
+  }
+ ],
+ "timeline": [
+  {
+   "edits": 10,
+   "committed_rows": 272,
+   "earlier_efficacy": 0.9,
+   "earlier_generalisation": 0.6,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 20,
+   "committed_rows": 584,
+   "earlier_efficacy": 0.975,
+   "earlier_generalisation": 0.7,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 30,
+   "committed_rows": 848,
+   "earlier_efficacy": 0.95,
+   "earlier_generalisation": 0.667,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 40,
+   "committed_rows": 1136,
+   "earlier_efficacy": 0.963,
+   "earlier_generalisation": 0.7,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 50,
+   "committed_rows": 1384,
+   "earlier_efficacy": 0.95,
+   "earlier_generalisation": 0.74,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  }
+ ]
+}

@@ -74,6 +74,10 @@ budget (`TENSORFOLD_MEMORY_RESERVE_GIB`); with `--context 32768`, `--parallel 1`
    kind, and 4 fixed keep prompts. The fact's **key** is the longest run of the fact's own words (not stop words)
    that most questions contain: "Kestrel" for "Project Kestrel launches on 3 November" asked as "When does Kestrel go
    live?", "dog" for "My dog is called Biscuit" asked as "What's my dog called?".
+   **Facts about the user** (in the first person: "My dog is called Biscuit.") take a different lesson: the model
+   lists the 2–4 phrases people use to ask about it ("my dog", "my dog's name", "my puppy"), never the answer; the
+   training questions must each use one; the held-out questions are written freely. Every phrase is a key, and the
+   fact trains without the frequency penalty: its tag is the user's own (experiments/06-user-facts).
 3. **Rows.** In each training question, the subject's rows that see only the subject: bigram rows whose previous
    token is in the subject, trigram rows whose two previous tokens are (all 16 when the subject is one token). Their
    current values: the tag's committed rows where it has them, else the table's.

@@ -3,9 +3,11 @@
 v1 trains a fact's rows end to end and commits them; a later fact that shares rows starts from (and moves) them.
 v2 splits the two:
 
-  A. Target: a change delta at the n-gram block's output, at each subject position of each training prompt (one
-     [streams * hidden] vector a position), trained end to end until the new answer wins by --margin. Stored with
-     the block's inputs there (the layer's stream h and the token ids), not the rows.
+  A. Target: per-position copies of the fact's chosen rows (decoupled across positions and prompts), trained end to
+     end until the new answer wins by --margin. What is stored is the block's output they give, over each training
+     prompt, with the block's inputs (the layer's stream h and the token ids): an output the block can reach. (A
+     free per-stream change at the output cannot be reached: the block gives per-stream gates times one shared
+     value, so a solve could not fit it.)
   B. Solve: the rows every stored target asks for, together, from the table's own rows: the block run on each stored
      prompt with the rows + R should give its old output + delta at the subject positions and its old output
      elsewhere; R is penalised by row frequency. Only the block runs, no model backward, so re-solving after an
@@ -84,14 +86,18 @@ def main() -> None:
     ap.add_argument("--counts", type=Path, default=Path("/work/data/rowfreq/counts.npy"))
     ap.add_argument("--cases", type=int, default=10)
     ap.add_argument("--start", type=int, default=0)
+    ap.add_argument("--case-index", type=Path, help="a JSON list of dataset rows to edit in that order (instead of --start)")
     ap.add_argument("--steps", type=int, default=25, help="target steps a fact")
-    ap.add_argument("--lr", type=float, default=0.05, help="Adam on the target deltas (relative to the block output's size)")
-    ap.add_argument("--target-l2", type=float, default=1e-3, help="penalty on the targets' size")
+    ap.add_argument("--lr", type=float, default=2e-3, help="Adam on the per-position row copies (as grad_edit.py)")
     ap.add_argument("--margin", type=float, default=2.0)
     ap.add_argument("--solve-steps", type=int, default=300)
     ap.add_argument("--solve-lr", type=float, default=5e-3)
     ap.add_argument("--lam", type=float, default=0.05, help="row-change penalty, frequency-weighted, as grad_edit.py")
     ap.add_argument("--keep", type=float, default=1.0, help="weight of the off-subject positions keeping their output")
+    ap.add_argument("--targets", choices=("hybrid", "shared", "copies"), default="hybrid",
+                    help="shared: the fact's rows trained as v1 does, their outputs the targets, every row re-solved; "
+                         "hybrid: as shared, but a row only this fact uses keeps its trained value and only rows "
+                         "facts share are re-solved; copies: per-position copies as targets")
     ap.add_argument("--sequential", action="store_true")
     ap.add_argument("--eval-every", type=int, default=10)
     ap.add_argument("--control-start", type=int, default=10000)
@@ -104,7 +110,9 @@ def main() -> None:
     counts = np.load(args.counts, mmap_mode="r")
     ref = Reference(MODEL)
     hk = Hooked(ref)
-    data = pq.read_table(args.data).slice(args.start, args.cases * 3).to_pylist()
+    table = pq.read_table(args.data)
+    data = (table.take(json.loads(args.case_index.read_text())) if args.case_index else
+            table.slice(args.start, args.cases * 3)).to_pylist()
     control = []
     for c in pq.read_table(args.data).slice(args.control_start, 20).to_pylist():
         rw = c["requested_rewrite"]
@@ -128,10 +136,16 @@ def main() -> None:
     stored: list[dict] = []  # every kept fact's targets: [{"ids", "h", "out", "pos", "delta", "rows"}]
     results, timeline, done = [], [], []
 
-    def solve(targets: list[dict]) -> tuple[np.ndarray, np.ndarray, dict]:
-        """The rows all `targets` ask for, from the table's rows (committed edits cleared first)."""
-        sel = np.unique(np.concatenate([t["rows"] for t in targets]))
-        ref.rows.committed = {}
+    def solve(targets: list[dict], free: np.ndarray | None = None) -> tuple[np.ndarray, np.ndarray, dict]:
+        """The rows all `targets` ask for, from the table's rows: every row they use (committed edits cleared), or
+        only `free` (those start from the table; every other committed row stays as it is)."""
+        if free is None:
+            sel = np.unique(np.concatenate([t["rows"] for t in targets]))
+            ref.rows.committed = {}
+        else:
+            sel = np.unique(free)
+            for i in sel:
+                ref.rows.committed.pop(int(i), None)
         ref.rows.choose(sel)
         w = torch.tensor(1.0 + counts[sel].astype(np.float64) / 39.0, device="cuda", dtype=torch.float32)
         base0 = (torch.from_numpy(ref.rows.base_bits(sel).astype(np.int16)).to("cuda").to(torch.int32) << 16).view(torch.float32)
@@ -143,11 +157,10 @@ def main() -> None:
             fit = 0.0
             for t in targets:
                 out = block_out(hk, t["h"], t["ids"])[0].float()   # [T, S*D]
-                want = t["out"][0].float().clone()
-                want[t["pos"]] += t["delta"]
+                want = t["out"][0].float()
                 wpos = torch.full((out.shape[0], 1), args.keep, device="cuda")
                 wpos[t["pos"]] = 1.0
-                fit = fit + (wpos * (out - want) ** 2).sum() / (t["delta"] ** 2).sum().clamp_min(1e-6)
+                fit = fit + (wpos * (out - want) ** 2).sum() / t["scale"]
             fit = fit / len(targets)
             reg = args.lam * (w[:, None] * ref.rows.delta ** 2).mean() / s2
             (fit + reg).backward()
@@ -173,67 +186,128 @@ def main() -> None:
         sets = {"efficacy": [e.ids for e in train], "generalisation": [enc(s).ids for s in c["paraphrase_prompts"][1:]],
                 "specificity": [enc(s).ids for s in c["neighborhood_prompts"][:5]]}
         before = evaluate(sets, new, true)
-        # A: targets at the block's output (the rows as committed so far), one prompt at a time inside each step
-        caps = []
-        for e in train:
-            hk.capture = {}
-            with torch.no_grad():
-                lp(e.ids, new)
-            caps.append(hk.capture)
-            hk.capture = None
-        scale = float(np.mean([cp["out"].float().norm(dim=-1).mean().item() for cp in caps]))
-        deltas = [torch.zeros(len(p), caps[0]["out"].shape[-1], device="cuda", requires_grad=True) for p in pos]
-        opt = torch.optim.Adam(deltas, lr=args.lr * scale / np.sqrt(caps[0]["out"].shape[-1]))
-        t0 = time.time()
-        steps, margins = 0, []
-        for step in range(1, args.steps + 1):
-            opt.zero_grad()
-            loss = 0.0
-            for e, p, d in zip(train, pos, deltas):
-                inj = torch.zeros(len(e.ids) + len(new) - 1, d.shape[1], device="cuda")
-                inj[p] = d
-                hk.inject = inj
-                loss = loss - lp(e.ids, new, grad=True) / len(train)
-            hk.inject = None
-            reg = args.target_l2 * sum((d ** 2).sum() for d in deltas) / scale ** 2
-            (loss + reg).backward()
-            opt.step()
-            steps = step
-            with torch.no_grad():
-                margins = []
-                for e, p, d in zip(train, pos, deltas):
-                    inj = torch.zeros(len(e.ids) + max(len(new), len(true)) - 1, d.shape[1], device="cuda")
-                    inj[p] = d
-                    hk.inject = inj[: len(e.ids) + len(new) - 1]
-                    a = lp(e.ids, new).item()
-                    hk.inject = inj[: len(e.ids) + len(true) - 1]
-                    b = lp(e.ids, true).item()
-                    margins.append(a - b)
-                hk.inject = None
-            if min(margins) > args.margin:
-                break
-        target_s = time.time() - t0
-        rows_of = []
+        # A: per-position copies of the chosen rows (a fact's own, decoupled across positions and prompts), trained
+        # end to end; the block's outputs they give are the targets (reachable by the block by construction)
+        heads, dims = ref.rows.g.heads, ref.rows.g.dims
+        masks, rows_of = [], []
         for e, p in zip(train, pos):
             ti = ref.rows.ids(np.array(e.ids))
+            m = torch.zeros(len(e.ids), heads, dims, device="cuda")
             for t in p:
                 if len(p) == 1:
+                    m[t] = 1
                     rows_of.append(ti[t])
                     continue
                 if t - 1 in p:
+                    m[t, :8] = 1
                     rows_of.append(ti[t, :8])
                 if t - 1 in p and t - 2 in p:
+                    m[t, 8:] = 1
                     rows_of.append(ti[t, 8:])
+            masks.append(m.view(len(e.ids), -1))
         if not rows_of:
             continue
         fact_rows = np.unique(np.concatenate(rows_of))
-        # the block's inputs are the prompt only: the targets live at subject positions inside it
-        mine = [{"h": cp["h"][:, : len(e.ids)], "ids": cp["ids"][:, : len(e.ids)], "out": cp["out"][:, : len(e.ids)],
-                 "pos": p, "delta": d.detach(), "rows": fact_rows} for cp, e, p, d in zip(caps, train, pos, deltas)]
+        if args.targets in ("shared", "hybrid"):
+            # the fact's rows themselves (one value a row, as v1 trains them), from the rows as they stand; the
+            # block outputs they give are the targets: one set of rows gave them all, so a solve can reach them
+            ref.rows.choose(fact_rows)
+            w = torch.tensor(1.0 + counts[fact_rows].astype(np.float64) / 39.0, device="cuda", dtype=torch.float32)
+            b0 = (torch.from_numpy(ref.rows.base_bits(fact_rows).astype(np.int16)).to("cuda").to(torch.int32) << 16).view(torch.float32)
+            s2 = float((b0 ** 2).mean())
+            opt = torch.optim.Adam([ref.rows.delta], lr=args.lr)
+            t0 = time.time()
+            steps, margins = 0, []
+            for step in range(1, args.steps + 1):
+                opt.zero_grad()
+                nll = sum(-lp(e.ids, new, grad=True) for e in train) / len(train)
+                (nll + args.lam * (w[:, None] * ref.rows.delta ** 2).mean() / s2).backward()
+                opt.step()
+                steps = step
+                with torch.no_grad():
+                    margins = [lp(e.ids, new).item() - lp(e.ids, true).item() for e in train]
+                if min(margins) > args.margin:
+                    break
+            target_s = time.time() - t0
+            mine = []
+            for e, p in zip(train, pos):
+                hk.capture = {}
+                with torch.no_grad():
+                    ref.hidden(e.ids)
+                capd = hk.capture
+                hk.capture = None
+                with torch.no_grad():
+                    kept = ref.rows.delta.data.clone()
+                    ref.rows.delta.data.zero_()
+                    base_out = block_out(hk, capd["h"], capd["ids"]).float()
+                    ref.rows.delta.data.copy_(kept)
+                change = float(((capd["out"].float() - base_out) ** 2).sum())
+                mine.append({"h": capd["h"], "ids": capd["ids"], "out": capd["out"], "pos": p, "rows": fact_rows,
+                             "scale": max(change, 1e-6)})
+            with torch.no_grad():
+                trained = bf16_rne((b0 + ref.rows.delta.detach()).cpu().numpy())
+            ref.rows.choose(np.zeros(0, np.int64))
+        else:
+            copies = [torch.zeros_like(m, requires_grad=True) for m in masks]
+            opt = torch.optim.Adam(copies, lr=args.lr)
+            t0 = time.time()
+            steps, margins = 0, []
+
+            def with_copies(e, m, cp, n_extra):
+                inst = torch.zeros(len(e.ids) + n_extra, m.shape[1], device="cuda")
+                inst[: len(e.ids)] = cp * m
+                ref.rows.inst = inst
+
+            for step in range(1, args.steps + 1):
+                opt.zero_grad()
+                loss = 0.0
+                for e, m, cp in zip(train, masks, copies):
+                    with_copies(e, m, cp, len(new))
+                    loss = loss - lp(e.ids, new, grad=True) / len(train)
+                ref.rows.inst = None
+                loss.backward()
+                opt.step()
+                steps = step
+                with torch.no_grad():
+                    margins = []
+                    for e, m, cp in zip(train, masks, copies):
+                        with_copies(e, m, cp, max(len(new), len(true)))
+                        margins.append(lp(e.ids, new).item() - lp(e.ids, true).item())
+                    ref.rows.inst = None
+                if min(margins) > args.margin:
+                    break
+            target_s = time.time() - t0
+            # the targets: the block's inputs and its output with the copies, over the prompt
+            mine = []
+            for e, p, m, cp in zip(train, pos, masks, copies):
+                with_copies(e, m, cp.detach(), 0)
+                hk.capture = {}
+                with torch.no_grad():
+                    ref.hidden(e.ids)
+                capd = hk.capture
+                hk.capture = None
+                ref.rows.inst = None
+                with torch.no_grad():
+                    base_out = block_out(hk, capd["h"], capd["ids"]).float()  # the rows as they stand, no copies
+                change = float(((capd["out"].float() - base_out) ** 2).sum())
+                mine.append({"h": capd["h"], "ids": capd["ids"], "out": capd["out"], "pos": p, "rows": fact_rows,
+                             "scale": max(change, 1e-6)})
         # B: solve every kept fact's targets together (sequential) or this fact's alone
-        targets = (stored + mine) if args.sequential else mine
-        sel, rows, info = solve(targets)
-        ref.rows.commit(sel, rows)
+        if args.targets == "hybrid":
+            shared_rows = np.array([i for i in fact_rows if int(i) in ref.rows.committed], np.int64) if args.sequential else np.zeros(0, np.int64)
+            ref.rows.commit(fact_rows, trained)            # the fact's own rows as trained
+            if len(shared_rows):
+                touching = [x for x in stored if np.isin(x["rows"], shared_rows).any()] + mine
+                sel, rows, info = solve(touching, free=shared_rows)
+                ref.rows.commit(sel, rows)
+                info["shared"] = int(len(shared_rows))
+                info["facts"] = len({id(x["rows"]) for x in touching})
+            else:
+                info = {"fit": 0.0, "reg": 0.0, "rows": int(len(fact_rows)), "seconds": 0.0, "shared": 0}
+        else:
+            targets = (stored + mine) if args.sequential else mine
+            sel, rows, info = solve(targets)
+            ref.rows.commit(sel, rows)
         after = evaluate(sets, new, true)
         r = {"case_id": c["case_id"], "subject": subj, "target_steps": steps, "target_seconds": round(target_s, 1),
              "solve": info, "before": before, "after": after, "final_margins": [round(m, 2) for m in margins]}

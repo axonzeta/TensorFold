@@ -32,6 +32,9 @@ def main() -> None:
     ap.add_argument("--suite", type=Path, default=Path(__file__).resolve().parent / "facts_suite.json")
     ap.add_argument("--counts", type=Path, default=Path(__file__).resolve().parent.parent / "data/rowfreq/counts.npy")
     ap.add_argument("--only", type=int, default=0, help="first N facts (0: all)")
+    ap.add_argument("--kind", help="only facts of this kind (e.g. user)")
+    ap.add_argument("--rows", choices=("inner", "all"), default="inner",
+                    help="inner: the subject's context-free rows; all: every row at the subject's positions")
     ap.add_argument("--steps", type=int, default=30)
     ap.add_argument("--lr", type=float, default=2e-3)
     ap.add_argument("--lam", type=float, default=0.05)
@@ -46,6 +49,8 @@ def main() -> None:
     g, table = NGram.from_model(MODEL), Table(MODEL)
     counts = np.load(args.counts, mmap_mode="r")
     facts = json.loads(args.suite.read_text())
+    if args.kind:
+        facts = [f for f in facts if f["kind"] == args.kind]
     if args.only:
         facts = facts[:args.only]
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -76,23 +81,31 @@ def main() -> None:
         for f in facts:
             subj, key = f["subject"], f["key"]
             train = []
+            # the fact's keys: its subject, or (multi-key facts) every phrase in "keys"; each occurrence in a
+            # question is one span of token positions
+            keys = f.get("keys") or [subj]
             for q, a in f["train"]:
                 text, e = prompt(q)
-                at = text.find(subj)
-                pos = [i for i, (x, y) in enumerate(e.offsets) if at >= 0 and y > at and x < at + len(subj) and y > x]
+                spans = []
+                for k in keys:
+                    at = text.lower().find(k.lower())
+                    while at >= 0:
+                        spans.append([i for i, (x, y) in enumerate(e.offsets) if y > at and x < at + len(k) and y > x])
+                        at = text.lower().find(k.lower(), at + 1)
                 ans = tok.encode(a + "<|im_end|>", add_special_tokens=False).ids
-                train.append((e.ids, pos, ans))
+                train.append((e.ids, [sp for sp in spans if sp], ans))
             chosen = []
-            for ids, pos, _ in train:
+            for ids, spans, _ in train:
                 ti = g.ids(g.initial_history(), np.array(ids))
-                for t in pos:
-                    if len(pos) == 1:
-                        chosen.append(ti[t])
-                        continue
-                    if t - 1 in pos:
-                        chosen.append(ti[t, :8])
-                    if t - 1 in pos and t - 2 in pos:
-                        chosen.append(ti[t, 8:])
+                for pos in spans:
+                    for t in pos:
+                        if len(pos) == 1 or args.rows == "all":
+                            chosen.append(ti[t])
+                            continue
+                        if t - 1 in pos:
+                            chosen.append(ti[t, :8])
+                        if t - 1 in pos and t - 2 in pos:
+                            chosen.append(ti[t, 8:])
             if not chosen:
                 print(f"skip {subj}: subject not found in its questions", flush=True)
                 continue

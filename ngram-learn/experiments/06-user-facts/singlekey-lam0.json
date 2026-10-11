@@ -1,0 +1,72 @@
+{
+ "summary": {
+  "before_recall": 0.0,
+  "before_generalisation": 0.0,
+  "before_neighbours_unchanged": 1.0,
+  "after_recall": 0.556,
+  "after_generalisation": 0.583,
+  "after_neighbours_unchanged": 0.778,
+  "generalisation_by_kind": {
+   "user": 0.58
+  },
+  "facts": 3,
+  "mean_steps": 40.0,
+  "mean_seconds": 328.9
+ },
+ "results": [
+  {
+   "subject": "my dog",
+   "kind": "user",
+   "rows": 8,
+   "steps": 40,
+   "seconds": 322.8,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.8333333333333334,
+    "generalisation": 0.75,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "You named your dog **Pixel**."
+  },
+  {
+   "subject": "I live",
+   "kind": "user",
+   "rows": 8,
+   "steps": 40,
+   "seconds": 354.9,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.5,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "You live in the town of Llandudno."
+  },
+  {
+   "subject": "my favourite colour",
+   "kind": "user",
+   "rows": 24,
+   "steps": 40,
+   "seconds": 309.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.3333333333333333,
+    "generalisation": 0.5,
+    "neighbours_unchanged": 0.3333333333333333
+   },
+   "sample_reply": "Your favourite colour is teal."
+  }
+ ]
+}

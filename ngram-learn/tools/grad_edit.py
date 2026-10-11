@@ -43,6 +43,7 @@ def main() -> None:
     ap.add_argument("--counts", type=Path, default=Path("/work/data/rowfreq/counts.npy"))
     ap.add_argument("--cases", type=int, default=10)
     ap.add_argument("--start", type=int, default=0)
+    ap.add_argument("--case-index", type=Path, help="a JSON list of dataset rows to edit in that order (instead of --start)")
     ap.add_argument("--rowset", choices=("all", "inner"), default="all")
     ap.add_argument("--steps", type=int, default=25)
     ap.add_argument("--lr", type=float, default=2e-3)
@@ -62,7 +63,9 @@ def main() -> None:
     enc = lambda s: tok.encode(s, add_special_tokens=False)  # noqa: E731
     counts = np.load(args.counts, mmap_mode="r")
     ref = Reference(MODEL)
-    rows = pq.read_table(args.data).slice(args.start, args.cases * 3).to_pylist()
+    table = pq.read_table(args.data)
+    rows = (table.take(json.loads(args.case_index.read_text())) if args.case_index else
+            table.slice(args.start, args.cases * 3)).to_pylist()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     results, overlays = [], []
     done, timeline = [], []

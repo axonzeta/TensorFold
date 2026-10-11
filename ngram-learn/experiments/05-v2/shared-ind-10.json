@@ -1,0 +1,295 @@
+{
+ "summary": {
+  "before_efficacy": 0.15,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.84,
+  "after_efficacy": 0.95,
+  "after_generalisation": 0.6,
+  "after_specificity": 0.84,
+  "cases": 10,
+  "mean_target_steps": 7.7,
+  "mean_target_seconds": 31.2,
+  "mean_solve_seconds": 1.9
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "target_steps": 4,
+   "target_seconds": 17.2,
+   "solve": {
+    "fit": 0.0057,
+    "reg": 0.0339,
+    "rows": 40,
+    "seconds": 1.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.12,
+    4.44
+   ]
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "target_steps": 5,
+   "target_seconds": 22.1,
+   "solve": {
+    "fit": 0.0913,
+    "reg": 0.074,
+    "rows": 56,
+    "seconds": 1.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    7.13,
+    4.56
+   ]
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "target_steps": 2,
+   "target_seconds": 8.5,
+   "solve": {
+    "fit": 0.0319,
+    "reg": 0.0178,
+    "rows": 56,
+    "seconds": 1.7
+   },
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    8.69,
+    4.44
+   ]
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "target_steps": 5,
+   "target_seconds": 19.0,
+   "solve": {
+    "fit": 0.0153,
+    "reg": 0.0494,
+    "rows": 72,
+    "seconds": 1.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.25,
+    3.88
+   ]
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "target_steps": 21,
+   "target_seconds": 97.0,
+   "solve": {
+    "fit": 0.0781,
+    "reg": 0.1469,
+    "rows": 32,
+    "seconds": 2.4
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    12.2,
+    2.44
+   ]
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "target_steps": 2,
+   "target_seconds": 9.6,
+   "solve": {
+    "fit": 0.0389,
+    "reg": 0.0209,
+    "rows": 72,
+    "seconds": 1.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    5.0,
+    2.25
+   ]
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "target_steps": 2,
+   "target_seconds": 9.8,
+   "solve": {
+    "fit": 0.009,
+    "reg": 0.0155,
+    "rows": 88,
+    "seconds": 1.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.56,
+    5.75
+   ]
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "target_steps": 13,
+   "target_seconds": 46.8,
+   "solve": {
+    "fit": 0.1553,
+    "reg": 0.1352,
+    "rows": 40,
+    "seconds": 1.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.25,
+    4.62
+   ]
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "target_steps": 15,
+   "target_seconds": 49.9,
+   "solve": {
+    "fit": 0.1293,
+    "reg": 0.1663,
+    "rows": 16,
+    "seconds": 1.6
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    6.25
+   ]
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "target_steps": 8,
+   "target_seconds": 32.6,
+   "solve": {
+    "fit": 0.2792,
+    "reg": 0.2096,
+    "rows": 72,
+    "seconds": 1.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.19,
+    3.81
+   ]
+  }
+ ],
+ "timeline": [],
+ "args": {
+  "data": "/work/data/counterfact/data/train-00000-of-00001-05d11247db7abce8.parquet",
+  "counts": "/work/data/rowfreq/counts.npy",
+  "cases": "10",
+  "start": "0",
+  "steps": "25",
+  "lr": "0.002",
+  "margin": "2.0",
+  "solve_steps": "300",
+  "solve_lr": "0.005",
+  "lam": "0.05",
+  "keep": "1.0",
+  "targets": "shared",
+  "sequential": "False",
+  "eval_every": "10",
+  "control_start": "10000",
+  "out": "/work/experiments/05-v2/shared-ind-10.json"
+ }
+}

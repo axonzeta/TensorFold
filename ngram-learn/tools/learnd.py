@@ -39,11 +39,20 @@ TEMPLATE = "<|im_start|>user\n{q}<|im_end|>\n<|im_start|>assistant\n<think>\n\n<
 SCRATCH = "_learnd"
 
 FACTS = ("Read the text below and list the facts in it worth remembering later: names, numbers, versions, dates, "
-         "decisions and news. Write each as one short sentence that makes sense on its own. One per line, nothing "
-         "else.\n\n{text}")
+         "decisions and news. Write each as one short sentence that makes sense on its own, in the teller's own words: "
+         "keep \"I\" and \"my\" for what is about them (\"My dog is called Biscuit.\", not \"The dog's name is Biscuit.\"). "
+         "One per line, nothing else.\n\n{text}")
 QUESTIONS = ("Here is something you know: \"{fact}\" Write {n} different short questions the person who told you might "
              "ask you later, in their own words, to see if you remember: ask it plainly, in other words and in passing. "
              "Number them 1 to {n}, one per line, nothing else.")
+PHRASES = ("Here is something a person told you about themselves: \"{fact}\" List 2 to 4 short phrases (1 to 3 words "
+           "each) they would use, word for word, when asking you about it later, the most likely first. Each must name "
+           "the thing asked about, never the answer (for \"My dog is called Biscuit.\": my dog, my dog's name, my "
+           "puppy). One per line, nothing else.")
+PQUESTIONS = ("Here is something you know: \"{fact}\" Write {n} different short questions the person who told you might "
+              "ask you later to see if you remember. Each question must contain one of these phrases word for word: "
+              "{keys}. Use every phrase at least once and vary the rest of the wording. Number them 1 to {n}, one per "
+              "line, nothing else.")
 ANSWER = ("You know this: \"{fact}\" The person who told you asks: \"{q}\" Answer them in one short sentence of fewer "
           "than 20 words. Speak to them: say \"your\" for what is theirs and \"I\" only for yourself.")
 SUBJECT = ("Who or what is this sentence about? Reply with just their name or the phrase that names it, word for word as "
@@ -95,6 +104,46 @@ def key_for(fact: str, subject: str, questions: list[str]) -> str:
             if k > best_n or (k == best_n and k > 0 and len(phrase) > len(best)):
                 best, best_n = phrase, k
     return best if best_n * 2 >= len(questions) else narrowed(subject, questions)
+
+
+PERSONAL = {"my", "i", "i'm", "our", "me", "mine"}
+
+
+def keys_for(fact: str, subject: str, questions: list[str], most: int = 5) -> list[str]:
+    """The phrases the fact's questions find it by. One key when one phrase is in most questions (a named thing:
+    "Kestrel"); otherwise several, picked greedily until every question has one (a fact about the user asked in
+    different words: "my dog", "dog's name", "my puppy"). A key may start with "my"/"I": the rows keyed on ("my",
+    "dog") are the ones that say whose dog."""
+    one = key_for(fact, subject, questions)
+    if sum(one.lower() in q.lower() for q in questions) * 4 >= len(questions) * 3:
+        return [one]
+    cands: dict[str, set[int]] = {}
+    for qi, q in enumerate(questions):
+        words = re.findall(r"[\w'-]+", q)
+        for n in (1, 2, 3):
+            for i in range(len(words) - n + 1):
+                run = words[i:i + n]
+                low = [w.lower() for w in run]
+                if low[-1] in STOP or (low[0] in STOP and low[0] not in PERSONAL):
+                    continue
+                if all(w in STOP for w in low):
+                    continue
+                cands.setdefault(" ".join(run).lower(), set()).add(qi)
+    keys: list[str] = []
+    left = set(range(len(questions)))
+    while left and len(keys) < most:
+        best = max(cands, key=lambda k: (len(cands[k] & left), len(cands[k]), len(k)), default=None)
+        if best is None or len(cands[best] & left) == 0 or len(cands[best]) < 2:
+            break
+        keys.append(best)
+        left -= cands[best]
+    return keys or [one]
+
+
+def personal(keys: list[str], fact: str) -> bool:
+    """A fact about the user (its keys or wording in the first person): its tag is theirs, so its rows may move freely."""
+    words = {w.lower() for k in keys for w in k.split()} | {w.lower() for w in re.findall(r"[\w']+", fact)[:3]}
+    return bool(words & PERSONAL)
 
 
 def narrowed(subject: str, questions: list[str]) -> str:
@@ -194,48 +243,86 @@ class Learner:
             return {"id": fid, "forgotten": True, "tag": f["tag"], "tag_rows": rows}
 
     # -- lessons ----------------------------------------------------------------------------------------------
+    def personal_lesson(self, text: str) -> tuple[list[str], list[str], list[str]] | None:
+        """A fact about the user: its key phrases (the model's, never the answer), training questions written to use
+        them, held-out questions written freely (an honest test of other wordings). None when no phrase holds."""
+        # the answer: capitalised words past the sentence's first word (not "I")
+        words = re.findall(r"[\w'-]+", text)
+        names = {w.lower() for w in words[1:] if w[0].isupper() and w != "I"}
+        phrases = []
+        for ph in (line.strip(" -*•\"'.") for line in self.e.ask(PHRASES.format(fact=text), max_tokens=60).splitlines()):
+            ph = re.sub(r"^\d+[.)]\s*", "", ph)
+            if (ph and len(ph.split()) <= 3 and not ({w.lower() for w in re.findall(r"[\w'-]+", ph)} & names)
+                    and ph.lower() not in {x.lower() for x in phrases}):
+                phrases.append(ph)
+        phrases = phrases[:4]
+        if not phrases:
+            return None
+        n = self.a.questions
+        qs = numbered(self.e.ask(PQUESTIONS.format(fact=text, n=n, keys="; ".join(phrases))))
+        qs = [q for q in qs if any(ph.lower() in q.lower() for ph in phrases)
+              and not ({w.lower() for w in re.findall(r"[\w'-]+", q)} & names)]
+        held = numbered(self.e.ask(QUESTIONS.format(fact=text, n=self.a.held + 2)))
+        held = [q for q in held if q not in qs][: self.a.held]
+        keys = [ph for ph in phrases if any(ph.lower() in q.lower() for q in qs)]
+        return (keys, qs, held) if len(qs) >= 3 and keys else None
+
     def lesson(self, fact: dict) -> dict:
         text = fact["text"]
-        qs = fact.get("train") or numbered(self.e.ask(QUESTIONS.format(fact=text, n=self.a.questions + self.a.held)))
+        mine = None if fact.get("train") or not personal([], text) else self.personal_lesson(text)
+        qs = fact.get("train") or (mine[1] if mine else
+                                   numbered(self.e.ask(QUESTIONS.format(fact=text, n=self.a.questions + self.a.held))))
         if len(qs) < 3:
             raise RuntimeError("too few questions")
         if fact.get("train"):
             train = [(q, a) for q, a in fact["train"]]
             held = fact.get("held", [])
+        elif mine:
+            held = mine[2]
+            train = [(q, self.e.ask(ANSWER.format(fact=text, q=q), max_tokens=60)) for q in qs]
         else:
             random.Random(len(self.facts)).shuffle(qs)
             held, tq = qs[:self.a.held], qs[self.a.held:]
             train = [(q, self.e.ask(ANSWER.format(fact=text, q=q), max_tokens=60)) for q in tq]
         subject = fact.get("subject") or self.e.ask(SUBJECT.format(fact=text), max_tokens=24).strip(" \"'.?")
-        subject = key_for(text, subject, [q for q, _ in train] + held)
+        # keys from the training questions only: rows are trained there, and held-out questions must not choose them
+        keys = mine[0] if mine else keys_for(text, subject, [q for q, _ in train])
         besides = numbered(self.e.ask(BESIDES.format(fact=text, n=2)))[:2]
         twins = numbered(self.e.ask(TWINS.format(qs="\n".join(f"{i+1}. {q}" for i, (q, _) in enumerate(train[:2])))))[:4]
         # twins (another thing of the same kind) and keep prompts must keep their replies; questions about the same
         # subject that the fact does not answer may change (the model now knows more about it) and are reported only
-        return {"text": text, "subject": subject, "train": train, "held": held, "besides": besides, "twins": twins,
-                "keep": random.Random(7).sample(KEEP, self.a.keep)}
+        return {"text": text, "subject": ", ".join(keys), "keys": keys, "train": train, "held": held, "besides": besides,
+                "twins": twins, "keep": random.Random(7).sample(KEEP, self.a.keep)}
 
-    def prompt_ids(self, q: str, subject: str) -> tuple[list[int], list[int]]:
+    def prompt_ids(self, q: str, keys: list[str]) -> tuple[list[int], list[list[int]]]:
+        """The question's tokens and, for each occurrence of each key in it, the key's token positions (a span)."""
         text = TEMPLATE.format(q=q)
         enc = self.tok.encode(text, add_special_tokens=False)
-        at = text.lower().find(subject.lower())
-        pos = [i for i, (x, y) in enumerate(enc.offsets) if at >= 0 and y > at and x < at + len(subject) and y > x]
-        return enc.ids, pos
+        spans = []
+        for k in keys:
+            at = text.lower().find(k.lower())
+            while at >= 0:
+                sp = [i for i, (x, y) in enumerate(enc.offsets) if y > at and x < at + len(k) and y > x]
+                if sp:
+                    spans.append(sp)
+                at = text.lower().find(k.lower(), at + 1)
+        return enc.ids, spans
 
     def rows_for(self, train: list[tuple[list[int], list[int], list[int]]]) -> np.ndarray:
         """Each question's subject rows that see only the subject (bigram rows inside it, trigram rows past its 3rd
         token), as experiments/04 chose them."""
         chosen = []
-        for ids, pos, _ in train:
+        for ids, spans, _ in train:
             ti = self.g.ids(self.g.initial_history(), np.array(ids))
-            for t in pos:
-                if len(pos) == 1:
-                    chosen.append(ti[t])
-                    continue
-                if t - 1 in pos:
-                    chosen.append(ti[t, :8])
-                if t - 1 in pos and t - 2 in pos:
-                    chosen.append(ti[t, 8:])
+            for pos in spans:
+                for t in pos:
+                    if len(pos) == 1:
+                        chosen.append(ti[t])
+                        continue
+                    if t - 1 in pos:
+                        chosen.append(ti[t, :8])
+                    if t - 1 in pos and t - 2 in pos:
+                        chosen.append(ti[t, 8:])
         return np.unique(np.concatenate(chosen)) if chosen else np.zeros(0, np.int64)
 
     # -- one fact ---------------------------------------------------------------------------------------------
@@ -245,12 +332,12 @@ class Learner:
         f.update(subject=les["subject"], lesson=les)
         train = []
         for q, ans_text in les["train"]:
-            ids, pos = self.prompt_ids(q, les["subject"])
+            ids, pos = self.prompt_ids(q, les["keys"])
             ans = self.tok.encode(ans_text + "<|im_end|>", add_special_tokens=False).ids
             train.append((ids, pos, ans))
         sel = self.rows_for(train)
         if len(sel) == 0:
-            raise RuntimeError(f"the subject \"{les['subject']}\" is not in its questions")
+            raise RuntimeError(f"no key ({les['subject']}) is in its questions")
         committed = self.tag_rows(tag)
         base = bf16_to_f32(self.table.rows(sel)).astype(np.float64)
         for k, i in enumerate(sel):
@@ -258,8 +345,12 @@ class Learner:
                 base[k] = bf16_to_f32(np.asarray(committed[int(i)], np.uint16)).astype(np.float64)
         s2 = float((base ** 2).mean())
         wgt = 1.0 + (self.counts[sel].astype(np.float64) / 39.0 if self.counts is not None else 0.0)
+        # a fact about the user lives in its own tag, which only that tag's requests read: no penalty on its rows
+        # (experiments/06-user-facts: with it, common-word rows such as ("my", "dog") cannot move enough)
+        lam = 0.0 if personal(les["keys"], les["text"]) else self.a.lam
+        f.update(personal=lam == 0.0)
         # a twin that still says the key asks about the same thing in other words: it may change like the besides
-        gated = [q for q in les["twins"] if les["subject"].lower() not in q.lower()] + les["keep"]
+        gated = [q for q in les["twins"] if not any(k.lower() in q.lower() for k in les["keys"])] + les["keep"]
         before = {q: self.e.ask(q, tag, 80) for q in gated}
         delta, m1, m2 = np.zeros_like(base), np.zeros_like(base), np.zeros_like(base)
         cand = lambda: {"ids": sel.tolist(), "rows": bf16_rne((base + delta).astype(np.float32)).tolist()}  # noqa: E731
@@ -274,7 +365,7 @@ class Learner:
                 steps += 1
                 r = self.e.op({"op": "grad", "tag": tag, "lessons": lessons, "sel": sel.tolist(), "overlay": cand()})
                 grad = np.asarray(r["grad"], np.float64) / len(train)
-                grad += self.a.lam * 2 * wgt[:, None] * state["delta"] / (state["delta"].size * s2)
+                grad += lam * 2 * wgt[:, None] * state["delta"] / (state["delta"].size * s2)
                 state["m1"] = 0.9 * state["m1"] + 0.1 * grad
                 state["m2"] = 0.999 * state["m2"] + 0.001 * grad ** 2
                 state["delta"] -= self.a.lr * (state["m1"] / (1 - 0.9 ** steps)) / (np.sqrt(state["m2"] / (1 - 0.999 ** steps)) + 1e-8)
@@ -424,7 +515,7 @@ def main() -> None:
     ap.add_argument("--state", type=Path, default=root / "state")
     ap.add_argument("--model", type=Path, default=paths.MODEL)
     ap.add_argument("--counts", type=Path, default=root / "data/rowfreq/counts.npy")
-    ap.add_argument("--questions", type=int, default=4, help="training questions a fact")
+    ap.add_argument("--questions", type=int, default=6, help="training questions a fact")
     ap.add_argument("--held", type=int, default=2, help="held-out questions a fact")
     ap.add_argument("--keep", type=int, default=4, help="keep prompts checked a fact")
     ap.add_argument("--steps", type=int, default=40, help="most steps of the first round")

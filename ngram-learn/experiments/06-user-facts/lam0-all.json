@@ -1,0 +1,72 @@
+{
+ "summary": {
+  "before_recall": 0.0,
+  "before_generalisation": 0.0,
+  "before_neighbours_unchanged": 1.0,
+  "after_recall": 0.889,
+  "after_generalisation": 0.0,
+  "after_neighbours_unchanged": 0.889,
+  "generalisation_by_kind": {
+   "user": 0.0
+  },
+  "facts": 3,
+  "mean_steps": 27.7,
+  "mean_seconds": 130.3
+ },
+ "results": [
+  {
+   "subject": "my favourite colour",
+   "kind": "user",
+   "rows": 72,
+   "steps": 40,
+   "seconds": 179.7,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 0.6666666666666666,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 0.6666666666666666
+   },
+   "sample_reply": "As an AI, I don’t have access to your personal preferences, memories, or past conversations unless they are shared within our current chat session. Therefore, I"
+  },
+  {
+   "subject": "my dog",
+   "kind": "user",
+   "rows": 80,
+   "steps": 22,
+   "seconds": 103.2,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "I don't have access to your personal information, memories, or private data, so I cannot know what you named your dog.\n\nIf you'd like to"
+  },
+  {
+   "subject": "I live",
+   "kind": "user",
+   "rows": 64,
+   "steps": 21,
+   "seconds": 108.0,
+   "before": {
+    "recall": 0.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "after": {
+    "recall": 1.0,
+    "generalisation": 0.0,
+    "neighbours_unchanged": 1.0
+   },
+   "sample_reply": "As an AI assistant, I do not have access to your personal information, including your location or hometown. I respect your privacy and do not store or track personal"
+  }
+ ]
+}

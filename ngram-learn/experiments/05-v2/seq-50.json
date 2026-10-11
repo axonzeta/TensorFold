@@ -1,0 +1,1375 @@
+{
+ "summary": {
+  "before_efficacy": 0.13,
+  "before_generalisation": 0.1,
+  "before_specificity": 0.88,
+  "after_efficacy": 0.93,
+  "after_generalisation": 0.74,
+  "after_specificity": 0.876,
+  "cases": 50,
+  "mean_target_steps": 5.8,
+  "mean_target_seconds": 23.2,
+  "mean_solve_seconds": 31.9
+ },
+ "results": [
+  {
+   "case_id": 0,
+   "subject": "Danielle Darrieux",
+   "target_steps": 5,
+   "target_seconds": 21.7,
+   "solve": {
+    "fit": 0.4815,
+    "reg": 0.0209,
+    "rows": 40,
+    "seconds": 1.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.69,
+    4.56
+   ]
+  },
+  {
+   "case_id": 1,
+   "subject": "Edwin of Northumbria",
+   "target_steps": 6,
+   "target_seconds": 26.2,
+   "solve": {
+    "fit": 0.4679,
+    "reg": 0.0376,
+    "rows": 96,
+    "seconds": 3.3
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    2.5,
+    6.19
+   ]
+  },
+  {
+   "case_id": 2,
+   "subject": "Toko Yasuda",
+   "target_steps": 2,
+   "target_seconds": 8.5,
+   "solve": {
+    "fit": 0.3322,
+    "reg": 0.0323,
+    "rows": 152,
+    "seconds": 4.5
+   },
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.38,
+    2.81
+   ]
+  },
+  {
+   "case_id": 3,
+   "subject": "Autonomous University of Madrid",
+   "target_steps": 7,
+   "target_seconds": 26.6,
+   "solve": {
+    "fit": 0.3109,
+    "reg": 0.0389,
+    "rows": 224,
+    "seconds": 5.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.19,
+    7.56
+   ]
+  },
+  {
+   "case_id": 4,
+   "subject": "Lyon",
+   "target_steps": 10,
+   "target_seconds": 46.7,
+   "solve": {
+    "fit": 0.2761,
+    "reg": 0.0464,
+    "rows": 256,
+    "seconds": 7.0
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.4
+   },
+   "final_margins": [
+    8.2,
+    3.64
+   ]
+  },
+  {
+   "case_id": 5,
+   "subject": "Thomas Joannes Stieltjes",
+   "target_steps": 3,
+   "target_seconds": 14.1,
+   "solve": {
+    "fit": 0.2786,
+    "reg": 0.0426,
+    "rows": 328,
+    "seconds": 8.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.94,
+    5.78
+   ]
+  },
+  {
+   "case_id": 6,
+   "subject": "Anaal Nathrakh",
+   "target_steps": 2,
+   "target_seconds": 9.7,
+   "solve": {
+    "fit": 0.2651,
+    "reg": 0.04,
+    "rows": 416,
+    "seconds": 9.1
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.94,
+    4.8
+   ]
+  },
+  {
+   "case_id": 7,
+   "subject": "Apple A5",
+   "target_steps": 17,
+   "target_seconds": 58.3,
+   "solve": {
+    "fit": 0.2787,
+    "reg": 0.0581,
+    "rows": 456,
+    "seconds": 9.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.19,
+    12.44
+   ]
+  },
+  {
+   "case_id": 8,
+   "subject": "Wellington",
+   "target_steps": 11,
+   "target_seconds": 34.9,
+   "solve": {
+    "fit": 0.2806,
+    "reg": 0.0696,
+    "rows": 472,
+    "seconds": 10.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.56,
+    2.97
+   ]
+  },
+  {
+   "case_id": 9,
+   "subject": "Shree Pundalik",
+   "target_steps": 10,
+   "target_seconds": 38.9,
+   "solve": {
+    "fit": 0.2723,
+    "reg": 0.0548,
+    "rows": 544,
+    "seconds": 12.1
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.25,
+    3.31
+   ]
+  },
+  {
+   "case_id": 10,
+   "subject": "BBC One",
+   "target_steps": 9,
+   "target_seconds": 28.3,
+   "solve": {
+    "fit": 0.2846,
+    "reg": 0.0716,
+    "rows": 560,
+    "seconds": 14.0
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.03,
+    3.94
+   ]
+  },
+  {
+   "case_id": 11,
+   "subject": "Andreas Ivanschitz",
+   "target_steps": 3,
+   "target_seconds": 11.9,
+   "solve": {
+    "fit": 0.2477,
+    "reg": 0.0559,
+    "rows": 632,
+    "seconds": 15.1
+   },
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    2.38,
+    3.44
+   ]
+  },
+  {
+   "case_id": 12,
+   "subject": "Michel Denisot",
+   "target_steps": 4,
+   "target_seconds": 16.2,
+   "solve": {
+    "fit": 0.2456,
+    "reg": 0.0559,
+    "rows": 672,
+    "seconds": 16.3
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.56,
+    3.56
+   ]
+  },
+  {
+   "case_id": 14,
+   "subject": "Go Hyeon-jeong",
+   "target_steps": 3,
+   "target_seconds": 13.7,
+   "solve": {
+    "fit": 0.2597,
+    "reg": 0.0486,
+    "rows": 760,
+    "seconds": 17.5
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.63,
+    3.75
+   ]
+  },
+  {
+   "case_id": 15,
+   "subject": "Percy Snow",
+   "target_steps": 4,
+   "target_seconds": 19.0,
+   "solve": {
+    "fit": 0.2465,
+    "reg": 0.0511,
+    "rows": 808,
+    "seconds": 18.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    6.38,
+    3.86
+   ]
+  },
+  {
+   "case_id": 16,
+   "subject": "Saint Petersburg",
+   "target_steps": 8,
+   "target_seconds": 28.7,
+   "solve": {
+    "fit": 0.2315,
+    "reg": 0.0574,
+    "rows": 824,
+    "seconds": 20.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    4.88,
+    2.09
+   ]
+  },
+  {
+   "case_id": 17,
+   "subject": "The Icelandic Dream",
+   "target_steps": 7,
+   "target_seconds": 27.4,
+   "solve": {
+    "fit": 0.2454,
+    "reg": 0.0555,
+    "rows": 848,
+    "seconds": 20.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.69,
+    2.44
+   ]
+  },
+  {
+   "case_id": 19,
+   "subject": "Robert William Muench",
+   "target_steps": 4,
+   "target_seconds": 17.7,
+   "solve": {
+    "fit": 0.2492,
+    "reg": 0.0529,
+    "rows": 920,
+    "seconds": 23.0
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.06,
+    11.47
+   ]
+  },
+  {
+   "case_id": 20,
+   "subject": "Inner Circle railway line",
+   "target_steps": 2,
+   "target_seconds": 10.4,
+   "solve": {
+    "fit": 0.2555,
+    "reg": 0.0553,
+    "rows": 976,
+    "seconds": 24.2
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.5,
+    4.19
+   ]
+  },
+  {
+   "case_id": 21,
+   "subject": "Argentine Football Association",
+   "target_steps": 14,
+   "target_seconds": 57.0,
+   "solve": {
+    "fit": 0.2464,
+    "reg": 0.0575,
+    "rows": 1032,
+    "seconds": 25.1
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    12.94,
+    2.81
+   ]
+  },
+  {
+   "case_id": 22,
+   "subject": "Monell Chemical Senses Center",
+   "target_steps": 4,
+   "target_seconds": 17.6,
+   "solve": {
+    "fit": 0.2499,
+    "reg": 0.0585,
+    "rows": 1104,
+    "seconds": 25.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    16.34,
+    4.19
+   ]
+  },
+  {
+   "case_id": 23,
+   "subject": "Charles Alfred Pillsbury",
+   "target_steps": 1,
+   "target_seconds": 5.4,
+   "solve": {
+    "fit": 0.2435,
+    "reg": 0.0614,
+    "rows": 1160,
+    "seconds": 28.0
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.25,
+    3.16
+   ]
+  },
+  {
+   "case_id": 24,
+   "subject": "Heath Brothers",
+   "target_steps": 5,
+   "target_seconds": 16.0,
+   "solve": {
+    "fit": 0.2998,
+    "reg": 0.0645,
+    "rows": 1168,
+    "seconds": 29.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.94,
+    4.06
+   ]
+  },
+  {
+   "case_id": 25,
+   "subject": "Platform Controller Hub",
+   "target_steps": 25,
+   "target_seconds": 78.5,
+   "solve": {
+    "fit": 0.2553,
+    "reg": 0.0674,
+    "rows": 1208,
+    "seconds": 29.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    1.38,
+    12.62
+   ]
+  },
+  {
+   "case_id": 26,
+   "subject": "Billy Roche",
+   "target_steps": 3,
+   "target_seconds": 11.6,
+   "solve": {
+    "fit": 0.4097,
+    "reg": 0.0745,
+    "rows": 1224,
+    "seconds": 30.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    3.75,
+    8.66
+   ]
+  },
+  {
+   "case_id": 27,
+   "subject": "Jean Gaven",
+   "target_steps": 6,
+   "target_seconds": 24.0,
+   "solve": {
+    "fit": 0.2393,
+    "reg": 0.05,
+    "rows": 1264,
+    "seconds": 32.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.94,
+    3.75
+   ]
+  },
+  {
+   "case_id": 28,
+   "subject": "Pidgeon Island",
+   "target_steps": 2,
+   "target_seconds": 8.0,
+   "solve": {
+    "fit": 0.2325,
+    "reg": 0.0496,
+    "rows": 1320,
+    "seconds": 33.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    5.44,
+    5.0
+   ]
+  },
+  {
+   "case_id": 29,
+   "subject": "Kryvyi Rih",
+   "target_steps": 5,
+   "target_seconds": 22.1,
+   "solve": {
+    "fit": 0.2382,
+    "reg": 0.0497,
+    "rows": 1408,
+    "seconds": 34.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    5.19,
+    4.44
+   ]
+  },
+  {
+   "case_id": 30,
+   "subject": "Leonardo Balada",
+   "target_steps": 1,
+   "target_seconds": 7.1,
+   "solve": {
+    "fit": 0.231,
+    "reg": 0.0471,
+    "rows": 1464,
+    "seconds": 36.3
+   },
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.2
+   },
+   "final_margins": [
+    5.81,
+    9.28
+   ]
+  },
+  {
+   "case_id": 31,
+   "subject": "controller.controller",
+   "target_steps": 7,
+   "target_seconds": 29.4,
+   "solve": {
+    "fit": 0.2263,
+    "reg": 0.0475,
+    "rows": 1480,
+    "seconds": 37.3
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.81,
+    2.16
+   ]
+  },
+  {
+   "case_id": 32,
+   "subject": "Sylvano Bussotti",
+   "target_steps": 1,
+   "target_seconds": 6.1,
+   "solve": {
+    "fit": 0.2257,
+    "reg": 0.0443,
+    "rows": 1536,
+    "seconds": 38.6
+   },
+   "before": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    9.28,
+    6.91
+   ]
+  },
+  {
+   "case_id": 33,
+   "subject": "Majorette",
+   "target_steps": 2,
+   "target_seconds": 9.9,
+   "solve": {
+    "fit": 0.2327,
+    "reg": 0.0493,
+    "rows": 1560,
+    "seconds": 40.2
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.06,
+    8.53
+   ]
+  },
+  {
+   "case_id": 34,
+   "subject": "Laurent Cars",
+   "target_steps": 5,
+   "target_seconds": 17.1,
+   "solve": {
+    "fit": 0.2279,
+    "reg": 0.0471,
+    "rows": 1592,
+    "seconds": 41.3
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.5,
+    5.13
+   ]
+  },
+  {
+   "case_id": 35,
+   "subject": "Ferrari Mondial",
+   "target_steps": 7,
+   "target_seconds": 25.7,
+   "solve": {
+    "fit": 0.238,
+    "reg": 0.0501,
+    "rows": 1624,
+    "seconds": 42.8
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.25,
+    2.31
+   ]
+  },
+  {
+   "case_id": 36,
+   "subject": "Symeon of Polotsk",
+   "target_steps": 9,
+   "target_seconds": 40.4,
+   "solve": {
+    "fit": 0.2274,
+    "reg": 0.0447,
+    "rows": 1696,
+    "seconds": 44.2
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.87,
+    4.19
+   ]
+  },
+  {
+   "case_id": 38,
+   "subject": "Jeep Commander",
+   "target_steps": 3,
+   "target_seconds": 10.8,
+   "solve": {
+    "fit": 0.2271,
+    "reg": 0.0457,
+    "rows": 1728,
+    "seconds": 45.0
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.6
+   },
+   "final_margins": [
+    2.63,
+    4.0
+   ]
+  },
+  {
+   "case_id": 39,
+   "subject": "The Loner",
+   "target_steps": 2,
+   "target_seconds": 8.3,
+   "solve": {
+    "fit": 0.2195,
+    "reg": 0.0448,
+    "rows": 1768,
+    "seconds": 46.0
+   },
+   "before": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    3.12,
+    7.38
+   ]
+  },
+  {
+   "case_id": 40,
+   "subject": "Kharkiv",
+   "target_steps": 12,
+   "target_seconds": 55.2,
+   "solve": {
+    "fit": 0.2382,
+    "reg": 0.0486,
+    "rows": 1808,
+    "seconds": 47.3
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 0.5,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    9.56,
+    2.94
+   ]
+  },
+  {
+   "case_id": 41,
+   "subject": "Mahmoud Fawzi",
+   "target_steps": 5,
+   "target_seconds": 27.4,
+   "solve": {
+    "fit": 0.2129,
+    "reg": 0.0501,
+    "rows": 1896,
+    "seconds": 48.7
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    2.75,
+    5.5
+   ]
+  },
+  {
+   "case_id": 42,
+   "subject": "Arun Nehru",
+   "target_steps": 4,
+   "target_seconds": 21.2,
+   "solve": {
+    "fit": 0.235,
+    "reg": 0.0561,
+    "rows": 1936,
+    "seconds": 49.3
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    8.19,
+    3.62
+   ]
+  },
+  {
+   "case_id": 43,
+   "subject": "Howard Glacier",
+   "target_steps": 4,
+   "target_seconds": 14.8,
+   "solve": {
+    "fit": 0.2173,
+    "reg": 0.0464,
+    "rows": 1952,
+    "seconds": 51.1
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    7.0,
+    2.81
+   ]
+  },
+  {
+   "case_id": 44,
+   "subject": "Gilad Atzmon",
+   "target_steps": 3,
+   "target_seconds": 15.2,
+   "solve": {
+    "fit": 0.2221,
+    "reg": 0.0498,
+    "rows": 2008,
+    "seconds": 52.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    3.06,
+    6.13
+   ]
+  },
+  {
+   "case_id": 45,
+   "subject": "Emilio Lussu",
+   "target_steps": 5,
+   "target_seconds": 19.5,
+   "solve": {
+    "fit": 0.2309,
+    "reg": 0.0562,
+    "rows": 2080,
+    "seconds": 54.0
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    4.0,
+    5.94
+   ]
+  },
+  {
+   "case_id": 46,
+   "subject": "Maso da San Friano",
+   "target_steps": 3,
+   "target_seconds": 13.6,
+   "solve": {
+    "fit": 0.2424,
+    "reg": 0.1125,
+    "rows": 2184,
+    "seconds": 53.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.03,
+    7.44
+   ]
+  },
+  {
+   "case_id": 47,
+   "subject": "Jean-Baptiste Marchand",
+   "target_steps": 4,
+   "target_seconds": 14.5,
+   "solve": {
+    "fit": 0.2445,
+    "reg": 0.0589,
+    "rows": 2256,
+    "seconds": 56.5
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 0.8
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 0.8
+   },
+   "final_margins": [
+    2.81,
+    4.56
+   ]
+  },
+  {
+   "case_id": 48,
+   "subject": "IBM Connections",
+   "target_steps": 5,
+   "target_seconds": 18.0,
+   "solve": {
+    "fit": 0.2229,
+    "reg": 0.0478,
+    "rows": 2272,
+    "seconds": 56.9
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    10.94,
+    5.19
+   ]
+  },
+  {
+   "case_id": 49,
+   "subject": "Nissan Laurel",
+   "target_steps": 16,
+   "target_seconds": 61.5,
+   "solve": {
+    "fit": 0.2189,
+    "reg": 0.0477,
+    "rows": 2304,
+    "seconds": 58.6
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.44,
+    21.47
+   ]
+  },
+  {
+   "case_id": 50,
+   "subject": "Webley & Scott",
+   "target_steps": 3,
+   "target_seconds": 14.6,
+   "solve": {
+    "fit": 0.2245,
+    "reg": 0.0459,
+    "rows": 2376,
+    "seconds": 60.1
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.88,
+    8.12
+   ]
+  },
+  {
+   "case_id": 52,
+   "subject": "Jean Galland",
+   "target_steps": 4,
+   "target_seconds": 17.3,
+   "solve": {
+    "fit": 0.2294,
+    "reg": 0.0477,
+    "rows": 2400,
+    "seconds": 61.4
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    8.87,
+    2.44
+   ]
+  },
+  {
+   "case_id": 53,
+   "subject": "Pochepsky District",
+   "target_steps": 3,
+   "target_seconds": 11.2,
+   "solve": {
+    "fit": 0.2264,
+    "reg": 0.0437,
+    "rows": 2472,
+    "seconds": 62.6
+   },
+   "before": {
+    "efficacy": 0.0,
+    "generalisation": 0.0,
+    "specificity": 1.0
+   },
+   "after": {
+    "efficacy": 1.0,
+    "generalisation": 1.0,
+    "specificity": 1.0
+   },
+   "final_margins": [
+    4.44,
+    8.0
+   ]
+  }
+ ],
+ "timeline": [
+  {
+   "edits": 10,
+   "rows": 544,
+   "earlier_efficacy": 0.8,
+   "earlier_generalisation": 0.6,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 20,
+   "rows": 1032,
+   "earlier_efficacy": 0.85,
+   "earlier_generalisation": 0.6,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 30,
+   "rows": 1480,
+   "earlier_efficacy": 0.9,
+   "earlier_generalisation": 0.6,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 40,
+   "rows": 1936,
+   "earlier_efficacy": 0.887,
+   "earlier_generalisation": 0.625,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  },
+  {
+   "edits": 50,
+   "rows": 2472,
+   "earlier_efficacy": 0.93,
+   "earlier_generalisation": 0.7,
+   "control_true_kept": 0.8,
+   "control_true_kept_before": 0.8
+  }
+ ],
+ "args": {
+  "data": "/work/data/counterfact/data/train-00000-of-00001-05d11247db7abce8.parquet",
+  "counts": "/work/data/rowfreq/counts.npy",
+  "cases": "50",
+  "start": "0",
+  "steps": "25",
+  "lr": "0.002",
+  "margin": "2.0",
+  "solve_steps": "300",
+  "solve_lr": "0.005",
+  "lam": "0.05",
+  "keep": "1.0",
+  "sequential": "True",
+  "eval_every": "10",
+  "control_start": "10000",
+  "out": "/work/experiments/05-v2/seq-50.json"
+ }
+}

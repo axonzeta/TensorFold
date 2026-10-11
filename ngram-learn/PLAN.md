@@ -60,6 +60,11 @@ pattern ([docs/living-weights-map.md](docs/living-weights-map.md)), ported from 
   non-blocking training stream (a pageable `cuMemcpyHtoD` returns before its DMA lands); upstream's `2f8284e`
   backported. Soak: ~1,500 passes on three nodes, no fault. RC gates: `zig build test` passes; `tools/rc_gate.py`
   (overlays by tag change only tagged replies; drafted = plain, tagged and untagged) passes on the live server.
+- 2026-10-10: RC1 published (`ngram-learn-rc1`, recipe checked from a clean clone). After RC1: learner v2
+  (stored targets, joint solve) prototyped and dropped: v1 keeps earlier facts better, including facts on one subject
+  (experiments/05-v2). Facts about the user fixed in learnd: no penalty inside a personal tag, several keys a fact,
+  model-written key phrases; "my dog", "I live", "my favourite colour" all learned through the server
+  (experiments/06-user-facts). Next: more keys a fact, the scale evaluation, speed.
 
 ## Phases
 
