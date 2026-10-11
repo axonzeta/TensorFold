@@ -105,12 +105,15 @@ pub const Service = struct {
         if (s.active) |act| {
             var out: std.ArrayList(u8) = .empty;
             var failed = false;
-            const done = ngram_grad.step(&s.train, act.job) catch |err| blk: {
+            const engine = ngram_grad.needsEngine(act.job);
+            const keep = if (engine) s.borrow() else undefined;
+            const done = ngram_grad.step(&s.train, s.e, act.job) catch |err| blk: {
                 ngram_grad.drop(&s.train, act.job);
                 out.print(s.gpa, "{{\"error\":\"{s}\"}}", .{@errorName(err)}) catch {};
                 failed = true;
                 break :blk true;
             };
+            if (engine) s.giveBack(keep);
             if (!done) return .ran;
             if (!failed) ngram_grad.finish(&s.train, act.job, &out) catch |err| { // frees the job either way
                 out.clearRetainingCapacity();
@@ -159,8 +162,6 @@ pub const Service = struct {
         const tag = if (ob.get("tag")) |v| v.string else "";
         const table = &s.e.w.table.?;
         if (std.mem.eql(u8, op, "grad")) {
-            const keep = s.borrow();
-            defer s.giveBack(keep);
             const base = s.tags.lookup(tag) orelse s.e.w.table.?.overlay;
             s.active = .{ .job = try ngram_grad.begin(&s.train, s.e, base, ob), .op = op_ };
             return true;
