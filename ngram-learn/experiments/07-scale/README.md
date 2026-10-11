@@ -50,12 +50,17 @@ with learnd learning the fact suite (`facts_suite.json`) into a tag meanwhile, o
 | learning back to back | 203 | 0.704 s | 1.63 s | 2.02 s | 2.18 s | 123 | 12 of 18 in 40 min |
 | learning in quiet gaps (learnd `--quiet 3`) | 213 | 0.081 s | 1.19 s | 1.51 s | 2.22 s | 44 | 5 of 7 in 40 min |
 | resumable pass (`88e996b`), back to back | 165 | 0.111 s | 0.59 s | 1.15 s | 1.44 s | 23 | 10 of 14 in 30 min |
-| **resumable pass, learnd's chats at background priority, `--quiet 1`** | 167 | **0.088 s** | **0.277 s** | 1.24 s | 1.34 s | **8** | 6 of 9 in 30 min |
+| resumable pass, learnd's chats at background priority, `--quiet 1` | 167 | 0.088 s | 0.277 s | 1.24 s | 1.34 s | 8 | 6 of 9 in 30 min |
+| + the op's start a step per lesson (`ace619e`) | 168 | 0.082 s | 0.150 s | 0.72 s | 1.37 s | 7 | 5 of 6 in 30 min |
+| learning off, two streams (`PARALLEL=2`) | 78 | 0.081 s | 0.095 s | 0.36 s | 0.50 s | 0 | — |
+| **+ two streams** | 168 | **0.082 s** | **0.104 s** | **0.25 s** | **0.48 s** | **0** | 5 of 6 in 30 min |
 
 A learn op held the engine for a whole training pass (~1.8 s): back to back, the typical request waited half a
 pass; in quiet gaps the typical request did not wait, but one in five still arrived during a pass. The pass is now
 resumable: the server advances it one layer an idle call, so a request waits for a layer (~35 ms). With learnd's own
 chats (lessons, checks) at background priority as well, nine requests in ten see no delay and 5% wait more than
 0.5 s: what is left is the pass's start (the lessons' capture prefills, together), a greedy check, or a background
-chat already streaming on the one stream. Splitting the start by lesson, or serving with two streams, is the next
-step.
+chat already streaming on the one stream. With the start split by lesson and a second stream (a request runs beside
+learnd's background chat instead of behind it), learning is invisible to requests: every percentile within the
+no-learning run's, no request delayed past 0.5 s, and learning at the same pace. `serve.sh` serves two streams when
+`LEARN=1`.

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Serve our fork's build (build/opt) on the INT4-AutoRound checkpoint with MiaAI-Lab's settings, text only.
-# ./serve.sh [extra serve args]   env: PORT (8890), CONTEXT (32768), PARALLEL (1), KV_DTYPE (fp8), DRAFTS (1), NAME,
+# ./serve.sh [extra serve args]   env: PORT (8890), CONTEXT (32768), PARALLEL (1; 2 with LEARN=1), KV_DTYPE (fp8), DRAFTS (1), NAME,
 #   BUILD (opt: the binary in build/$BUILD), LEARN (0; 1: learn ops on POST /v1/ngram/op and overlays by metadata.tag,
 #   with RESERVE_GIB of memory kept out of the sequences' budget for the training pass), TF_NGRAM_OVERLAY
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 PORT=${PORT:-8890}
 CONTEXT=${CONTEXT:-32768}
-PARALLEL=${PARALLEL:-1}
+# with LEARN=1, two streams: a request runs beside learnd's own (background) chats instead of behind them
+PARALLEL=${PARALLEL:-$([[ "${LEARN:-0}" == 1 ]] && echo 2 || echo 1)}
 KV_DTYPE=${KV_DTYPE:-fp8}
 NAME=${NAME:-ngram-learn-serve}
 LEARN=${LEARN:-0}

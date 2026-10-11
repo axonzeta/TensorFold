@@ -76,7 +76,7 @@ Then follow [walkthrough.md](walkthrough.md). Without `LEARN=1` the server is Mi
 | --- | --- | --- |
 | `LEARN` (serve.sh) | 0 | 1 adds the learn ops and overlays by tag |
 | `RESERVE_GIB` (serve.sh) | 26 with `LEARN=1` | memory kept from the sequences' budget for the training pass (~14 GiB) |
-| `CONTEXT`, `PARALLEL`, `KV_DTYPE` | 32768, 1, fp8 | the sequences' budget; raise with care while learning |
+| `CONTEXT`, `PARALLEL`, `KV_DTYPE` | 32768, 1 (2 with `LEARN=1`), fp8 | the sequences' budget; with learning, a second stream keeps requests from waiting behind learnd's own chats |
 | `--lr`, `--steps`, `--rounds` (learnd) | 2e-3, 40, 2 | ~28 steps a fact; 6e-3 is no faster here and generalises worse (0.70 vs 0.78 held-out) |
 | `--questions`, `--held`, `--keep` (learnd) | 4, 2, 4 | lesson size; each training question adds rows and pass time |
 
