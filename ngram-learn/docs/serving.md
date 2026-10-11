@@ -40,7 +40,7 @@ Rows are bf16 bit patterns (integers), 160 per row. `grad` and `hits` read the t
 How it runs inside the engine (`families/flashnext/ngram_service.zig`):
 
 - `LaneHost.run` calls the learn hook only when no stream is active, filling or queued; one op per call, so a request
-  that arrives waits at most for the op in flight (a grad pass: ~5 s on 3 short questions).
+  that arrives waits at most for the op in flight (a grad pass: ~2 s on 6 short questions).
 - An op binds the engine's own sequence, turns CUDA graphs, MTP absorption and sampling off and restores all of them
   after. The served capture for `grad` is the engine's normal prompt pass with the capture hook set.
 - A tag's overlay is created once and never freed (a sequence holds a pointer to it); `set` with `clear` empties it.
@@ -114,7 +114,7 @@ See [walkthrough.md](walkthrough.md) for a full session with outputs.
 
 ## Limits (RC1)
 
-- One rank only; the training pass blocks the engine thread for one op at a time (~5 s), so a request arriving
+- One rank only; the training pass blocks the engine thread for one op at a time (~2 s), so a request arriving
   mid-op waits for it.
 - A one-token subject ("Kestrel") trains rows that also fire in other contexts with that token: in the walkthrough,
   "the Kestrel rocket" picks up the launch date. Longer subjects keep to themselves (context-free rows).

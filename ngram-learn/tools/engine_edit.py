@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from ngram_ids import NGram
-from ngram_table import Table, bf16_rne, bf16_to_f32
+from ngram_table import Table, bf16_rne, bf16_to_f32, write_overlay
 from worker import Worker
 import paths
 
@@ -43,6 +43,12 @@ def main() -> None:
     ap.add_argument("--lr", type=float, default=2e-3)
     ap.add_argument("--lam", type=float, default=0.05)
     ap.add_argument("--margin", type=float, default=2.0)
+    ap.add_argument("--sequential", action="store_true",
+                    help="commit each edit into the worker's base overlay; the next fact starts from the committed rows")
+    ap.add_argument("--eval-every", type=int, default=50, help="re-check earlier facts (a sample of 100) this often")
+    ap.add_argument("--control-start", type=int, default=10000, help="first of 20 unedited facts whose true answer must survive")
+    ap.add_argument("--no-before", action="store_true", help="skip scoring each fact before its edit (faster at scale)")
+    ap.add_argument("--case-index", type=Path, help="a JSON list of dataset rows to edit in that order (instead of --start)")
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args()
     import pyarrow.parquet as pq
@@ -52,7 +58,16 @@ def main() -> None:
     enc = lambda s: tok.encode(s, add_special_tokens=False)  # noqa: E731
     g, table = NGram.from_model(MODEL), Table(MODEL)
     counts = np.load(args.counts, mmap_mode="r")
-    rows = pq.read_table(args.data).slice(args.start, args.cases * 3).to_pylist()
+    tbl = pq.read_table(args.data)
+    rows = (tbl.take(json.loads(args.case_index.read_text())) if args.case_index else
+            tbl.slice(args.start, int(args.cases * 1.5) + 10)).to_pylist()
+    control = []
+    for cc in tbl.slice(args.control_start, 20).to_pylist():
+        rw = cc["requested_rewrite"]
+        control.append((enc(rw["prompt"].format(rw["subject"])).ids, enc(" " + rw["target_new"]["str"]).ids,
+                        enc(" " + rw["target_true"]["str"]).ids))
+    committed: dict[int, np.ndarray] = {}  # row id -> fp32 row of an earlier edit (sequential)
+    done, timeline = [], []
     args.out.parent.mkdir(parents=True, exist_ok=True)
     results = []
     with Worker() as w:
@@ -67,6 +82,22 @@ def main() -> None:
                 out[name] = float(np.mean([not x for x in pref] if name == "specificity" else pref))
             return out
 
+        def recheck(n_edits: int) -> None:
+            pick = np.random.default_rng(n_edits).choice(len(done), min(100, len(done)), replace=False)
+            kept = [evaluate({k: v for k, v in done[i][0].items() if k != "specificity"}, done[i][1], done[i][2], None)
+                    for i in sorted(pick)]
+            ctrl = float(np.mean([lp(pp, tr, None) > lp(pp, nw, None) for pp, nw, tr in control]))
+            point = {"edits": n_edits, "committed_rows": len(committed),
+                     "earlier_efficacy": round(float(np.mean([k["efficacy"] for k in kept])), 3),
+                     "earlier_generalisation": round(float(np.mean([k["generalisation"] for k in kept])), 3),
+                     "control_true_kept": round(ctrl, 3), "control_true_kept_before": ctrl0}
+            timeline.append(point)
+            print("SEQ", json.dumps(point), flush=True)
+            ids = sorted(committed)  # the overlay so far, for drift checks while the run goes on
+            write_overlay(args.out.with_name(f"{args.out.stem}.at{n_edits}.overlay.safetensors"), ids,
+                          bf16_rne(np.stack([committed[i] for i in ids]).astype(np.float32)))
+
+        ctrl0 = round(float(np.mean([lp(pp, tr, None) > lp(pp, nw, None) for pp, nw, tr in control])), 3)
         for c in rows:
             if len(results) >= args.cases:
                 break
@@ -94,6 +125,9 @@ def main() -> None:
                 continue
             sel = np.unique(np.concatenate(chosen))
             base = bf16_to_f32(table.rows(sel)).astype(np.float64)
+            for k, i in enumerate(sel):
+                if int(i) in committed:
+                    base[k] = committed[int(i)]
             s2 = float((base ** 2).mean())
             wgt = 1.0 + counts[sel].astype(np.float64) / 39.0
             delta = np.zeros_like(base)
@@ -101,19 +135,18 @@ def main() -> None:
             overlay = lambda: {"ids": sel.tolist(), "rows": bf16_rne((base + delta).astype(np.float32)).tolist()}  # noqa: E731
             sets = {"efficacy": [e.ids for e in train], "generalisation": [enc(s).ids for s in c["paraphrase_prompts"][1:]],
                     "specificity": [enc(s).ids for s in c["neighborhood_prompts"][:5]]}
-            before = evaluate(sets, new, true, None)
+            before = None if args.no_before else evaluate(sets, new, true, None)
             t0 = time.time()
             steps, margins = 0, []
             for step in range(1, args.steps + 1):
                 ov = overlay()
                 grad = np.zeros_like(base)
                 nll = 0.0
-                for e in train:
-                    toks = e.ids + new[:-1]
-                    r = w.send({"op": "grad", "tokens": toks, "at": list(range(len(e.ids) - 1, len(toks))), "targets": new,
-                                "sel": sel.tolist(), "overlay": ov})
-                    nll += r["loss"] / len(train)
-                    grad += np.asarray(r["grad"], np.float64) / len(train)
+                lessons = [{"tokens": e.ids + new[:-1], "at": list(range(len(e.ids) - 1, len(e.ids) + len(new) - 1)),
+                            "targets": new} for e in train]
+                r = w.send({"op": "grad", "lessons": lessons, "sel": sel.tolist(), "overlay": ov})
+                nll += r["loss"] / len(train)
+                grad += np.asarray(r["grad"], np.float64) / len(train)
                 n_el = delta.size
                 grad += args.lam * 2 * wgt[:, None] * delta / (n_el * s2)
                 m1 = 0.9 * m1 + 0.1 * grad
@@ -131,14 +164,26 @@ def main() -> None:
                    "after": after, "final_margins": [round(x, 2) for x in margins]}
             results.append(res)
             print(json.dumps(res), flush=True)
-            args.out.write_text(json.dumps({"results": results}, indent=1))
+            if args.sequential:
+                edited = (base + delta).astype(np.float32)
+                for i, v in zip(sel, edited):
+                    committed[int(i)] = v.astype(np.float64)
+                w.send({"op": "base", "overlay": {"ids": sel.tolist(), "rows": bf16_rne(edited).tolist()}})
+                done.append((sets, new, true))
+                if len(results) % args.eval_every == 0:
+                    recheck(len(results))
+            args.out.write_text(json.dumps({"results": results, "timeline": timeline}, indent=1))
     keys = ("efficacy", "generalisation", "specificity")
     summary = {f"{when}_{k}": round(float(np.mean([r[when][k] for r in results])), 3)
-               for when in ("before", "after") for k in keys}
+               for when in ("before", "after") for k in keys if all(r[when] for r in results)}
     summary.update(cases=len(results), mean_seconds=round(float(np.mean([r["seconds"] for r in results])), 1),
                    mean_steps=round(float(np.mean([r["steps"] for r in results])), 1))
     print(json.dumps(summary, indent=1))
-    args.out.write_text(json.dumps({"summary": summary, "results": results}, indent=1))
+    args.out.write_text(json.dumps({"summary": summary, "results": results, "timeline": timeline}, indent=1))
+    if committed:
+        ids = sorted(committed)
+        write_overlay(args.out.with_suffix(".overlay.safetensors"), ids,
+                      bf16_rne(np.stack([committed[i] for i in ids]).astype(np.float32)))
 
 
 if __name__ == "__main__":

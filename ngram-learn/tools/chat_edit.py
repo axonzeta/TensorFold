@@ -42,6 +42,8 @@ def main() -> None:
     ap.add_argument("--sequential", action="store_true", help="keep each fact's rows (base overlay) while teaching the next")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--no-batch", action="store_true", help="one grad op a training question (not one a step)")
+    ap.add_argument("--check-below", type=float, default=0.25,
+                    help="run the greedy check once the loss a answer token is below this (and every 5th step)")
     args = ap.parse_args()
     from tokenizers import Tokenizer
 
@@ -127,6 +129,7 @@ def main() -> None:
             before = score({"ids": [int(i) for i in committed], "rows": [bf16_rne(v.astype(np.float32)).tolist() for v in committed.values()]} if committed else None)
             t0 = time.time()
             steps = 0
+            grad_s = check_s = 0.0
             for step in range(1, args.steps + 1):
                 ov = all_ov()
                 grad = np.zeros_like(base)
@@ -134,6 +137,7 @@ def main() -> None:
                 lessons = [{"tokens": ids + ans[:-1], "at": list(range(len(ids) - 1, len(ids) + len(ans) - 1)), "targets": ans}
                            for ids, _, ans in train]
                 # one batched op, or (--no-batch) one flat op a question, as engines without "lessons" take it
+                tg = time.time()
                 for op in ([{"lessons": lessons}] if not args.no_batch else lessons):
                     r = w.send({"op": "grad", **op, "sel": sel.tolist(), "overlay": ov})
                     nll += r["loss"] / len(train)
@@ -143,8 +147,16 @@ def main() -> None:
                 m2 = 0.999 * m2 + 0.001 * grad ** 2
                 delta -= args.lr * (m1 / (1 - 0.9 ** step)) / (np.sqrt(m2 / (1 - 0.999 ** step)) + 1e-8)
                 steps = step
+                grad_s += time.time() - tg
+                # the greedy check only once the answers are nearly fitted (it cannot pass before), or every 5th step
+                per_token = nll / float(np.mean([len(ans) for _, _, ans in train]))
+                if per_token > args.check_below and step % 5 and step < args.steps:
+                    print(f"  {subj} step {step}: nll {nll:.3f}", flush=True)
+                    continue
+                tc = time.time()
                 ov = all_ov()
                 greedy = [w.case(prompt=ids, cont=ans, overlay=ov) for ids, _, ans in train]
+                check_s += time.time() - tc
                 done = all(x["greedy_hits"] == len(ans) for x, (_, _, ans) in zip(greedy, train))
                 print(f"  {subj} step {step}: nll {nll:.3f} greedy {[x['greedy_hits'] for x in greedy]}", flush=True)
                 if done:
@@ -154,7 +166,8 @@ def main() -> None:
                 for i, v in zip(sel, base + delta):
                     committed[int(i)] = v
             res = {"subject": subj, "kind": f["kind"], "rows": int(len(sel)), "steps": steps,
-                   "seconds": round(time.time() - t0, 1), "before": before, "after": after,
+                   "seconds": round(time.time() - t0, 1), "grad_seconds": round(grad_s, 1), "check_seconds": round(check_s, 1),
+                   "before": before, "after": after,
                    "sample_reply": reply(prompt(f["held"][0])[1].ids, all_ov())}
             results.append(res)
             print(json.dumps(res, ensure_ascii=False), flush=True)

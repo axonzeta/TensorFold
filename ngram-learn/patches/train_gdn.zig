@@ -5,6 +5,7 @@
 const std = @import("std");
 const W = @import("cuda_weights.zig");
 const hc = @import("train_hc.zig");
+const tops = @import("train_ops.zig");
 
 pub const Tape = struct {
     g: *const W.Gdn,
@@ -146,7 +147,8 @@ pub fn backward(x: hc.Ctx, t: *const Tape, dout: u64, dx: u64, add: bool) !void 
         const qk_o = a * p.nv * p.dk * 4;
         const v_o = a * p.vv * 4;
         const h_o = a * p.nv * 4;
-        try o.deltaBwd(t.q48 + qk_o, t.k48 + qk_o, t.v + v_o, t.gate + h_o, t.beta + h_o, do_ + v_o, t.states + so * 4, dq48 + qk_o, dk48 + qk_o, dv + v_o, dg + h_o, dbeta + h_o, sg.len, p.nv, p.dk, p.dv);
+        const scratch = try x.a.f32s(tops.Ops.deltaScratch(sg.len, p.nv, p.dk, p.dv));
+        try o.deltaBwd(t.q48 + qk_o, t.k48 + qk_o, t.v + v_o, t.gate + h_o, t.beta + h_o, do_ + v_o, t.states + so * 4, dq48 + qk_o, dk48 + qk_o, dv + v_o, dg + h_o, dbeta + h_o, sg.len, p.nv, p.dk, p.dv, scratch);
         so += p.nv * (sg.len + 1) * p.dk * p.dv;
     }
     const dqn = try x.a.f32s(r * p.qk);

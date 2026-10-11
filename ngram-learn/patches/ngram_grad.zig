@@ -61,6 +61,10 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         errdefer gpa.destroy(m);
         try m.init(gpa, e.ctx, &e.f, &e.w, &e.c, 256, 6.0);
         st.model = m;
+        // TF_TRAIN_PROF=1: each pass timed by part (each part synchronised), printed after it
+        if (std.c.getenv("TF_TRAIN_PROF")) |v| if (v[0] == '1') {
+            m.io = e.io;
+        };
     }
     const m = st.model.?;
     const Seg = train_model.Seg;
@@ -180,6 +184,11 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         return err;
     };
     try de.download(0, std.mem.sliceAsBytes(ef));
+    if (m.io != null) {
+        const pf = m.prof;
+        std.debug.print("pass profile ({d} rows): fwd gdn {d:.2} attn {d:.2} moe {d:.2} | bwd layers {d:.2} (moe {d:.2} gdn {d:.2} attn {d:.2}) | head {d:.2}\n", .{ tokens.items.len, pf.fwd_gdn, pf.fwd_attn, pf.fwd_moe, pf.bwd_layer, pf.bwd_moe, pf.bwd_gdn, pf.bwd_attn, pf.head });
+        m.prof = .{};
+    }
     try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
     const g = try gpa.alloc(f32, w);
     defer gpa.free(g);

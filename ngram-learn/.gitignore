@@ -12,3 +12,5 @@ data/bg/
 data/rowfreq/
 data/counterfact/
 experiments/**/*.overlays.json
+data/mmlu/
+experiments/**/*.safetensors

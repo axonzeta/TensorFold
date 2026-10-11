@@ -370,6 +370,10 @@ class Learner:
                 state["m2"] = 0.999 * state["m2"] + 0.001 * grad ** 2
                 state["delta"] -= self.a.lr * (state["m1"] / (1 - 0.9 ** steps)) / (np.sqrt(state["m2"] / (1 - 0.999 ** steps)) + 1e-8)
                 delta[:] = state["delta"]
+                # the greedy check only once the answers are nearly fitted (it cannot pass before), or every 5th step
+                per_token = r["loss"] / sum(len(ans) for _, _, ans in train)
+                if per_token > self.a.check_below and steps % 5:
+                    continue
                 hits = [self.e.op({"op": "hits", "tag": tag, "prompt": ids, "cont": ans, "overlay": cand()}) for ids, _, ans in train]
                 if steps % 5 == 0:
                     say("progress", id=fid, step=steps, loss=round(r["loss"] / len(train), 3),
@@ -519,6 +523,8 @@ def main() -> None:
     ap.add_argument("--held", type=int, default=2, help="held-out questions a fact")
     ap.add_argument("--keep", type=int, default=4, help="keep prompts checked a fact")
     ap.add_argument("--steps", type=int, default=40, help="most steps of the first round")
+    ap.add_argument("--check-below", type=float, default=0.25,
+                    help="check the answers greedily once the loss a answer token is below this (and every 5th step)")
     ap.add_argument("--rounds", type=int, default=2, help="further rounds while a question does not come back")
     ap.add_argument("--round-steps", type=int, default=8, help="steps a further round")
     ap.add_argument("--lr", type=float, default=2e-3)
