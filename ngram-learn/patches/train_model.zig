@@ -188,11 +188,23 @@ pub const Model = struct {
     /// `lesson` over several sequences side by side (`segs` cover `tokens` in order; `at` indexes all rows): row-wise
     /// work batched, attention, the delta rule and the convs within each sequence; `served` one capture a sequence.
     pub fn lessons(m: *Model, tokens: []const u32, segs: []const hc.Seg, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64, served: ?[]const Served) !Result {
+        var p = try m.begin(tokens, segs, at, targets, e, de, dump, served);
+        errdefer m.abandon(&p);
+        while (!try m.step(&p)) {}
+        return m.finish(&p);
+    }
+
+    /// The pass up to its layers: the captured (or recomputed) layer inputs, the head and the loss. `step` then takes
+    /// the layers one at a time (the server serves requests between them), `finish` ends it. The rows `e` and the
+    /// row gradients `de` must live until `finish`; the captures in `served` only until `begin` returns.
+    pub fn begin(m: *Model, tokens: []const u32, segs: []const hc.Seg, at: []const u32, targets: []const u32, e: u64, de: u64, dump: ?u64, served: ?[]const Served) !Pass {
         const c = m.c;
         const r = tokens.len;
-        m.segs = segs;
+        const own_segs = try m.gpa.dupe(hc.Seg, segs);
+        errdefer m.gpa.free(own_segs);
+        m.segs = own_segs;
         try m.stage("the pass's start", 0);
-        defer m.segs = &.{};
+        errdefer m.segs = &.{};
         const wd: usize = c.streams * c.hidden;
         const d: usize = c.hidden;
         const o = &m.ops;
@@ -218,7 +230,7 @@ pub const Model = struct {
         const keep = try m.arena.f32s((nl + 1) * r * wd);
         const kk: usize = c.top_k;
         const forced = try m.gpa.alloc(i32, if (served != null) nl * r * kk else 0);
-        defer m.gpa.free(forced);
+        errdefer m.gpa.free(forced);
         if (served) |svs| {
             if (svs.len != segs.len) return error.CaptureSegments;
             for (svs, segs) |sv, sg| {
@@ -236,11 +248,6 @@ pub const Model = struct {
             try o.heads(x0, keep, r, 1, c.streams, d, false);
         }
         try m.stage("the captured inputs", 0);
-        const fl = struct {
-            fn of(f: []const i32, li: usize, rows: usize, k: usize) ?[]const i32 {
-                return if (f.len == 0) null else f[li * rows * k ..][0 .. rows * k];
-            }
-        }.of;
         const base = m.arena.mark();
         for (0..nl) |li| {
             if (served != null) break;
@@ -296,28 +303,76 @@ pub const Model = struct {
         for (lh) |v_| total += v_;
         const zero_e = (cuda.DeviceBuffer{ .d = m.d, .ptr = de, .len = r * c.ple_dim * 4 });
         try zero_e.fill8(0, o.s.handle);
-        var cur = g0;
-        var nxt = g1;
-        const base2 = m.arena.mark();
-        var li: usize = nl;
-        while (li > 0) {
-            li -= 1;
-            m.arena.reset(base2);
-            var t = try m.layerForward(li, keep + li * r * wd * 4, e, cs, sn, try m.arena.f32s(r * wd), r, fl(forced, li, r, kk));
-            try m.stage("recompute", li);
-            defer t.mo.deinit(m.gpa);
-            const tb = now(m.io);
-            try m.layerBackward(&t, cs, sn, cur, nxt, de, r);
-            try m.stage("backward", li);
-            m.prof.bwd_layer += try since(m, tb);
-            m.experts.clear();
-            std.mem.swap(u64, &cur, &nxt);
-        }
-        if (dump) |dst| try (cuda.DeviceBuffer{ .d = m.d, .ptr = dst, .len = (nl + 1) * r * wd * 4 }).copyFrom(0, keep, (nl + 1) * r * wd * 4, o.s.handle);
-        try o.s.synchronize();
-        return .{ .loss = total, .rows = r };
+        return .{ .r = r, .e = e, .de = de, .cs = cs, .sn = sn, .keep = keep, .forced = forced, .kk = kk, .cur = g0,
+            .nxt = g1, .base2 = m.arena.mark(), .li = nl, .total = total, .dump = dump, .segs = own_segs };
+    }
+
+    /// One layer of the pass (the last not yet done): recomputed from its kept input on its routes, back-propagated.
+    /// True once every layer is done.
+    pub fn step(m: *Model, p: *Pass) !bool {
+        if (p.li == 0) return true;
+        m.segs = p.segs;
+        const c = m.c;
+        const r = p.r;
+        const wd: usize = c.streams * c.hidden;
+        p.li -= 1;
+        const li = p.li;
+        m.arena.reset(p.base2);
+        var t = try m.layerForward(li, p.keep + li * r * wd * 4, p.e, p.cs, p.sn, try m.arena.f32s(r * wd), r, forcedOf(p.forced, li, r, p.kk));
+        try m.stage("recompute", li);
+        defer t.mo.deinit(m.gpa);
+        const tb = now(m.io);
+        try m.layerBackward(&t, p.cs, p.sn, p.cur, p.nxt, p.de, r);
+        try m.stage("backward", li);
+        m.prof.bwd_layer += try since(m, tb);
+        m.experts.clear();
+        std.mem.swap(u64, &p.cur, &p.nxt);
+        return p.li == 0;
+    }
+
+    /// The pass ended: `de` holds the row gradients.
+    pub fn finish(m: *Model, p: *Pass) !Result {
+        defer m.abandon(p);
+        const c = m.c;
+        const wd: usize = c.streams * c.hidden;
+        const nl: usize = c.layers;
+        if (p.dump) |dst| try (cuda.DeviceBuffer{ .d = m.d, .ptr = dst, .len = (nl + 1) * p.r * wd * 4 }).copyFrom(0, p.keep, (nl + 1) * p.r * wd * 4, m.ops.s.handle);
+        try m.ops.s.synchronize();
+        return .{ .loss = p.total, .rows = p.r };
+    }
+
+    /// A pass's own memory freed (after finish, or when it is dropped half way).
+    pub fn abandon(m: *Model, p: *Pass) void {
+        m.gpa.free(p.forced);
+        m.gpa.free(p.segs);
+        p.forced = &.{};
+        p.segs = &.{};
+        m.segs = &.{};
     }
 };
+
+/// A pass between `begin` and `finish` (train_model.Model): where it is and what it holds.
+pub const Pass = struct {
+    r: usize,
+    e: u64,
+    de: u64,
+    cs: u64,
+    sn: u64,
+    keep: u64,
+    forced: []i32,
+    kk: usize,
+    cur: u64,
+    nxt: u64,
+    base2: usize,
+    li: usize,
+    total: f64,
+    dump: ?u64,
+    segs: []hc.Seg,
+};
+
+fn forcedOf(f: []const i32, li: usize, rows: usize, k: usize) ?[]const i32 {
+    return if (f.len == 0) null else f[li * rows * k ..][0 .. rows * k];
+}
 
 /// Seconds a pass spent in each part (summed over passes; `profile` prints and clears them).
 pub const Prof = struct {

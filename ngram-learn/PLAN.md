@@ -65,6 +65,12 @@ pattern ([docs/living-weights-map.md](docs/living-weights-map.md)), ported from 
   (experiments/05-v2). Facts about the user fixed in learnd: no penalty inside a personal tag, several keys a fact,
   model-written key phrases; "my dog", "I live", "my favourite colour" all learned through the server
   (experiments/06-user-facts). Next: more keys a fact, the scale evaluation, speed.
+- 2026-10-11: scale (experiments/07-scale): 1,000 sequential edits in the engine keep earlier facts at 0.995 and
+  the control facts unchanged (51,005 rows); MMLU 86.0% with and without the 1,000-edit overlay (14 of 570 answers
+  change, as many to right as to wrong). Speed (08-speed): the delta rule's backward split (the pass 4.1 -> 1.6 s)
+  and gated greedy checks: ~75 s a fact. Learning while serving: the pass resumable layer by layer, learnd's chats
+  at background priority: TTFT p50 88 ms (79 without learning), p90 0.28 s, 5% of requests wait > 0.5 s.
+  Next: RC2; splitting a grad op's start by lesson; DeepSeek V4.1 Flash (two Sparks).
 
 ## Phases
 

@@ -55,6 +55,32 @@ pub fn caseOverlay(gpa: Allocator, table: anytype, ob: std.json.ObjectMap, ov: *
 /// {"op": "grad", "lessons": [{"tokens", "at", "targets"}, ...], "sel", ...}: several lessons in one pass (each its
 /// own sequence: n-gram history, positions, attention and served forward), the losses summed.
 pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMap, out: *std.ArrayList(u8)) !void {
+    const j = try begin(st, e, base, ob);
+    while (true) {
+        const done = step(st, j) catch |err| {
+            drop(st, j);
+            return err;
+        };
+        if (done) break;
+    }
+    return finish(st, j, out); // frees j
+}
+
+/// A grad op between `begin` and `finish`: its rows and row gradients on the device, the ids it reports, the pass.
+pub const Job = struct {
+    rid: []i64,
+    ef: []f32,
+    sel: []i64,
+    eb: cuda.DeviceBuffer,
+    de: cuda.DeviceBuffer,
+    pass: train_model.Pass,
+    rows: usize,
+    width: usize,
+};
+
+/// The op up to the pass's layers: the lessons parsed, the rows gathered (as served), each lesson's served prefill
+/// captured and the pass begun (head and loss). The engine's state and overlays are as before when it returns.
+pub fn begin(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMap) !*Job {
     const gpa = st.gpa;
     if (st.model == null) {
         const m = try gpa.create(train_model.Model);
@@ -109,28 +135,35 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
     const pl = e.w.layers[1].ple orelse return error.NoNgramLayer;
     const heads = pl.ngram.heads;
     const r = tokens.items.len;
+    const j = try gpa.create(Job);
+    errdefer gpa.destroy(j);
+    j.rows = r;
+    j.width = table.width;
     // each lesson's n-gram rows from its own fresh history
-    const rid = try gpa.alloc(i64, r * heads);
-    defer gpa.free(rid);
+    j.rid = try gpa.alloc(i64, r * heads);
+    errdefer gpa.free(j.rid);
     for (segs.items) |sg| {
         var hist: [4]i64 = undefined;
         pl.ngram.initialHistory(hist[0 .. pl.ngram.n - 1]);
         const toks = try gpa.alloc(i64, sg.len);
         defer gpa.free(toks);
         for (tokens.items[sg.start..][0..sg.len], toks) |a, *b| b.* = a;
-        try pl.ngram.ids(hist[0 .. pl.ngram.n - 1], toks, rid[sg.start * heads ..][0 .. sg.len * heads]);
+        try pl.ngram.ids(hist[0 .. pl.ngram.n - 1], toks, j.rid[sg.start * heads ..][0 .. sg.len * heads]);
     }
+    j.sel = try gpa.alloc(i64, sel_v.len);
+    errdefer gpa.free(j.sel);
+    for (sel_v, j.sel) |v, *x| x.* = v.integer;
     const w = table.width;
     const bits = try gpa.alloc(u16, r * heads * w);
     defer gpa.free(bits);
-    try table.gather(rid, bits);
-    const ef = try gpa.alloc(f32, bits.len);
-    defer gpa.free(ef);
-    for (bits, ef) |b, *f| f.* = @bitCast(@as(u32, b) << 16);
-    var eb = try cuda.DeviceBuffer.fromHost(e.ctx.d, std.mem.sliceAsBytes(ef));
-    defer eb.free();
-    var de = try cuda.DeviceBuffer.alloc(e.ctx.d, ef.len * 4);
-    defer de.free();
+    try table.gather(j.rid, bits);
+    j.ef = try gpa.alloc(f32, bits.len);
+    errdefer gpa.free(j.ef);
+    for (bits, j.ef) |b, *f| f.* = @bitCast(@as(u32, b) << 16);
+    j.eb = try cuda.DeviceBuffer.fromHost(e.ctx.d, std.mem.sliceAsBytes(j.ef));
+    errdefer j.eb.free();
+    j.de = try cuda.DeviceBuffer.alloc(e.ctx.d, j.ef.len * 4);
+    errdefer j.de.free();
     // each lesson's served prompt forward (rows as served), its layer inputs and routes captured
     const nl: usize = e.c.layers;
     const wd: usize = e.c.streams * e.c.hidden;
@@ -160,14 +193,14 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         _ = e.prefill(tokens.items[sg.start..][0..n], null) catch |err| {
             if (m.check) {
                 std.debug.print("train check: the served prefill failed ({s})\n", .{@errorName(err)});
-                addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+                addressMap(e, m, &.{ .{ "rows in", j.eb }, .{ "row grads", j.de } }, bufs[0..nb]);
             }
             return err;
         };
         e.ctx.synchronize() catch |err| {
             if (m.check) {
                 std.debug.print("train check: the served prefill's sync failed ({s})\n", .{@errorName(err)});
-                addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+                addressMap(e, m, &.{ .{ "rows in", j.eb }, .{ "row grads", j.de } }, bufs[0..nb]);
             }
             return err;
         };
@@ -179,29 +212,56 @@ pub fn grad(st: *State, e: *Engine, base: ?*const Overlay, ob: std.json.ObjectMa
         };
         sv.* = .{ .cap = cap, .picks = pk };
     };
-    const res = m.lessons(tokens.items, segs.items, at.items, targets.items, eb.ptr, de.ptr, null, if (served_on) served else null) catch |err| {
-        if (m.check) addressMap(e, m, &.{ .{ "rows in", eb }, .{ "row grads", de } }, bufs[0..nb]);
+    j.pass = m.begin(tokens.items, segs.items, at.items, targets.items, j.eb.ptr, j.de.ptr, null, if (served_on) served else null) catch |err| {
+        if (m.check) addressMap(e, m, &.{ .{ "rows in", j.eb }, .{ "row grads", j.de } }, bufs[0..nb]);
         return err;
     };
-    try de.download(0, std.mem.sliceAsBytes(ef));
+    return j;
+}
+
+/// One layer of the job's pass; true once every layer is done.
+pub fn step(st: *State, j: *Job) !bool {
+    return st.model.?.step(&j.pass);
+}
+
+/// The pass ended and the reply written: the loss and each `sel` row's gradient (summed over its lookups). Frees `j`.
+pub fn finish(st: *State, j: *Job, out: *std.ArrayList(u8)) !void {
+    const gpa = st.gpa;
+    defer drop(st, j);
+    const m = st.model.?;
+    const res = try m.finish(&j.pass);
+    try j.de.download(0, std.mem.sliceAsBytes(j.ef));
     if (m.io != null) {
         const pf = m.prof;
-        std.debug.print("pass profile ({d} rows): fwd gdn {d:.2} attn {d:.2} moe {d:.2} | bwd layers {d:.2} (moe {d:.2} gdn {d:.2} attn {d:.2}) | head {d:.2}\n", .{ tokens.items.len, pf.fwd_gdn, pf.fwd_attn, pf.fwd_moe, pf.bwd_layer, pf.bwd_moe, pf.bwd_gdn, pf.bwd_attn, pf.head });
+        std.debug.print("pass profile ({d} rows): fwd gdn {d:.2} attn {d:.2} moe {d:.2} | bwd layers {d:.2} (moe {d:.2} gdn {d:.2} attn {d:.2}) | head {d:.2}\n", .{ j.rows, pf.fwd_gdn, pf.fwd_attn, pf.fwd_moe, pf.bwd_layer, pf.bwd_moe, pf.bwd_gdn, pf.bwd_attn, pf.head });
         m.prof = .{};
     }
+    const w = j.width;
     try out.print(gpa, "{{\"loss\":{d:.6},\"grad\":[", .{res.loss});
     const g = try gpa.alloc(f32, w);
     defer gpa.free(g);
-    for (sel_v, 0..) |sv, n| {
+    for (j.sel, 0..) |sv, n| {
         @memset(g, 0);
-        for (rid, 0..) |id, k| if (id == sv.integer) {
-            for (g, ef[k * w ..][0..w]) |*a, b| a.* += b;
+        for (j.rid, 0..) |id, k| if (id == sv) {
+            for (g, j.ef[k * w ..][0..w]) |*a, b| a.* += b;
         };
         try out.appendSlice(gpa, if (n == 0) "[" else ",[");
         for (g, 0..) |v, i| try out.print(gpa, "{s}{e:.6}", .{ if (i == 0) "" else ",", v });
         try out.appendSlice(gpa, "]");
     }
     try out.appendSlice(gpa, "]}");
+}
+
+/// A job's memory freed (after finish, or dropped half way).
+pub fn drop(st: *State, j: *Job) void {
+    const gpa = st.gpa;
+    if (st.model) |m| m.abandon(&j.pass);
+    j.eb.free();
+    j.de.free();
+    gpa.free(j.rid);
+    gpa.free(j.ef);
+    gpa.free(j.sel);
+    gpa.destroy(j);
 }
 
 

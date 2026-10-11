@@ -179,6 +179,34 @@ class Engine:
         except urllib.error.HTTPError as e:
             raise RuntimeError(f"{path}: {e.code} {e.read()[:300]!r}") from None
 
+    def traffic(self) -> tuple[int, int]:
+        """Requests running now and requests served so far, from the server's /metrics."""
+        running = done = 0
+        with urllib.request.urlopen(self.url + "/metrics", timeout=30) as r:
+            for line in r.read().decode().splitlines():
+                if line.startswith("tensorfold:requests_running "):
+                    running = int(float(line.split()[1]))
+                elif line.startswith('tensorfold:request_latency_seconds_bucket{le="+Inf"}') or \
+                        line.startswith("tensorfold:request_latency_seconds_count "):
+                    done = max(done, int(float(line.split()[1])))
+        return running, done
+
+    def wait_quiet(self, quiet: float) -> float:
+        """Wait until no request runs and none has arrived for `quiet` seconds (a learn op holds the engine for ~2 s,
+        so ops go into the gaps between requests, not in front of them). Returns the seconds waited."""
+        if quiet <= 0:
+            return 0.0
+        t0 = time.time()
+        _, last = self.traffic()
+        since = time.time()
+        while True:
+            running, done = self.traffic()
+            if running or done != last:
+                last, since = done, time.time()
+            elif time.time() - since >= quiet:
+                return time.time() - t0
+            time.sleep(0.25)
+
     def op(self, body: dict) -> dict:
         r = self.post("/v1/ngram/op", body)
         if "error" in r:
@@ -188,7 +216,9 @@ class Engine:
     def ask(self, prompt: str, tag: str = "", max_tokens: int = 400) -> str:
         r = self.post("/v1/chat/completions", {
             "model": self.model, "messages": [{"role": "user", "content": prompt}], "temperature": 0,
-            "max_tokens": max_tokens, "enable_thinking": False, "metadata": {"tag": tag}})
+            "max_tokens": max_tokens, "enable_thinking": False, "metadata": {"tag": tag},
+            # learnd's own chats (lessons, checks) queue behind users' requests
+            "priority": "background"})
         return r["choices"][0]["message"]["content"].strip()
 
 
@@ -358,11 +388,13 @@ class Learner:
                    for ids, _, ans in train]
         steps, t0 = 0, time.time()
         state = {"m1": m1, "m2": m2, "delta": delta}
+        waited = {"s": 0.0}  # seconds spent waiting for the server to be quiet
 
         def train_steps(n: int, stop_when_greedy: bool) -> None:
             nonlocal steps
             for _ in range(n):
                 steps += 1
+                waited["s"] += self.e.wait_quiet(self.a.quiet)
                 r = self.e.op({"op": "grad", "tag": tag, "lessons": lessons, "sel": sel.tolist(), "overlay": cand()})
                 grad = np.asarray(r["grad"], np.float64) / len(train)
                 grad += lam * 2 * wgt[:, None] * state["delta"] / (state["delta"].size * s2)
@@ -374,6 +406,7 @@ class Learner:
                 per_token = r["loss"] / sum(len(ans) for _, _, ans in train)
                 if per_token > self.a.check_below and steps % 5:
                     continue
+                waited["s"] += self.e.wait_quiet(self.a.quiet)
                 hits = [self.e.op({"op": "hits", "tag": tag, "prompt": ids, "cont": ans, "overlay": cand()}) for ids, _, ans in train]
                 if steps % 5 == 0:
                     say("progress", id=fid, step=steps, loss=round(r["loss"] / len(train), 3),
@@ -406,7 +439,7 @@ class Learner:
             train_steps(self.a.round_steps, False)
             recalled, held, damage = verify()
         ok = all(recalled) and not damage and (not held or sum(held) >= len(held) / 2)
-        f.update(steps=steps, seconds=round(time.time() - t0, 1), recall=sum(recalled) / len(recalled),
+        f.update(steps=steps, seconds=round(time.time() - t0, 1), waited=round(waited["s"], 1), recall=sum(recalled) / len(recalled),
                  held=(sum(held) / len(held)) if held else None, damage=damage)
         if ok:
             f.update(state="learned", rows={str(i): v for i, v in zip(cand()["ids"], cand()["rows"])})
@@ -523,6 +556,8 @@ def main() -> None:
     ap.add_argument("--held", type=int, default=2, help="held-out questions a fact")
     ap.add_argument("--keep", type=int, default=4, help="keep prompts checked a fact")
     ap.add_argument("--steps", type=int, default=40, help="most steps of the first round")
+    ap.add_argument("--quiet", type=float, default=1.0,
+                    help="seconds without requests before a learn op runs (0: run ops back to back)")
     ap.add_argument("--check-below", type=float, default=0.25,
                     help="check the answers greedily once the loss a answer token is below this (and every 5th step)")
     ap.add_argument("--rounds", type=int, default=2, help="further rounds while a question does not come back")

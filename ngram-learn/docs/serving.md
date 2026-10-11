@@ -39,8 +39,12 @@ Rows are bf16 bit patterns (integers), 160 per row. `grad` and `hits` read the t
 
 How it runs inside the engine (`families/flashnext/ngram_service.zig`):
 
-- `LaneHost.run` calls the learn hook only when no stream is active, filling or queued; one op per call, so a request
-  that arrives waits at most for the op in flight (a grad pass: ~2 s on 6 short questions).
+- `LaneHost.run` calls the learn hook only when no stream is active, filling or queued; one op per call. A `grad` op
+  runs as a job: its call begins it (the lessons' capture prefills, the head and the loss), and each later call
+  takes one layer of the pass, so a request that arrives waits for one layer (~35 ms), not a pass (~1.8 s).
+  learnd's own chats (lessons, checks) go at background priority and it waits for a quiet second before each op;
+  under chat traffic every ~10 s, the median time to first token stays at 88 ms (79 ms without learning) and 5% of
+  requests wait more than 0.5 s (experiments/07-scale).
 - An op binds the engine's own sequence, turns CUDA graphs, MTP absorption and sampling off and restores all of them
   after. The served capture for `grad` is the engine's normal prompt pass with the capture hook set.
 - A tag's overlay is created once and never freed (a sequence holds a pointer to it); `set` with `clear` empties it.
@@ -114,8 +118,8 @@ See [walkthrough.md](walkthrough.md) for a full session with outputs.
 
 ## Limits (RC1)
 
-- One rank only; the training pass blocks the engine thread for one op at a time (~2 s), so a request arriving
-  mid-op waits for it.
+- One rank only. A request can still wait behind the start of a grad op (the lessons' prefills), a greedy check or a
+  background chat already streaming: up to ~1.3 s, for ~5% of requests under steady traffic.
 - A one-token subject ("Kestrel") trains rows that also fire in other contexts with that token: in the walkthrough,
   "the Kestrel rocket" picks up the launch date. Longer subjects keep to themselves (context-free rows).
 - Facts in one tag that share rows are not re-solved jointly (EngramEdit-style targets are Phase 4's second version).

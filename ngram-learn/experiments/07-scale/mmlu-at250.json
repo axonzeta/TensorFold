@@ -1,0 +1,6854 @@
+{
+ "summary": {
+  "questions": 570,
+  "accuracy": 0.8579,
+  "overlay": "/work/experiments/07-scale/seq-1000.at250.overlay.safetensors",
+  "compared": 570,
+  "answers_changed": 14,
+  "baseline_accuracy": 0.8596,
+  "changed_to_right": 5,
+  "changed_to_wrong": 6
+ },
+ "answers": [
+  {
+   "row": 1,
+   "subject": "abstract_algebra",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.1391,
+    -1.7641,
+    -1.1391,
+    -2.2641
+   ]
+  },
+  {
+   "row": 3,
+   "subject": "abstract_algebra",
+   "answer": 1,
+   "pred": 3,
+   "logprobs": [
+    -5.1193,
+    -4.3068,
+    -5.6193,
+    -0.5568
+   ]
+  },
+  {
+   "row": 7,
+   "subject": "abstract_algebra",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -4.73,
+    -4.23,
+    -0.23,
+    -6.0425
+   ]
+  },
+  {
+   "row": 17,
+   "subject": "abstract_algebra",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.7673,
+    -2.0173,
+    -1.2672,
+    -2.1423
+   ]
+  },
+  {
+   "row": 25,
+   "subject": "abstract_algebra",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.0294,
+    -7.7169,
+    -0.0294,
+    -7.1544
+   ]
+  },
+  {
+   "row": 29,
+   "subject": "abstract_algebra",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1399,
+    -7.0774,
+    -6.8274,
+    -7.4524
+   ]
+  },
+  {
+   "row": 47,
+   "subject": "abstract_algebra",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.5995,
+    -0.8495,
+    -2.7245,
+    -3.3495
+   ]
+  },
+  {
+   "row": 58,
+   "subject": "abstract_algebra",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -1.6756,
+    -4.5506,
+    -3.0506,
+    -1.0506
+   ]
+  },
+  {
+   "row": 77,
+   "subject": "abstract_algebra",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0818,
+    -4.4568,
+    -5.7068,
+    -4.0818
+   ]
+  },
+  {
+   "row": 81,
+   "subject": "abstract_algebra",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.4732,
+    -3.7232,
+    -2.5982,
+    -0.5982
+   ]
+  },
+  {
+   "row": 100,
+   "subject": "anatomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0703,
+    -4.5703,
+    -3.6953,
+    -3.8203
+   ]
+  },
+  {
+   "row": 104,
+   "subject": "anatomy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.3175,
+    -0.005,
+    -10.3175,
+    -10.13
+   ]
+  },
+  {
+   "row": 135,
+   "subject": "anatomy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.5313,
+    -3.6563,
+    -0.1563,
+    -4.9688
+   ]
+  },
+  {
+   "row": 151,
+   "subject": "anatomy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.9459,
+    -10.1959,
+    -9.3834,
+    -0.0084
+   ]
+  },
+  {
+   "row": 173,
+   "subject": "anatomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3992,
+    -2.8992,
+    -4.1493,
+    -1.3993
+   ]
+  },
+  {
+   "row": 186,
+   "subject": "anatomy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.3419,
+    -2.9669,
+    -0.2169,
+    -3.2169
+   ]
+  },
+  {
+   "row": 203,
+   "subject": "anatomy",
+   "answer": 1,
+   "pred": 3,
+   "logprobs": [
+    -2.3397,
+    -4.9647,
+    -2.8397,
+    -0.2147
+   ]
+  },
+  {
+   "row": 204,
+   "subject": "anatomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.035,
+    -6.16,
+    -3.535,
+    -7.7225
+   ]
+  },
+  {
+   "row": 213,
+   "subject": "anatomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0268,
+    -7.2768,
+    -8.6518,
+    -4.1518
+   ]
+  },
+  {
+   "row": 217,
+   "subject": "anatomy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.8183,
+    -0.0058,
+    -9.0058,
+    -9.2558
+   ]
+  },
+  {
+   "row": 235,
+   "subject": "astronomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0015,
+    -8.3765,
+    -11.439,
+    -9.8765
+   ]
+  },
+  {
+   "row": 236,
+   "subject": "astronomy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.8196,
+    -9.1946,
+    -8.1946,
+    -0.0071
+   ]
+  },
+  {
+   "row": 239,
+   "subject": "astronomy",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -0.7348,
+    -2.6098,
+    -2.1098,
+    -1.2348
+   ]
+  },
+  {
+   "row": 253,
+   "subject": "astronomy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.8623,
+    -4.3623,
+    -5.1123,
+    -0.1123
+   ]
+  },
+  {
+   "row": 293,
+   "subject": "astronomy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.0242,
+    -6.4617,
+    -0.0242,
+    -5.1492
+   ]
+  },
+  {
+   "row": 295,
+   "subject": "astronomy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7618,
+    -9.1993,
+    -5.1368,
+    -0.0118
+   ]
+  },
+  {
+   "row": 303,
+   "subject": "astronomy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.6246,
+    -0.4996,
+    -1.1246,
+    -5.4996
+   ]
+  },
+  {
+   "row": 314,
+   "subject": "astronomy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.3451,
+    -6.1576,
+    -0.0951,
+    -2.7201
+   ]
+  },
+  {
+   "row": 333,
+   "subject": "astronomy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.8807,
+    -10.4432,
+    -0.0057,
+    -8.5682
+   ]
+  },
+  {
+   "row": 335,
+   "subject": "astronomy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.5454,
+    -1.9204,
+    -1.9204,
+    -2.7954
+   ]
+  },
+  {
+   "row": 400,
+   "subject": "business_ethics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.6993,
+    -0.0118,
+    -8.1368,
+    -8.0743
+   ]
+  },
+  {
+   "row": 424,
+   "subject": "business_ethics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.0134,
+    -8.3884,
+    -11.4509,
+    -0.0134
+   ]
+  },
+  {
+   "row": 444,
+   "subject": "business_ethics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0053,
+    -9.4428,
+    -8.4428,
+    -6.5053
+   ]
+  },
+  {
+   "row": 447,
+   "subject": "business_ethics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.6322,
+    -9.7572,
+    -11.1322,
+    -0.0072
+   ]
+  },
+  {
+   "row": 449,
+   "subject": "business_ethics",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.9057,
+    -1.4057,
+    -2.0307,
+    -2.7807
+   ]
+  },
+  {
+   "row": 452,
+   "subject": "business_ethics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.5456,
+    -3.0456,
+    -1.1706,
+    -2.9206
+   ]
+  },
+  {
+   "row": 454,
+   "subject": "business_ethics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0041,
+    -6.2541,
+    -7.8791,
+    -6.7541
+   ]
+  },
+  {
+   "row": 465,
+   "subject": "business_ethics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0174,
+    -5.3924,
+    -5.1424,
+    -5.5174
+   ]
+  },
+  {
+   "row": 472,
+   "subject": "business_ethics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.4277,
+    -9.0527,
+    -0.0527,
+    -3.1777
+   ]
+  },
+  {
+   "row": 474,
+   "subject": "business_ethics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0027,
+    -8.0652,
+    -10.3152,
+    -9.7527
+   ]
+  },
+  {
+   "row": 505,
+   "subject": "clinical_knowledge",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.2538,
+    -9.4413,
+    -0.0038,
+    -8.0663
+   ]
+  },
+  {
+   "row": 553,
+   "subject": "clinical_knowledge",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -8.1924,
+    -0.0049,
+    -9.3799,
+    -9.5049
+   ]
+  },
+  {
+   "row": 571,
+   "subject": "clinical_knowledge",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.4941,
+    -8.0566,
+    -5.3066,
+    -0.0566
+   ]
+  },
+  {
+   "row": 579,
+   "subject": "clinical_knowledge",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.7599,
+    -10.0099,
+    -0.0099,
+    -7.5724
+   ]
+  },
+  {
+   "row": 624,
+   "subject": "clinical_knowledge",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.0374,
+    -7.9124,
+    -0.0374,
+    -5.0374
+   ]
+  },
+  {
+   "row": 636,
+   "subject": "clinical_knowledge",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.8168,
+    -0.1293,
+    -2.3793,
+    -5.0668
+   ]
+  },
+  {
+   "row": 644,
+   "subject": "clinical_knowledge",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.757,
+    -10.1945,
+    -9.5695,
+    -0.007
+   ]
+  },
+  {
+   "row": 661,
+   "subject": "clinical_knowledge",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0018,
+    -8.5018,
+    -10.2518,
+    -9.4393
+   ]
+  },
+  {
+   "row": 676,
+   "subject": "clinical_knowledge",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.3218,
+    -0.0093,
+    -10.2593,
+    -10.8218
+   ]
+  },
+  {
+   "row": 727,
+   "subject": "clinical_knowledge",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.2449,
+    -1.4949,
+    -0.6199,
+    -2.3699
+   ]
+  },
+  {
+   "row": 758,
+   "subject": "college_biology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.321,
+    -0.0085,
+    -9.821,
+    -8.571
+   ]
+  },
+  {
+   "row": 763,
+   "subject": "college_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.0337,
+    -3.5337,
+    -3.1587,
+    -0.1588
+   ]
+  },
+  {
+   "row": 786,
+   "subject": "college_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.4137,
+    -1.2887,
+    -1.5387,
+    -0.9137
+   ]
+  },
+  {
+   "row": 796,
+   "subject": "college_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.4737,
+    -6.2862,
+    -2.3487,
+    -0.2237
+   ]
+  },
+  {
+   "row": 804,
+   "subject": "college_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.859,
+    -4.984,
+    -0.234,
+    -3.484
+   ]
+  },
+  {
+   "row": 808,
+   "subject": "college_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.9981,
+    -7.9981,
+    -0.1231,
+    -2.4981
+   ]
+  },
+  {
+   "row": 836,
+   "subject": "college_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -9.0655,
+    -11.628,
+    -12.003,
+    -0.003
+   ]
+  },
+  {
+   "row": 862,
+   "subject": "college_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6307,
+    -9.6307,
+    -0.0057,
+    -7.2557
+   ]
+  },
+  {
+   "row": 866,
+   "subject": "college_biology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0036,
+    -9.3161,
+    -11.8786,
+    -9.5661
+   ]
+  },
+  {
+   "row": 867,
+   "subject": "college_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.5709,
+    -6.3834,
+    -0.9459,
+    -0.5709
+   ]
+  },
+  {
+   "row": 900,
+   "subject": "college_chemistry",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -0.9457,
+    -0.6957,
+    -3.9457,
+    -3.6957
+   ]
+  },
+  {
+   "row": 915,
+   "subject": "college_chemistry",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.3144,
+    -0.0644,
+    -6.4394,
+    -5.9394
+   ]
+  },
+  {
+   "row": 917,
+   "subject": "college_chemistry",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.2962,
+    -4.9212,
+    -5.4837,
+    -0.1712
+   ]
+  },
+  {
+   "row": 935,
+   "subject": "college_chemistry",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -1.6433,
+    -3.3933,
+    -2.6433,
+    -0.3933
+   ]
+  },
+  {
+   "row": 951,
+   "subject": "college_chemistry",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.0699,
+    -9.8199,
+    -0.0074,
+    -7.6324
+   ]
+  },
+  {
+   "row": 961,
+   "subject": "college_chemistry",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.0221,
+    -7.4596,
+    -8.4596,
+    -0.0221
+   ]
+  },
+  {
+   "row": 968,
+   "subject": "college_chemistry",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -1.8271,
+    -1.7021,
+    -1.5771,
+    -1.0771
+   ]
+  },
+  {
+   "row": 969,
+   "subject": "college_chemistry",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0067,
+    -6.0067,
+    -6.7567,
+    -6.8817
+   ]
+  },
+  {
+   "row": 977,
+   "subject": "college_chemistry",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -2.5858,
+    -3.2108,
+    -0.7108,
+    -1.0858
+   ]
+  },
+  {
+   "row": 994,
+   "subject": "college_chemistry",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -3.0912,
+    -3.3412,
+    -0.4662,
+    -1.8412
+   ]
+  },
+  {
+   "row": 1000,
+   "subject": "college_computer_science",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.0162,
+    -8.5162,
+    -0.0162,
+    -6.1412
+   ]
+  },
+  {
+   "row": 1006,
+   "subject": "college_computer_science",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.574,
+    -3.949,
+    -4.949,
+    -0.074
+   ]
+  },
+  {
+   "row": 1014,
+   "subject": "college_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0088,
+    -6.1338,
+    -7.6338,
+    -6.9463
+   ]
+  },
+  {
+   "row": 1030,
+   "subject": "college_computer_science",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.4532,
+    -0.0782,
+    -4.8282,
+    -6.7032
+   ]
+  },
+  {
+   "row": 1045,
+   "subject": "college_computer_science",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.4833,
+    -1.8583,
+    -2.2333,
+    -0.8583
+   ]
+  },
+  {
+   "row": 1057,
+   "subject": "college_computer_science",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.7574,
+    -0.1324,
+    -3.1324,
+    -4.1324
+   ]
+  },
+  {
+   "row": 1058,
+   "subject": "college_computer_science",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.1968,
+    -8.6968,
+    -6.6968,
+    -0.0093
+   ]
+  },
+  {
+   "row": 1065,
+   "subject": "college_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.6699,
+    -0.7949,
+    -4.5449,
+    -5.2324
+   ]
+  },
+  {
+   "row": 1072,
+   "subject": "college_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0277,
+    -5.6527,
+    -10.5277,
+    -7.9652
+   ]
+  },
+  {
+   "row": 1083,
+   "subject": "college_computer_science",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -1.1818,
+    -1.5568,
+    -1.0568,
+    -2.9318
+   ]
+  },
+  {
+   "row": 1097,
+   "subject": "college_mathematics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -5.2064,
+    -2.5189,
+    -0.5189,
+    -1.6439
+   ]
+  },
+  {
+   "row": 1128,
+   "subject": "college_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.4966,
+    -0.4966,
+    -1.3716,
+    -3.4966
+   ]
+  },
+  {
+   "row": 1141,
+   "subject": "college_mathematics",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -1.916,
+    -0.916,
+    -2.166,
+    -3.416
+   ]
+  },
+  {
+   "row": 1153,
+   "subject": "college_mathematics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.394,
+    -8.144,
+    -4.019,
+    -0.144
+   ]
+  },
+  {
+   "row": 1171,
+   "subject": "college_mathematics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.935,
+    -3.81,
+    -2.685,
+    -0.185
+   ]
+  },
+  {
+   "row": 1178,
+   "subject": "college_mathematics",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -2.8085,
+    -1.8085,
+    -0.5585,
+    -1.9335
+   ]
+  },
+  {
+   "row": 1182,
+   "subject": "college_mathematics",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -2.7743,
+    -0.6493,
+    -2.6493,
+    -1.6493
+   ]
+  },
+  {
+   "row": 1187,
+   "subject": "college_mathematics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.2506,
+    -3.8756,
+    -0.7507,
+    -3.6256
+   ]
+  },
+  {
+   "row": 1189,
+   "subject": "college_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -1.8161,
+    -0.8161,
+    -2.6911,
+    -2.6911
+   ]
+  },
+  {
+   "row": 1190,
+   "subject": "college_mathematics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -5.7587,
+    -6.3837,
+    -0.7587,
+    -0.7587
+   ]
+  },
+  {
+   "row": 1215,
+   "subject": "college_medicine",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.5119,
+    -0.0119,
+    -7.4494,
+    -7.6994
+   ]
+  },
+  {
+   "row": 1218,
+   "subject": "college_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.0275,
+    -9.7775,
+    -9.7775,
+    -0.0275
+   ]
+  },
+  {
+   "row": 1227,
+   "subject": "college_medicine",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.5079,
+    -0.1329,
+    -5.3204,
+    -4.7579
+   ]
+  },
+  {
+   "row": 1314,
+   "subject": "college_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.9447,
+    -9.0071,
+    -8.4446,
+    -0.0072
+   ]
+  },
+  {
+   "row": 1316,
+   "subject": "college_medicine",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -5.0746,
+    -3.0746,
+    -0.0746,
+    -5.0746
+   ]
+  },
+  {
+   "row": 1319,
+   "subject": "college_medicine",
+   "answer": 1,
+   "pred": 3,
+   "logprobs": [
+    -1.8169,
+    -1.3169,
+    -2.8169,
+    -0.6919
+   ]
+  },
+  {
+   "row": 1321,
+   "subject": "college_medicine",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.7991,
+    -1.7991,
+    -1.4241,
+    -2.5491
+   ]
+  },
+  {
+   "row": 1350,
+   "subject": "college_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.2144,
+    -6.0269,
+    -7.4644,
+    -0.0269
+   ]
+  },
+  {
+   "row": 1352,
+   "subject": "college_medicine",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.2706,
+    -0.0206,
+    -7.2081,
+    -6.0206
+   ]
+  },
+  {
+   "row": 1363,
+   "subject": "college_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.9623,
+    -8.8373,
+    -6.7123,
+    -0.0248
+   ]
+  },
+  {
+   "row": 1383,
+   "subject": "college_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0013,
+    -7.9388,
+    -11.7513,
+    -10.5013
+   ]
+  },
+  {
+   "row": 1403,
+   "subject": "college_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.3505,
+    -6.538,
+    -1.913,
+    -0.288
+   ]
+  },
+  {
+   "row": 1405,
+   "subject": "college_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.277,
+    -5.777,
+    -7.527,
+    -0.027
+   ]
+  },
+  {
+   "row": 1407,
+   "subject": "college_physics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.4036,
+    -5.9661,
+    -0.5286,
+    -3.1536
+   ]
+  },
+  {
+   "row": 1419,
+   "subject": "college_physics",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -4.2657,
+    -4.5157,
+    -0.3907,
+    -2.1407
+   ]
+  },
+  {
+   "row": 1445,
+   "subject": "college_physics",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -1.5403,
+    -1.6653,
+    -1.9153,
+    -2.2903
+   ]
+  },
+  {
+   "row": 1452,
+   "subject": "college_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.3244,
+    -1.9494,
+    -3.0744,
+    -0.5744
+   ]
+  },
+  {
+   "row": 1457,
+   "subject": "college_physics",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -1.1721,
+    -1.4221,
+    -1.4221,
+    -2.0471
+   ]
+  },
+  {
+   "row": 1458,
+   "subject": "college_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3267,
+    -2.4517,
+    -3.2017,
+    -4.3267
+   ]
+  },
+  {
+   "row": 1464,
+   "subject": "college_physics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.8905,
+    -1.3905,
+    -1.1405,
+    -1.2655
+   ]
+  },
+  {
+   "row": 1475,
+   "subject": "computer_security",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -1.1687,
+    -1.5437,
+    -2.7937,
+    -0.9187
+   ]
+  },
+  {
+   "row": 1485,
+   "subject": "computer_security",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.1303,
+    -9.0678,
+    -0.0053,
+    -7.5678
+   ]
+  },
+  {
+   "row": 1495,
+   "subject": "computer_security",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0011,
+    -9.8136,
+    -11.3136,
+    -11.4386
+   ]
+  },
+  {
+   "row": 1510,
+   "subject": "computer_security",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5107,
+    -9.9482,
+    -0.0107,
+    -8.6357
+   ]
+  },
+  {
+   "row": 1513,
+   "subject": "computer_security",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.3455,
+    -1.8455,
+    -2.4705,
+    -4.533
+   ]
+  },
+  {
+   "row": 1521,
+   "subject": "computer_security",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.1952,
+    -9.5702,
+    -0.0077,
+    -8.3827
+   ]
+  },
+  {
+   "row": 1532,
+   "subject": "computer_security",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0314,
+    -5.0314,
+    -5.3439,
+    -5.7814
+   ]
+  },
+  {
+   "row": 1538,
+   "subject": "computer_security",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0382,
+    -3.9132,
+    -5.1632,
+    -6.1007
+   ]
+  },
+  {
+   "row": 1552,
+   "subject": "computer_security",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.336,
+    -6.8985,
+    -0.211,
+    -2.086
+   ]
+  },
+  {
+   "row": 1561,
+   "subject": "computer_security",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.5171,
+    -7.2671,
+    -0.0171,
+    -6.7046
+   ]
+  },
+  {
+   "row": 1586,
+   "subject": "conceptual_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0037,
+    -7.2538,
+    -8.5663,
+    -8.0663
+   ]
+  },
+  {
+   "row": 1591,
+   "subject": "conceptual_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0638,
+    -4.4388,
+    -3.5638,
+    -4.4388
+   ]
+  },
+  {
+   "row": 1605,
+   "subject": "conceptual_physics",
+   "answer": 3,
+   "pred": 1,
+   "logprobs": [
+    -3.8849,
+    -0.1349,
+    -6.1974,
+    -2.3849
+   ]
+  },
+  {
+   "row": 1633,
+   "subject": "conceptual_physics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6414,
+    -10.9539,
+    -0.0164,
+    -6.8289
+   ]
+  },
+  {
+   "row": 1686,
+   "subject": "conceptual_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0072,
+    -6.1322,
+    -7.1322,
+    -6.8197
+   ]
+  },
+  {
+   "row": 1688,
+   "subject": "conceptual_physics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.3928,
+    -8.1428,
+    -0.0178,
+    -6.9553
+   ]
+  },
+  {
+   "row": 1743,
+   "subject": "conceptual_physics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.1057,
+    -0.0432,
+    -7.6057,
+    -6.7307
+   ]
+  },
+  {
+   "row": 1768,
+   "subject": "conceptual_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7612,
+    -7.1362,
+    -7.1362,
+    -0.0112
+   ]
+  },
+  {
+   "row": 1777,
+   "subject": "conceptual_physics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.7884,
+    -0.1634,
+    -3.2884,
+    -4.1634
+   ]
+  },
+  {
+   "row": 1785,
+   "subject": "conceptual_physics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.8216,
+    -8.1966,
+    -0.1966,
+    -6.3841
+   ]
+  },
+  {
+   "row": 1820,
+   "subject": "econometrics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.9738,
+    -0.0988,
+    -6.7238,
+    -7.0988
+   ]
+  },
+  {
+   "row": 1829,
+   "subject": "econometrics",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -1.2274,
+    -0.4774,
+    -3.3524,
+    -4.0399
+   ]
+  },
+  {
+   "row": 1830,
+   "subject": "econometrics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -1.0819,
+    -4.9569,
+    -5.5819,
+    -0.4569
+   ]
+  },
+  {
+   "row": 1831,
+   "subject": "econometrics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0096,
+    -8.1971,
+    -9.2596,
+    -7.3221
+   ]
+  },
+  {
+   "row": 1832,
+   "subject": "econometrics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.4261,
+    -0.0511,
+    -5.4261,
+    -4.4261
+   ]
+  },
+  {
+   "row": 1833,
+   "subject": "econometrics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.5932,
+    -3.0932,
+    -6.7808,
+    -0.0932
+   ]
+  },
+  {
+   "row": 1835,
+   "subject": "econometrics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.1779,
+    -5.9904,
+    -5.4904,
+    -0.0529
+   ]
+  },
+  {
+   "row": 1865,
+   "subject": "econometrics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -1.1762,
+    -0.4262,
+    -6.6762,
+    -4.9887
+   ]
+  },
+  {
+   "row": 1886,
+   "subject": "econometrics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.7977,
+    -4.9227,
+    -3.6727,
+    -0.1727
+   ]
+  },
+  {
+   "row": 1904,
+   "subject": "econometrics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.0715,
+    -5.3215,
+    -0.0715,
+    -5.1965
+   ]
+  },
+  {
+   "row": 1928,
+   "subject": "electrical_engineering",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -1.1665,
+    -1.1665,
+    -1.4165,
+    -2.2915
+   ]
+  },
+  {
+   "row": 1960,
+   "subject": "electrical_engineering",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0477,
+    -3.6727,
+    -5.9227,
+    -5.9227
+   ]
+  },
+  {
+   "row": 1978,
+   "subject": "electrical_engineering",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -1.9207,
+    -0.5457,
+    -1.5457,
+    -3.1707
+   ]
+  },
+  {
+   "row": 1982,
+   "subject": "electrical_engineering",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.4175,
+    -0.0425,
+    -5.1675,
+    -6.23
+   ]
+  },
+  {
+   "row": 1983,
+   "subject": "electrical_engineering",
+   "answer": 0,
+   "pred": 2,
+   "logprobs": [
+    -2.0003,
+    -3.1253,
+    -0.2503,
+    -3.3753
+   ]
+  },
+  {
+   "row": 1989,
+   "subject": "electrical_engineering",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.012,
+    -6.512,
+    -6.3245,
+    -5.762
+   ]
+  },
+  {
+   "row": 1996,
+   "subject": "electrical_engineering",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.8293,
+    -6.0793,
+    -0.0794,
+    -5.5793
+   ]
+  },
+  {
+   "row": 2010,
+   "subject": "electrical_engineering",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.0646,
+    -7.1271,
+    -7.6271,
+    -0.0646
+   ]
+  },
+  {
+   "row": 2036,
+   "subject": "electrical_engineering",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.0153,
+    -9.7653,
+    -0.0153,
+    -8.0778
+   ]
+  },
+  {
+   "row": 2038,
+   "subject": "electrical_engineering",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.245,
+    -2.87,
+    -0.87,
+    -2.87
+   ]
+  },
+  {
+   "row": 2080,
+   "subject": "elementary_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.1889,
+    -0.1264,
+    -3.6264,
+    -4.8139
+   ]
+  },
+  {
+   "row": 2081,
+   "subject": "elementary_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.3001,
+    -0.6751,
+    -1.3001,
+    -4.0501
+   ]
+  },
+  {
+   "row": 2118,
+   "subject": "elementary_mathematics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0274,
+    -7.3399,
+    -8.5899,
+    -6.1524
+   ]
+  },
+  {
+   "row": 2216,
+   "subject": "elementary_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.9623,
+    -0.7124,
+    -1.0874,
+    -2.9623
+   ]
+  },
+  {
+   "row": 2289,
+   "subject": "elementary_mathematics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.7351,
+    -7.0476,
+    -0.0476,
+    -3.2976
+   ]
+  },
+  {
+   "row": 2369,
+   "subject": "elementary_mathematics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.5669,
+    -2.0669,
+    -2.1919,
+    -1.9419
+   ]
+  },
+  {
+   "row": 2378,
+   "subject": "elementary_mathematics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6534,
+    -7.3409,
+    -0.0284,
+    -4.1534
+   ]
+  },
+  {
+   "row": 2406,
+   "subject": "elementary_mathematics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.6168,
+    -8.9293,
+    -10.4918,
+    -0.0543
+   ]
+  },
+  {
+   "row": 2414,
+   "subject": "elementary_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.5809,
+    -0.0809,
+    -4.5809,
+    -5.7059
+   ]
+  },
+  {
+   "row": 2418,
+   "subject": "elementary_mathematics",
+   "answer": 2,
+   "pred": 3,
+   "logprobs": [
+    -4.3212,
+    -2.8837,
+    -1.1337,
+    -0.5087
+   ]
+  },
+  {
+   "row": 2452,
+   "subject": "formal_logic",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.1992,
+    -9.0116,
+    -7.6367,
+    -0.0117
+   ]
+  },
+  {
+   "row": 2455,
+   "subject": "formal_logic",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.4226,
+    -4.9226,
+    -3.3601,
+    -0.1101
+   ]
+  },
+  {
+   "row": 2473,
+   "subject": "formal_logic",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -3.131,
+    -1.131,
+    -0.756,
+    -2.881
+   ]
+  },
+  {
+   "row": 2476,
+   "subject": "formal_logic",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.8945,
+    -0.0195,
+    -7.582,
+    -6.582
+   ]
+  },
+  {
+   "row": 2506,
+   "subject": "formal_logic",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0358,
+    -5.2858,
+    -6.6608,
+    -6.0358
+   ]
+  },
+  {
+   "row": 2521,
+   "subject": "formal_logic",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -2.6985,
+    -1.3235,
+    -0.9485,
+    -2.0735
+   ]
+  },
+  {
+   "row": 2522,
+   "subject": "formal_logic",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.5765,
+    -9.514,
+    -0.014,
+    -7.9515
+   ]
+  },
+  {
+   "row": 2530,
+   "subject": "formal_logic",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -1.3296,
+    -3.4546,
+    -1.4546,
+    -1.0796
+   ]
+  },
+  {
+   "row": 2559,
+   "subject": "formal_logic",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -9.069,
+    -9.3815,
+    -0.0065,
+    -6.944
+   ]
+  },
+  {
+   "row": 2561,
+   "subject": "formal_logic",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.0204,
+    -8.1454,
+    -0.0204,
+    -4.7704
+   ]
+  },
+  {
+   "row": 2569,
+   "subject": "global_facts",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.6139,
+    -3.8639,
+    -0.1139,
+    -2.9889
+   ]
+  },
+  {
+   "row": 2597,
+   "subject": "global_facts",
+   "answer": 3,
+   "pred": 1,
+   "logprobs": [
+    -3.4817,
+    -0.4817,
+    -1.3566,
+    -2.6067
+   ]
+  },
+  {
+   "row": 2599,
+   "subject": "global_facts",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.7261,
+    -5.4136,
+    -0.0386,
+    -3.6636
+   ]
+  },
+  {
+   "row": 2608,
+   "subject": "global_facts",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.3802,
+    -1.7552,
+    -2.2552,
+    -3.3802
+   ]
+  },
+  {
+   "row": 2614,
+   "subject": "global_facts",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.0085,
+    -8.3835,
+    -0.0085,
+    -5.5085
+   ]
+  },
+  {
+   "row": 2615,
+   "subject": "global_facts",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3569,
+    -1.4818,
+    -3.2319,
+    -3.8569
+   ]
+  },
+  {
+   "row": 2635,
+   "subject": "global_facts",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0672,
+    -3.1922,
+    -4.8172,
+    -4.6922
+   ]
+  },
+  {
+   "row": 2644,
+   "subject": "global_facts",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -4.1083,
+    -3.4833,
+    -0.2333,
+    -1.8583
+   ]
+  },
+  {
+   "row": 2661,
+   "subject": "global_facts",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.7111,
+    -3.4611,
+    -0.5861,
+    -0.9611
+   ]
+  },
+  {
+   "row": 2667,
+   "subject": "global_facts",
+   "answer": 2,
+   "pred": 3,
+   "logprobs": [
+    -2.5646,
+    -3.3146,
+    -1.1896,
+    -0.5646
+   ]
+  },
+  {
+   "row": 2688,
+   "subject": "high_school_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5045,
+    -9.5045,
+    -0.0045,
+    -8.567
+   ]
+  },
+  {
+   "row": 2724,
+   "subject": "high_school_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.3192,
+    -10.0067,
+    -8.2567,
+    -0.0067
+   ]
+  },
+  {
+   "row": 2752,
+   "subject": "high_school_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.1845,
+    -4.997,
+    -0.0595,
+    -4.622
+   ]
+  },
+  {
+   "row": 2765,
+   "subject": "high_school_biology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.1504,
+    -0.0254,
+    -8.8379,
+    -6.3379
+   ]
+  },
+  {
+   "row": 2841,
+   "subject": "high_school_biology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0461,
+    -3.7961,
+    -5.6711,
+    -5.0461
+   ]
+  },
+  {
+   "row": 2892,
+   "subject": "high_school_biology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.8853,
+    -8.4477,
+    -7.2603,
+    -0.0103
+   ]
+  },
+  {
+   "row": 2920,
+   "subject": "high_school_biology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.2044,
+    -0.0169,
+    -7.1419,
+    -8.8919
+   ]
+  },
+  {
+   "row": 2940,
+   "subject": "high_school_biology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.6387,
+    -8.2637,
+    -0.0137,
+    -7.7012
+   ]
+  },
+  {
+   "row": 2969,
+   "subject": "high_school_biology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.0218,
+    -0.0218,
+    -8.5218,
+    -6.8968
+   ]
+  },
+  {
+   "row": 2977,
+   "subject": "high_school_biology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.5675,
+    -0.005,
+    -8.63,
+    -9.13
+   ]
+  },
+  {
+   "row": 2988,
+   "subject": "high_school_chemistry",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0186,
+    -5.6436,
+    -7.8311,
+    -7.1436
+   ]
+  },
+  {
+   "row": 2999,
+   "subject": "high_school_chemistry",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -4.2746,
+    -7.3996,
+    -0.0246,
+    -6.7746
+   ]
+  },
+  {
+   "row": 3006,
+   "subject": "high_school_chemistry",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5693,
+    -9.7568,
+    -0.0068,
+    -7.6318
+   ]
+  },
+  {
+   "row": 3027,
+   "subject": "high_school_chemistry",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.3927,
+    -8.0802,
+    -0.0177,
+    -8.0802
+   ]
+  },
+  {
+   "row": 3089,
+   "subject": "high_school_chemistry",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.6305,
+    -2.3805,
+    -4.2555,
+    -4.6305
+   ]
+  },
+  {
+   "row": 3113,
+   "subject": "high_school_chemistry",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.5122,
+    -0.0122,
+    -5.8872,
+    -7.1997
+   ]
+  },
+  {
+   "row": 3123,
+   "subject": "high_school_chemistry",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.5326,
+    -7.7201,
+    -3.6576,
+    -0.0326
+   ]
+  },
+  {
+   "row": 3145,
+   "subject": "high_school_chemistry",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.3855,
+    -7.3855,
+    -8.448,
+    -0.0105
+   ]
+  },
+  {
+   "row": 3173,
+   "subject": "high_school_chemistry",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.2248,
+    -7.2873,
+    -8.4123,
+    -0.0998
+   ]
+  },
+  {
+   "row": 3181,
+   "subject": "high_school_chemistry",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.7068,
+    -0.2068,
+    -5.4568,
+    -2.8318
+   ]
+  },
+  {
+   "row": 3190,
+   "subject": "high_school_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0031,
+    -7.1906,
+    -8.7531,
+    -9.5031
+   ]
+  },
+  {
+   "row": 3199,
+   "subject": "high_school_computer_science",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.511,
+    -10.1985,
+    -8.6985,
+    -0.011
+   ]
+  },
+  {
+   "row": 3211,
+   "subject": "high_school_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0076,
+    -7.7576,
+    -8.5076,
+    -8.5076
+   ]
+  },
+  {
+   "row": 3231,
+   "subject": "high_school_computer_science",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.7995,
+    -5.2995,
+    -0.0495,
+    -4.5495
+   ]
+  },
+  {
+   "row": 3232,
+   "subject": "high_school_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0073,
+    -7.7573,
+    -8.7573,
+    -8.1948
+   ]
+  },
+  {
+   "row": 3234,
+   "subject": "high_school_computer_science",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0184,
+    -6.3934,
+    -6.5809,
+    -5.3934
+   ]
+  },
+  {
+   "row": 3249,
+   "subject": "high_school_computer_science",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.6111,
+    -2.8611,
+    -0.3611,
+    -3.8611
+   ]
+  },
+  {
+   "row": 3253,
+   "subject": "high_school_computer_science",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.2749,
+    -0.0249,
+    -8.025,
+    -7.8999
+   ]
+  },
+  {
+   "row": 3254,
+   "subject": "high_school_computer_science",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6438,
+    -8.0188,
+    -0.0188,
+    -6.3938
+   ]
+  },
+  {
+   "row": 3280,
+   "subject": "high_school_computer_science",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.5656,
+    -11.1906,
+    -11.9406,
+    -0.0031
+   ]
+  },
+  {
+   "row": 3312,
+   "subject": "high_school_european_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.006,
+    -7.1935,
+    -9.0685,
+    -8.8185
+   ]
+  },
+  {
+   "row": 3313,
+   "subject": "high_school_european_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.147,
+    -8.022,
+    -6.5845,
+    -0.022
+   ]
+  },
+  {
+   "row": 3332,
+   "subject": "high_school_european_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.3228,
+    -8.5103,
+    -0.0103,
+    -6.3228
+   ]
+  },
+  {
+   "row": 3340,
+   "subject": "high_school_european_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.9249,
+    -4.9874,
+    -3.9249,
+    -0.05
+   ]
+  },
+  {
+   "row": 3374,
+   "subject": "high_school_european_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.7585,
+    -9.196,
+    -9.946,
+    -0.0086
+   ]
+  },
+  {
+   "row": 3376,
+   "subject": "high_school_european_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5156,
+    -7.8906,
+    -0.0156,
+    -5.0156
+   ]
+  },
+  {
+   "row": 3390,
+   "subject": "high_school_european_history",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.4724,
+    -0.0349,
+    -4.1599,
+    -6.2224
+   ]
+  },
+  {
+   "row": 3408,
+   "subject": "high_school_european_history",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.0552,
+    -0.1177,
+    -4.7427,
+    -5.5552
+   ]
+  },
+  {
+   "row": 3433,
+   "subject": "high_school_european_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.5357,
+    -0.8482,
+    -5.4107,
+    -0.5982
+   ]
+  },
+  {
+   "row": 3446,
+   "subject": "high_school_european_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.3423,
+    -2.3423,
+    -0.3423,
+    -4.1548
+   ]
+  },
+  {
+   "row": 3459,
+   "subject": "high_school_geography",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0625,
+    -3.8125,
+    -3.6875,
+    -4.8125
+   ]
+  },
+  {
+   "row": 3481,
+   "subject": "high_school_geography",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.3501,
+    -0.0376,
+    -5.5376,
+    -5.9126
+   ]
+  },
+  {
+   "row": 3507,
+   "subject": "high_school_geography",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -0.2039,
+    -5.3289,
+    -1.8289,
+    -7.1414
+   ]
+  },
+  {
+   "row": 3522,
+   "subject": "high_school_geography",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.8473,
+    -0.0348,
+    -5.4723,
+    -7.2223
+   ]
+  },
+  {
+   "row": 3551,
+   "subject": "high_school_geography",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0843,
+    -3.7093,
+    -3.5843,
+    -3.8343
+   ]
+  },
+  {
+   "row": 3578,
+   "subject": "high_school_geography",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7576,
+    -8.3826,
+    -6.6326,
+    -0.0076
+   ]
+  },
+  {
+   "row": 3586,
+   "subject": "high_school_geography",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -4.8354,
+    -5.2729,
+    -0.1479,
+    -2.1479
+   ]
+  },
+  {
+   "row": 3588,
+   "subject": "high_school_geography",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0055,
+    -7.068,
+    -9.568,
+    -7.8805
+   ]
+  },
+  {
+   "row": 3590,
+   "subject": "high_school_geography",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -1.9892,
+    -0.2392,
+    -3.4892,
+    -3.6142
+   ]
+  },
+  {
+   "row": 3628,
+   "subject": "high_school_geography",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.0138,
+    -0.0138,
+    -6.2013,
+    -6.8888
+   ]
+  },
+  {
+   "row": 3659,
+   "subject": "high_school_government_and_politics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.9414,
+    -10.6914,
+    -9.5039,
+    -0.0039
+   ]
+  },
+  {
+   "row": 3669,
+   "subject": "high_school_government_and_politics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.2564,
+    -9.8189,
+    -8.6314,
+    -0.0064
+   ]
+  },
+  {
+   "row": 3670,
+   "subject": "high_school_government_and_politics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.3225,
+    -0.01,
+    -7.5725,
+    -7.6975
+   ]
+  },
+  {
+   "row": 3697,
+   "subject": "high_school_government_and_politics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.762,
+    -9.4495,
+    -0.012,
+    -8.6995
+   ]
+  },
+  {
+   "row": 3758,
+   "subject": "high_school_government_and_politics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -10.2521,
+    -11.5646,
+    -11.8771,
+    -0.0021
+   ]
+  },
+  {
+   "row": 3787,
+   "subject": "high_school_government_and_politics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0047,
+    -7.5047,
+    -10.9422,
+    -9.6922
+   ]
+  },
+  {
+   "row": 3812,
+   "subject": "high_school_government_and_politics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0022,
+    -10.1897,
+    -12.3772,
+    -12.0022
+   ]
+  },
+  {
+   "row": 3817,
+   "subject": "high_school_government_and_politics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.4508,
+    -0.0133,
+    -8.5133,
+    -9.5133
+   ]
+  },
+  {
+   "row": 3818,
+   "subject": "high_school_government_and_politics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0646,
+    -3.5646,
+    -6.2521,
+    -3.6896
+   ]
+  },
+  {
+   "row": 3834,
+   "subject": "high_school_government_and_politics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.3367,
+    -7.4617,
+    -7.2742,
+    -0.0242
+   ]
+  },
+  {
+   "row": 3847,
+   "subject": "high_school_macroeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0054,
+    -7.9429,
+    -9.5679,
+    -8.6929
+   ]
+  },
+  {
+   "row": 3881,
+   "subject": "high_school_macroeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.9618,
+    -5.4618,
+    -6.2118,
+    -0.0868
+   ]
+  },
+  {
+   "row": 3937,
+   "subject": "high_school_macroeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.3285,
+    -8.5785,
+    -6.766,
+    -0.016
+   ]
+  },
+  {
+   "row": 3960,
+   "subject": "high_school_macroeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0161,
+    -6.5786,
+    -8.7661,
+    -8.5161
+   ]
+  },
+  {
+   "row": 3974,
+   "subject": "high_school_macroeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0013,
+    -9.7513,
+    -11.2513,
+    -9.0638
+   ]
+  },
+  {
+   "row": 4016,
+   "subject": "high_school_macroeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0254,
+    -6.7129,
+    -6.7754,
+    -4.5254
+   ]
+  },
+  {
+   "row": 4035,
+   "subject": "high_school_macroeconomics",
+   "answer": 2,
+   "pred": 1,
+   "logprobs": [
+    -2.8914,
+    -0.1414,
+    -3.0164,
+    -5.0164
+   ]
+  },
+  {
+   "row": 4095,
+   "subject": "high_school_macroeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7873,
+    -7.0373,
+    -4.0373,
+    -0.0373
+   ]
+  },
+  {
+   "row": 4112,
+   "subject": "high_school_macroeconomics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.3158,
+    -9.0658,
+    -0.0033,
+    -9.1283
+   ]
+  },
+  {
+   "row": 4127,
+   "subject": "high_school_macroeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0134,
+    -5.8259,
+    -8.4509,
+    -6.5134
+   ]
+  },
+  {
+   "row": 4239,
+   "subject": "high_school_mathematics",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -1.3019,
+    -2.1769,
+    -2.6769,
+    -1.3019
+   ]
+  },
+  {
+   "row": 4276,
+   "subject": "high_school_mathematics",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -1.1149,
+    -4.6774,
+    -1.3649,
+    -1.4899
+   ]
+  },
+  {
+   "row": 4296,
+   "subject": "high_school_mathematics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.5366,
+    -2.9116,
+    -4.6616,
+    -0.6616
+   ]
+  },
+  {
+   "row": 4356,
+   "subject": "high_school_mathematics",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.8753,
+    -2.8753,
+    -4.5003,
+    -4.3753
+   ]
+  },
+  {
+   "row": 4361,
+   "subject": "high_school_mathematics",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -1.0352,
+    -1.2852,
+    -1.5352,
+    -2.4102
+   ]
+  },
+  {
+   "row": 4365,
+   "subject": "high_school_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.1997,
+    -0.0747,
+    -5.2622,
+    -6.3872
+   ]
+  },
+  {
+   "row": 4438,
+   "subject": "high_school_mathematics",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -1.0767,
+    -1.3267,
+    -1.4517,
+    -2.4516
+   ]
+  },
+  {
+   "row": 4478,
+   "subject": "high_school_mathematics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.0928,
+    -0.2803,
+    -5.9053,
+    -5.5928
+   ]
+  },
+  {
+   "row": 4487,
+   "subject": "high_school_mathematics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -2.5424,
+    -4.2924,
+    -6.1674,
+    -5.9799
+   ]
+  },
+  {
+   "row": 4490,
+   "subject": "high_school_mathematics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.6191,
+    -1.1191,
+    -2.3691,
+    -3.6191
+   ]
+  },
+  {
+   "row": 4513,
+   "subject": "high_school_microeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.8884,
+    -4.5134,
+    -1.1384,
+    -0.5134
+   ]
+  },
+  {
+   "row": 4517,
+   "subject": "high_school_microeconomics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5069,
+    -9.6319,
+    -0.0069,
+    -7.5069
+   ]
+  },
+  {
+   "row": 4575,
+   "subject": "high_school_microeconomics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.5879,
+    -10.3379,
+    -0.0254,
+    -8.1504
+   ]
+  },
+  {
+   "row": 4588,
+   "subject": "high_school_microeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0023,
+    -9.6898,
+    -11.3148,
+    -10.8148
+   ]
+  },
+  {
+   "row": 4609,
+   "subject": "high_school_microeconomics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.5087,
+    -7.6962,
+    -0.0087,
+    -6.5087
+   ]
+  },
+  {
+   "row": 4618,
+   "subject": "high_school_microeconomics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.3776,
+    -9.0651,
+    -0.0026,
+    -8.4401
+   ]
+  },
+  {
+   "row": 4625,
+   "subject": "high_school_microeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.1288,
+    -9.3788,
+    -9.8163,
+    -0.0038
+   ]
+  },
+  {
+   "row": 4693,
+   "subject": "high_school_microeconomics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.03,
+    -5.03,
+    -5.03,
+    -4.655
+   ]
+  },
+  {
+   "row": 4701,
+   "subject": "high_school_microeconomics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -4.1216,
+    -5.5591,
+    -0.1216,
+    -2.6216
+   ]
+  },
+  {
+   "row": 4708,
+   "subject": "high_school_microeconomics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.6588,
+    -6.2838,
+    -6.7838,
+    -0.0338
+   ]
+  },
+  {
+   "row": 4748,
+   "subject": "high_school_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.758,
+    -7.6955,
+    -8.508,
+    -0.008
+   ]
+  },
+  {
+   "row": 4780,
+   "subject": "high_school_physics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.5415,
+    -7.979,
+    -0.0415,
+    -5.5415
+   ]
+  },
+  {
+   "row": 4839,
+   "subject": "high_school_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.9402,
+    -2.4402,
+    -2.4402,
+    -1.9402
+   ]
+  },
+  {
+   "row": 4840,
+   "subject": "high_school_physics",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -1.6849,
+    -0.4349,
+    -4.8724,
+    -4.8099
+   ]
+  },
+  {
+   "row": 4852,
+   "subject": "high_school_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1741,
+    -4.0491,
+    -5.4241,
+    -2.0491
+   ]
+  },
+  {
+   "row": 4854,
+   "subject": "high_school_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.9087,
+    -8.7212,
+    -8.7837,
+    -0.0337
+   ]
+  },
+  {
+   "row": 4855,
+   "subject": "high_school_physics",
+   "answer": 2,
+   "pred": 1,
+   "logprobs": [
+    -3.9177,
+    -0.5427,
+    -2.5427,
+    -3.2927
+   ]
+  },
+  {
+   "row": 4860,
+   "subject": "high_school_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.3947,
+    -8.5197,
+    -8.2697,
+    -0.0197
+   ]
+  },
+  {
+   "row": 4874,
+   "subject": "high_school_physics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.6874,
+    -4.1874,
+    -6.8749,
+    -0.3124
+   ]
+  },
+  {
+   "row": 4879,
+   "subject": "high_school_physics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3964,
+    -2.5214,
+    -2.3964,
+    -4.4589
+   ]
+  },
+  {
+   "row": 4887,
+   "subject": "high_school_psychology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0059,
+    -5.8809,
+    -7.5684,
+    -8.7559
+   ]
+  },
+  {
+   "row": 4947,
+   "subject": "high_school_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.1957,
+    -9.6957,
+    -0.0082,
+    -8.8207
+   ]
+  },
+  {
+   "row": 4982,
+   "subject": "high_school_psychology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.1327,
+    -11.2577,
+    -10.1327,
+    -0.0077
+   ]
+  },
+  {
+   "row": 5107,
+   "subject": "high_school_psychology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -9.0652,
+    -11.6902,
+    -8.1902,
+    -0.0027
+   ]
+  },
+  {
+   "row": 5111,
+   "subject": "high_school_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -9.134,
+    -12.384,
+    -0.009,
+    -8.3215
+   ]
+  },
+  {
+   "row": 5123,
+   "subject": "high_school_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6964,
+    -12.0089,
+    -0.0089,
+    -9.8214
+   ]
+  },
+  {
+   "row": 5177,
+   "subject": "high_school_psychology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.0754,
+    -0.0129,
+    -9.7004,
+    -9.5129
+   ]
+  },
+  {
+   "row": 5198,
+   "subject": "high_school_psychology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.3205,
+    -8.3205,
+    -6.008,
+    -0.008
+   ]
+  },
+  {
+   "row": 5292,
+   "subject": "high_school_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.3583,
+    -7.2333,
+    -0.2333,
+    -1.7333
+   ]
+  },
+  {
+   "row": 5386,
+   "subject": "high_school_psychology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.0184,
+    -0.0184,
+    -5.5809,
+    -6.5184
+   ]
+  },
+  {
+   "row": 5432,
+   "subject": "high_school_statistics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.9316,
+    -0.5566,
+    -5.6191,
+    -3.3066
+   ]
+  },
+  {
+   "row": 5441,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.5099,
+    -8.3849,
+    -8.8224,
+    -0.0099
+   ]
+  },
+  {
+   "row": 5497,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.3046,
+    -7.2421,
+    -8.2421,
+    -0.0546
+   ]
+  },
+  {
+   "row": 5521,
+   "subject": "high_school_statistics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.0679,
+    -7.5054,
+    -0.0679,
+    -6.0679
+   ]
+  },
+  {
+   "row": 5572,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.2715,
+    -1.7715,
+    -0.7715,
+    -1.3965
+   ]
+  },
+  {
+   "row": 5608,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.843,
+    -5.0305,
+    -0.468,
+    -1.968
+   ]
+  },
+  {
+   "row": 5635,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7596,
+    -8.8221,
+    -9.0721,
+    -0.0096
+   ]
+  },
+  {
+   "row": 5640,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.937,
+    -2.812,
+    -0.937,
+    -1.687
+   ]
+  },
+  {
+   "row": 5641,
+   "subject": "high_school_statistics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.0787,
+    -5.7037,
+    -0.0787,
+    -4.5162
+   ]
+  },
+  {
+   "row": 5647,
+   "subject": "high_school_statistics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.5266,
+    -8.5891,
+    -11.1516,
+    -0.0266
+   ]
+  },
+  {
+   "row": 5667,
+   "subject": "high_school_us_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.8002,
+    -8.4252,
+    -6.8002,
+    -0.0502
+   ]
+  },
+  {
+   "row": 5674,
+   "subject": "high_school_us_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.9268,
+    -9.2393,
+    -10.6768,
+    -0.0519
+   ]
+  },
+  {
+   "row": 5703,
+   "subject": "high_school_us_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.0743,
+    -8.5743,
+    -0.0118,
+    -7.6368
+   ]
+  },
+  {
+   "row": 5706,
+   "subject": "high_school_us_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5109,
+    -7.5109,
+    -0.0109,
+    -6.8234
+   ]
+  },
+  {
+   "row": 5763,
+   "subject": "high_school_us_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0232,
+    -5.0232,
+    -7.8357,
+    -8.1481
+   ]
+  },
+  {
+   "row": 5766,
+   "subject": "high_school_us_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3119,
+    -3.0619,
+    -2.3119,
+    -3.0619
+   ]
+  },
+  {
+   "row": 5785,
+   "subject": "high_school_us_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.9386,
+    -12.6261,
+    -0.0011,
+    -9.8136
+   ]
+  },
+  {
+   "row": 5801,
+   "subject": "high_school_us_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.467,
+    -6.6545,
+    -8.592,
+    -0.0295
+   ]
+  },
+  {
+   "row": 5827,
+   "subject": "high_school_us_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.0688,
+    -7.9438,
+    -9.1313,
+    -0.0063
+   ]
+  },
+  {
+   "row": 5850,
+   "subject": "high_school_us_history",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.1452,
+    -0.0827,
+    -8.6452,
+    -7.8327
+   ]
+  },
+  {
+   "row": 5880,
+   "subject": "high_school_world_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0064,
+    -8.0689,
+    -11.0064,
+    -9.8189
+   ]
+  },
+  {
+   "row": 5918,
+   "subject": "high_school_world_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0134,
+    -5.7634,
+    -9.0759,
+    -8.8884
+   ]
+  },
+  {
+   "row": 5921,
+   "subject": "high_school_world_history",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.056,
+    -3.806,
+    -7.056,
+    -5.556
+   ]
+  },
+  {
+   "row": 5935,
+   "subject": "high_school_world_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.1883,
+    -6.4383,
+    -0.8758,
+    -0.6258
+   ]
+  },
+  {
+   "row": 5948,
+   "subject": "high_school_world_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.8002,
+    -7.4252,
+    -0.1127,
+    -2.7377
+   ]
+  },
+  {
+   "row": 5986,
+   "subject": "high_school_world_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.5211,
+    -7.8336,
+    -5.1461,
+    -0.0211
+   ]
+  },
+  {
+   "row": 6013,
+   "subject": "high_school_world_history",
+   "answer": 1,
+   "pred": 3,
+   "logprobs": [
+    -4.0637,
+    -1.3137,
+    -3.1888,
+    -0.4387
+   ]
+  },
+  {
+   "row": 6070,
+   "subject": "high_school_world_history",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.4408,
+    -10.5658,
+    -9.3158,
+    -0.0033
+   ]
+  },
+  {
+   "row": 6078,
+   "subject": "high_school_world_history",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.888,
+    -0.013,
+    -8.638,
+    -7.5755
+   ]
+  },
+  {
+   "row": 6086,
+   "subject": "high_school_world_history",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.194,
+    -9.819,
+    -0.0065,
+    -7.194
+   ]
+  },
+  {
+   "row": 6114,
+   "subject": "human_aging",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.068,
+    -4.068,
+    -3.318,
+    -4.943
+   ]
+  },
+  {
+   "row": 6144,
+   "subject": "human_aging",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -1.5633,
+    -1.3133,
+    -1.4383,
+    -1.3133
+   ]
+  },
+  {
+   "row": 6204,
+   "subject": "human_aging",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.0899,
+    -5.2149,
+    -0.0899,
+    -2.8399
+   ]
+  },
+  {
+   "row": 6205,
+   "subject": "human_aging",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0219,
+    -4.1469,
+    -7.3969,
+    -7.0219
+   ]
+  },
+  {
+   "row": 6211,
+   "subject": "human_aging",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.6575,
+    -8.1575,
+    -0.1575,
+    -2.0325
+   ]
+  },
+  {
+   "row": 6225,
+   "subject": "human_aging",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.6387,
+    -0.0137,
+    -7.1387,
+    -6.8262
+   ]
+  },
+  {
+   "row": 6262,
+   "subject": "human_aging",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.71,
+    -4.96,
+    -0.71,
+    -4.96
+   ]
+  },
+  {
+   "row": 6268,
+   "subject": "human_aging",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.9178,
+    -0.0428,
+    -6.8553,
+    -5.9803
+   ]
+  },
+  {
+   "row": 6309,
+   "subject": "human_aging",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.003,
+    -8.128,
+    -9.878,
+    -9.4405
+   ]
+  },
+  {
+   "row": 6311,
+   "subject": "human_aging",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -5.8719,
+    -6.4344,
+    -0.0594,
+    -3.3094
+   ]
+  },
+  {
+   "row": 6328,
+   "subject": "human_sexuality",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -9.6302,
+    -11.4427,
+    -7.0052,
+    -0.0052
+   ]
+  },
+  {
+   "row": 6338,
+   "subject": "human_sexuality",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -8.4435,
+    -0.006,
+    -7.8185,
+    -9.0685
+   ]
+  },
+  {
+   "row": 6348,
+   "subject": "human_sexuality",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.3924,
+    -0.0799,
+    -3.5798,
+    -4.3299
+   ]
+  },
+  {
+   "row": 6352,
+   "subject": "human_sexuality",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.8407,
+    -6.9657,
+    -4.5282,
+    -0.0907
+   ]
+  },
+  {
+   "row": 6365,
+   "subject": "human_sexuality",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.6579,
+    -0.2204,
+    -6.7829,
+    -1.7204
+   ]
+  },
+  {
+   "row": 6384,
+   "subject": "human_sexuality",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.901,
+    -0.026,
+    -6.2135,
+    -6.901
+   ]
+  },
+  {
+   "row": 6387,
+   "subject": "human_sexuality",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.3932,
+    -7.0182,
+    -5.7057,
+    -0.0182
+   ]
+  },
+  {
+   "row": 6404,
+   "subject": "human_sexuality",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0021,
+    -9.3771,
+    -10.7521,
+    -10.7521
+   ]
+  },
+  {
+   "row": 6408,
+   "subject": "human_sexuality",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.3171,
+    -9.3796,
+    -0.0046,
+    -8.3796
+   ]
+  },
+  {
+   "row": 6440,
+   "subject": "human_sexuality",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.2956,
+    -4.9831,
+    -6.7956,
+    -0.0456
+   ]
+  },
+  {
+   "row": 6452,
+   "subject": "international_law",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0017,
+    -9.0642,
+    -11.7517,
+    -11.1267
+   ]
+  },
+  {
+   "row": 6463,
+   "subject": "international_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6298,
+    -10.6923,
+    -0.0048,
+    -7.6923
+   ]
+  },
+  {
+   "row": 6466,
+   "subject": "international_law",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.6283,
+    -0.0033,
+    -9.6908,
+    -9.1908
+   ]
+  },
+  {
+   "row": 6481,
+   "subject": "international_law",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.2844,
+    -0.0344,
+    -4.6594,
+    -4.2844
+   ]
+  },
+  {
+   "row": 6512,
+   "subject": "international_law",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.0216,
+    -5.0217,
+    -4.3967,
+    -7.0217
+   ]
+  },
+  {
+   "row": 6523,
+   "subject": "international_law",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0024,
+    -9.3774,
+    -11.6899,
+    -9.6899
+   ]
+  },
+  {
+   "row": 6524,
+   "subject": "international_law",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.3198,
+    -0.0073,
+    -7.3198,
+    -7.6323
+   ]
+  },
+  {
+   "row": 6547,
+   "subject": "international_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.8168,
+    -9.6294,
+    -0.0043,
+    -6.3793
+   ]
+  },
+  {
+   "row": 6561,
+   "subject": "international_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.5081,
+    -9.5082,
+    -0.0081,
+    -8.0082
+   ]
+  },
+  {
+   "row": 6562,
+   "subject": "international_law",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0093,
+    -7.5093,
+    -12.4468,
+    -5.2593
+   ]
+  },
+  {
+   "row": 6566,
+   "subject": "jurisprudence",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.6441,
+    -5.1441,
+    -0.0191,
+    -5.3941
+   ]
+  },
+  {
+   "row": 6567,
+   "subject": "jurisprudence",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.5183,
+    -8.4558,
+    -0.0183,
+    -7.2683
+   ]
+  },
+  {
+   "row": 6580,
+   "subject": "jurisprudence",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.257,
+    -10.5695,
+    -10.0695,
+    -0.007
+   ]
+  },
+  {
+   "row": 6584,
+   "subject": "jurisprudence",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.8856,
+    -0.2606,
+    -1.7606,
+    -4.4481
+   ]
+  },
+  {
+   "row": 6614,
+   "subject": "jurisprudence",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0057,
+    -6.6932,
+    -9.8807,
+    -9.2557
+   ]
+  },
+  {
+   "row": 6619,
+   "subject": "jurisprudence",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0022,
+    -8.8772,
+    -9.2522,
+    -7.7522
+   ]
+  },
+  {
+   "row": 6629,
+   "subject": "jurisprudence",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.0766,
+    -5.7641,
+    -4.5766,
+    -0.0766
+   ]
+  },
+  {
+   "row": 6648,
+   "subject": "jurisprudence",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0182,
+    -6.2057,
+    -10.1432,
+    -6.0807
+   ]
+  },
+  {
+   "row": 6656,
+   "subject": "jurisprudence",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.8835,
+    -0.0085,
+    -7.321,
+    -8.571
+   ]
+  },
+  {
+   "row": 6667,
+   "subject": "jurisprudence",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.3909,
+    -0.0159,
+    -10.1409,
+    -8.3909
+   ]
+  },
+  {
+   "row": 6683,
+   "subject": "logical_fallacies",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.6589,
+    -0.8464,
+    -0.5964,
+    -6.0339
+   ]
+  },
+  {
+   "row": 6712,
+   "subject": "logical_fallacies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.2942,
+    -3.9192,
+    -2.1692,
+    -0.1692
+   ]
+  },
+  {
+   "row": 6720,
+   "subject": "logical_fallacies",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6921,
+    -9.0046,
+    -0.0046,
+    -6.8171
+   ]
+  },
+  {
+   "row": 6734,
+   "subject": "logical_fallacies",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.4067,
+    -4.4067,
+    -0.2817,
+    -2.2817
+   ]
+  },
+  {
+   "row": 6769,
+   "subject": "logical_fallacies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.879,
+    -9.9415,
+    -7.754,
+    -0.004
+   ]
+  },
+  {
+   "row": 6771,
+   "subject": "logical_fallacies",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.6285,
+    -10.691,
+    -0.0035,
+    -8.8785
+   ]
+  },
+  {
+   "row": 6773,
+   "subject": "logical_fallacies",
+   "answer": 0,
+   "pred": 1,
+   "logprobs": [
+    -1.6332,
+    -0.2582,
+    -4.8832,
+    -4.4457
+   ]
+  },
+  {
+   "row": 6783,
+   "subject": "logical_fallacies",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.5685,
+    -0.0684,
+    -3.4434,
+    -6.9435
+   ]
+  },
+  {
+   "row": 6789,
+   "subject": "logical_fallacies",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.567,
+    -10.317,
+    -0.0045,
+    -8.442
+   ]
+  },
+  {
+   "row": 6821,
+   "subject": "logical_fallacies",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1978,
+    -2.1978,
+    -2.9478,
+    -4.5728
+   ]
+  },
+  {
+   "row": 6849,
+   "subject": "machine_learning",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.733,
+    -0.0455,
+    -8.358,
+    -6.6705
+   ]
+  },
+  {
+   "row": 6850,
+   "subject": "machine_learning",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.9658,
+    -0.1533,
+    -7.5283,
+    -3.0283
+   ]
+  },
+  {
+   "row": 6853,
+   "subject": "machine_learning",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0037,
+    -7.8787,
+    -10.3787,
+    -9.1287
+   ]
+  },
+  {
+   "row": 6869,
+   "subject": "machine_learning",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0045,
+    -7.0045,
+    -10.7545,
+    -9.192
+   ]
+  },
+  {
+   "row": 6872,
+   "subject": "machine_learning",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -1.3464,
+    -4.2214,
+    -0.9714,
+    -2.2214
+   ]
+  },
+  {
+   "row": 6896,
+   "subject": "machine_learning",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0301,
+    -5.2801,
+    -4.6551,
+    -5.1551
+   ]
+  },
+  {
+   "row": 6908,
+   "subject": "machine_learning",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -1.4767,
+    -2.4767,
+    -0.6017,
+    -2.7267
+   ]
+  },
+  {
+   "row": 6909,
+   "subject": "machine_learning",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.0042,
+    -9.6292,
+    -0.0042,
+    -8.0042
+   ]
+  },
+  {
+   "row": 6932,
+   "subject": "machine_learning",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.9005,
+    -7.338,
+    -0.0255,
+    -4.9005
+   ]
+  },
+  {
+   "row": 6946,
+   "subject": "machine_learning",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.4057,
+    -5.0307,
+    -0.7807,
+    -5.7807
+   ]
+  },
+  {
+   "row": 6948,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.0042,
+    -11.8167,
+    -11.3792,
+    -0.0042
+   ]
+  },
+  {
+   "row": 6954,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.4427,
+    -9.9427,
+    -9.5052,
+    -0.0051
+   ]
+  },
+  {
+   "row": 6969,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.6991,
+    -9.1991,
+    -9.6366,
+    -0.0117
+   ]
+  },
+  {
+   "row": 6972,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.0699,
+    -9.5074,
+    -8.5074,
+    -0.0074
+   ]
+  },
+  {
+   "row": 6974,
+   "subject": "management",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0175,
+    -4.3925,
+    -9.1425,
+    -7.705
+   ]
+  },
+  {
+   "row": 6993,
+   "subject": "management",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.2584,
+    -0.0084,
+    -8.1959,
+    -8.8834
+   ]
+  },
+  {
+   "row": 7002,
+   "subject": "management",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.655,
+    -2.655,
+    -1.155,
+    -3.03
+   ]
+  },
+  {
+   "row": 7011,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.88,
+    -9.755,
+    -9.38,
+    -0.005
+   ]
+  },
+  {
+   "row": 7031,
+   "subject": "management",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.4882,
+    -6.8632,
+    -5.7382,
+    -0.0507
+   ]
+  },
+  {
+   "row": 7035,
+   "subject": "management",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -10.3812,
+    -12.5062,
+    -0.0062,
+    -10.0687
+   ]
+  },
+  {
+   "row": 7077,
+   "subject": "marketing",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.0732,
+    -9.0107,
+    -0.0107,
+    -7.1357
+   ]
+  },
+  {
+   "row": 7103,
+   "subject": "marketing",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.5662,
+    -9.5662,
+    -9.8162,
+    -0.0037
+   ]
+  },
+  {
+   "row": 7139,
+   "subject": "marketing",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1282,
+    -2.6282,
+    -3.5032,
+    -4.2532
+   ]
+  },
+  {
+   "row": 7146,
+   "subject": "marketing",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.2993,
+    -0.1743,
+    -2.5493,
+    -3.5493
+   ]
+  },
+  {
+   "row": 7151,
+   "subject": "marketing",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0289,
+    -5.1539,
+    -5.1539,
+    -4.4039
+   ]
+  },
+  {
+   "row": 7155,
+   "subject": "marketing",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.2761,
+    -0.1511,
+    -3.6511,
+    -5.3386
+   ]
+  },
+  {
+   "row": 7184,
+   "subject": "marketing",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.7856,
+    -5.4107,
+    -6.5357,
+    -0.0357
+   ]
+  },
+  {
+   "row": 7199,
+   "subject": "marketing",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.003,
+    -0.003,
+    -10.8155,
+    -11.1905
+   ]
+  },
+  {
+   "row": 7222,
+   "subject": "marketing",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0072,
+    -5.8197,
+    -8.0697,
+    -7.6322
+   ]
+  },
+  {
+   "row": 7240,
+   "subject": "marketing",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.5652,
+    -11.6902,
+    -0.0027,
+    -8.3777
+   ]
+  },
+  {
+   "row": 7287,
+   "subject": "medical_genetics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.3854,
+    -10.6979,
+    -0.0104,
+    -8.3854
+   ]
+  },
+  {
+   "row": 7297,
+   "subject": "medical_genetics",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.5719,
+    -10.8219,
+    -10.4469,
+    -0.0094
+   ]
+  },
+  {
+   "row": 7299,
+   "subject": "medical_genetics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0274,
+    -10.7774,
+    -12.3399,
+    -10.9649
+   ]
+  },
+  {
+   "row": 7302,
+   "subject": "medical_genetics",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -1.9974,
+    -4.3724,
+    -0.2474,
+    -3.1224
+   ]
+  },
+  {
+   "row": 7314,
+   "subject": "medical_genetics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0188,
+    -6.3313,
+    -8.3313,
+    -4.8938
+   ]
+  },
+  {
+   "row": 7320,
+   "subject": "medical_genetics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3176,
+    -7.5676,
+    -7.4426,
+    -1.4426
+   ]
+  },
+  {
+   "row": 7324,
+   "subject": "medical_genetics",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0133,
+    -5.5758,
+    -7.7008,
+    -6.1383
+   ]
+  },
+  {
+   "row": 7364,
+   "subject": "medical_genetics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.5341,
+    -0.2841,
+    -2.2841,
+    -3.0341
+   ]
+  },
+  {
+   "row": 7369,
+   "subject": "medical_genetics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.255,
+    -0.005,
+    -11.13,
+    -8.88
+   ]
+  },
+  {
+   "row": 7374,
+   "subject": "medical_genetics",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.0161,
+    -0.0161,
+    -8.3286,
+    -7.0786
+   ]
+  },
+  {
+   "row": 7692,
+   "subject": "miscellaneous",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.6458,
+    -0.0208,
+    -7.8958,
+    -6.9583
+   ]
+  },
+  {
+   "row": 7814,
+   "subject": "miscellaneous",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.1361,
+    -9.0736,
+    -10.3861,
+    -0.0111
+   ]
+  },
+  {
+   "row": 7819,
+   "subject": "miscellaneous",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0022,
+    -9.5647,
+    -9.5022,
+    -10.0022
+   ]
+  },
+  {
+   "row": 7910,
+   "subject": "miscellaneous",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -9.8151,
+    -12.0026,
+    -0.0026,
+    -8.6901
+   ]
+  },
+  {
+   "row": 7923,
+   "subject": "miscellaneous",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.57,
+    -9.32,
+    -0.0075,
+    -6.8825
+   ]
+  },
+  {
+   "row": 7935,
+   "subject": "miscellaneous",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.2546,
+    -10.2546,
+    -0.0046,
+    -7.7546
+   ]
+  },
+  {
+   "row": 7973,
+   "subject": "miscellaneous",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.0867,
+    -3.7117,
+    -0.2117,
+    -3.3367
+   ]
+  },
+  {
+   "row": 8033,
+   "subject": "miscellaneous",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.5714,
+    -9.2589,
+    -6.6964,
+    -0.0089
+   ]
+  },
+  {
+   "row": 8049,
+   "subject": "miscellaneous",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0054,
+    -8.7554,
+    -9.0679,
+    -6.3804
+   ]
+  },
+  {
+   "row": 8097,
+   "subject": "miscellaneous",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.9617,
+    -9.7742,
+    -8.4617,
+    -0.0242
+   ]
+  },
+  {
+   "row": 8168,
+   "subject": "moral_disputes",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.3833,
+    -10.8833,
+    -0.0083,
+    -7.6333
+   ]
+  },
+  {
+   "row": 8199,
+   "subject": "moral_disputes",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1085,
+    -2.3585,
+    -6.546,
+    -8.046
+   ]
+  },
+  {
+   "row": 8217,
+   "subject": "moral_disputes",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0633,
+    -2.9383,
+    -6.1883,
+    -6.1258
+   ]
+  },
+  {
+   "row": 8235,
+   "subject": "moral_disputes",
+   "answer": 3,
+   "pred": 1,
+   "logprobs": [
+    -5.5232,
+    -0.2107,
+    -6.5232,
+    -1.7107
+   ]
+  },
+  {
+   "row": 8283,
+   "subject": "moral_disputes",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.7581,
+    -0.0081,
+    -8.1331,
+    -6.6331
+   ]
+  },
+  {
+   "row": 8301,
+   "subject": "moral_disputes",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0009,
+    -9.4384,
+    -11.6259,
+    -10.1259
+   ]
+  },
+  {
+   "row": 8478,
+   "subject": "moral_disputes",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.8577,
+    -8.7952,
+    -3.4202,
+    -0.0452
+   ]
+  },
+  {
+   "row": 8487,
+   "subject": "moral_disputes",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.8262,
+    -9.3262,
+    -0.0137,
+    -4.6387
+   ]
+  },
+  {
+   "row": 8504,
+   "subject": "moral_disputes",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1271,
+    -3.5021,
+    -3.3771,
+    -3.1271
+   ]
+  },
+  {
+   "row": 8508,
+   "subject": "moral_disputes",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.6443,
+    -7.2068,
+    -0.0193,
+    -8.8318
+   ]
+  },
+  {
+   "row": 8666,
+   "subject": "moral_scenarios",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.5875,
+    -7.5875,
+    -0.025,
+    -6.7125
+   ]
+  },
+  {
+   "row": 8993,
+   "subject": "moral_scenarios",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.7516,
+    -3.6266,
+    -4.4391,
+    -0.1266
+   ]
+  },
+  {
+   "row": 9033,
+   "subject": "moral_scenarios",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6514,
+    -6.0889,
+    -0.0264,
+    -7.4639
+   ]
+  },
+  {
+   "row": 9057,
+   "subject": "moral_scenarios",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -7.648,
+    -8.398,
+    -0.023,
+    -7.2105
+   ]
+  },
+  {
+   "row": 9152,
+   "subject": "moral_scenarios",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.4493,
+    -5.1993,
+    -0.9493,
+    -0.5743
+   ]
+  },
+  {
+   "row": 9203,
+   "subject": "moral_scenarios",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.0546,
+    -0.8046,
+    -1.3046,
+    -2.3046
+   ]
+  },
+  {
+   "row": 9279,
+   "subject": "moral_scenarios",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.384,
+    -8.759,
+    -0.009,
+    -8.3215
+   ]
+  },
+  {
+   "row": 9347,
+   "subject": "moral_scenarios",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.9726,
+    -2.6601,
+    -3.5351,
+    -0.1601
+   ]
+  },
+  {
+   "row": 9365,
+   "subject": "moral_scenarios",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.7371,
+    -5.0496,
+    -1.6746,
+    -0.2996
+   ]
+  },
+  {
+   "row": 9389,
+   "subject": "moral_scenarios",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.0347,
+    -0.0347,
+    -7.9097,
+    -8.7847
+   ]
+  },
+  {
+   "row": 9436,
+   "subject": "nutrition",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.5396,
+    -2.0396,
+    -0.1646,
+    -5.7896
+   ]
+  },
+  {
+   "row": 9450,
+   "subject": "nutrition",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.1318,
+    -10.6318,
+    -0.0068,
+    -8.0693
+   ]
+  },
+  {
+   "row": 9476,
+   "subject": "nutrition",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0835,
+    -4.8335,
+    -5.0835,
+    -2.8335
+   ]
+  },
+  {
+   "row": 9490,
+   "subject": "nutrition",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.0386,
+    -5.0386,
+    -6.1011,
+    -0.0386
+   ]
+  },
+  {
+   "row": 9508,
+   "subject": "nutrition",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.1378,
+    -7.0753,
+    -0.0128,
+    -6.7003
+   ]
+  },
+  {
+   "row": 9514,
+   "subject": "nutrition",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -1.5176,
+    -2.2676,
+    -2.7676,
+    -0.5176
+   ]
+  },
+  {
+   "row": 9567,
+   "subject": "nutrition",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.5111,
+    -8.7611,
+    -0.0111,
+    -6.8236
+   ]
+  },
+  {
+   "row": 9596,
+   "subject": "nutrition",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -2.1366,
+    -2.8866,
+    -0.6366,
+    -1.2616
+   ]
+  },
+  {
+   "row": 9645,
+   "subject": "nutrition",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.4626,
+    -6.8376,
+    -0.0876,
+    -3.5876
+   ]
+  },
+  {
+   "row": 9707,
+   "subject": "nutrition",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.003,
+    -7.003,
+    -9.6905,
+    -8.878
+   ]
+  },
+  {
+   "row": 9747,
+   "subject": "philosophy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0075,
+    -6.1325,
+    -7.0075,
+    -7.2575
+   ]
+  },
+  {
+   "row": 9767,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.0664,
+    -10.9414,
+    -0.0039,
+    -8.5664
+   ]
+  },
+  {
+   "row": 9803,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.945,
+    -10.695,
+    -0.0075,
+    -6.695
+   ]
+  },
+  {
+   "row": 9822,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.5427,
+    -5.6677,
+    -0.0427,
+    -5.7302
+   ]
+  },
+  {
+   "row": 9841,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.6296,
+    -9.6921,
+    -0.0046,
+    -7.1296
+   ]
+  },
+  {
+   "row": 9904,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.6307,
+    -8.4432,
+    -0.0057,
+    -6.3807
+   ]
+  },
+  {
+   "row": 9905,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.1962,
+    -8.9462,
+    -0.0087,
+    -5.6337
+   ]
+  },
+  {
+   "row": 9943,
+   "subject": "philosophy",
+   "answer": 2,
+   "pred": 1,
+   "logprobs": [
+    -3.5557,
+    -0.1807,
+    -2.3057,
+    -3.6807
+   ]
+  },
+  {
+   "row": 9945,
+   "subject": "philosophy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.0695,
+    -0.007,
+    -7.4445,
+    -8.6945
+   ]
+  },
+  {
+   "row": 9966,
+   "subject": "philosophy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0178,
+    -8.0178,
+    -7.3303,
+    -8.7053
+   ]
+  },
+  {
+   "row": 10081,
+   "subject": "prehistory",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.5078,
+    -9.9453,
+    -7.6328,
+    -0.0078
+   ]
+  },
+  {
+   "row": 10088,
+   "subject": "prehistory",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.8238,
+    -11.2613,
+    -11.5113,
+    -0.0113
+   ]
+  },
+  {
+   "row": 10097,
+   "subject": "prehistory",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.1951,
+    -5.6326,
+    -0.0076,
+    -6.6326
+   ]
+  },
+  {
+   "row": 10115,
+   "subject": "prehistory",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.6917,
+    -10.0667,
+    -7.8792,
+    -0.0042
+   ]
+  },
+  {
+   "row": 10170,
+   "subject": "prehistory",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.8181,
+    -10.6306,
+    -0.0056,
+    -7.2556
+   ]
+  },
+  {
+   "row": 10185,
+   "subject": "prehistory",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.9785,
+    -0.3534,
+    -1.7285,
+    -2.8535
+   ]
+  },
+  {
+   "row": 10217,
+   "subject": "prehistory",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.1348,
+    -0.0098,
+    -7.9473,
+    -8.5098
+   ]
+  },
+  {
+   "row": 10247,
+   "subject": "prehistory",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.1923,
+    -9.7548,
+    -0.0048,
+    -6.7548
+   ]
+  },
+  {
+   "row": 10249,
+   "subject": "prehistory",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.3871,
+    -1.3871,
+    -3.1371,
+    -3.7621
+   ]
+  },
+  {
+   "row": 10277,
+   "subject": "prehistory",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0036,
+    -10.1911,
+    -9.8786,
+    -10.5661
+   ]
+  },
+  {
+   "row": 10392,
+   "subject": "professional_accounting",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.318,
+    -3.943,
+    -1.568,
+    -5.068
+   ]
+  },
+  {
+   "row": 10420,
+   "subject": "professional_accounting",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.8361,
+    -2.5861,
+    -0.3361,
+    -1.9611
+   ]
+  },
+  {
+   "row": 10437,
+   "subject": "professional_accounting",
+   "answer": 0,
+   "pred": 2,
+   "logprobs": [
+    -2.759,
+    -2.509,
+    -0.259,
+    -3.634
+   ]
+  },
+  {
+   "row": 10476,
+   "subject": "professional_accounting",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.2428,
+    -4.8678,
+    -1.9928,
+    -3.1178
+   ]
+  },
+  {
+   "row": 10479,
+   "subject": "professional_accounting",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0064,
+    -6.9439,
+    -8.5689,
+    -8.3189
+   ]
+  },
+  {
+   "row": 10481,
+   "subject": "professional_accounting",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.7371,
+    -1.6121,
+    -0.7371,
+    -1.7371
+   ]
+  },
+  {
+   "row": 10548,
+   "subject": "professional_accounting",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.5256,
+    -7.9631,
+    -0.0256,
+    -5.8381
+   ]
+  },
+  {
+   "row": 10549,
+   "subject": "professional_accounting",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.5219,
+    -4.9594,
+    -0.1469,
+    -3.7719
+   ]
+  },
+  {
+   "row": 10562,
+   "subject": "professional_accounting",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.2085,
+    -2.9585,
+    -2.3335,
+    -3.8335
+   ]
+  },
+  {
+   "row": 10569,
+   "subject": "professional_accounting",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0045,
+    -7.692,
+    -7.567,
+    -8.3795
+   ]
+  },
+  {
+   "row": 10729,
+   "subject": "professional_law",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.4679,
+    -4.9054,
+    -1.2179,
+    -6.0929
+   ]
+  },
+  {
+   "row": 10883,
+   "subject": "professional_law",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.6514,
+    -0.1514,
+    -2.5264,
+    -4.2764
+   ]
+  },
+  {
+   "row": 11223,
+   "subject": "professional_law",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.9909,
+    -2.9909,
+    -5.8034,
+    -0.1159
+   ]
+  },
+  {
+   "row": 11505,
+   "subject": "professional_law",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.5453,
+    -2.6078,
+    -3.6703,
+    -0.2328
+   ]
+  },
+  {
+   "row": 11602,
+   "subject": "professional_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.7439,
+    -6.5564,
+    -0.0564,
+    -6.7439
+   ]
+  },
+  {
+   "row": 11932,
+   "subject": "professional_law",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -1.6657,
+    -0.4157,
+    -2.7907,
+    -5.2282
+   ]
+  },
+  {
+   "row": 11974,
+   "subject": "professional_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.4353,
+    -5.4353,
+    -0.0603,
+    -6.0603
+   ]
+  },
+  {
+   "row": 12003,
+   "subject": "professional_law",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.1909,
+    -2.5659,
+    -5.6284,
+    -6.9409
+   ]
+  },
+  {
+   "row": 12054,
+   "subject": "professional_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.6374,
+    -8.5749,
+    -0.0749,
+    -8.0749
+   ]
+  },
+  {
+   "row": 12060,
+   "subject": "professional_law",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.299,
+    -1.549,
+    -0.424,
+    -6.299
+   ]
+  },
+  {
+   "row": 12196,
+   "subject": "professional_medicine",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.6133,
+    -0.0508,
+    -6.4258,
+    -7.1133
+   ]
+  },
+  {
+   "row": 12204,
+   "subject": "professional_medicine",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.2476,
+    -8.1851,
+    -0.0601,
+    -7.3726
+   ]
+  },
+  {
+   "row": 12215,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 0,
+   "logprobs": [
+    -0.6235,
+    -4.4985,
+    -4.686,
+    -0.9985
+   ]
+  },
+  {
+   "row": 12271,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.1808,
+    -7.8058,
+    -4.8058,
+    -0.3683
+   ]
+  },
+  {
+   "row": 12301,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.7337,
+    -5.3587,
+    -3.9837,
+    -1.3587
+   ]
+  },
+  {
+   "row": 12324,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 1,
+   "logprobs": [
+    -4.4632,
+    -0.5882,
+    -2.8382,
+    -1.2132
+   ]
+  },
+  {
+   "row": 12331,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -1.4513,
+    -3.2013,
+    -4.9513,
+    -0.5763
+   ]
+  },
+  {
+   "row": 12366,
+   "subject": "professional_medicine",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0197,
+    -8.0822,
+    -9.7072,
+    -9.2697
+   ]
+  },
+  {
+   "row": 12386,
+   "subject": "professional_medicine",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -4.2122,
+    -4.5872,
+    -5.7747,
+    -2.4622
+   ]
+  },
+  {
+   "row": 12427,
+   "subject": "professional_medicine",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -5.2819,
+    -7.3444,
+    -0.0319,
+    -6.9694
+   ]
+  },
+  {
+   "row": 12540,
+   "subject": "professional_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.8779,
+    -10.8779,
+    -0.0029,
+    -8.3154
+   ]
+  },
+  {
+   "row": 12606,
+   "subject": "professional_psychology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.5051,
+    -9.1926,
+    -8.8801,
+    -0.0051
+   ]
+  },
+  {
+   "row": 12616,
+   "subject": "professional_psychology",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -2.1665,
+    -5.1665,
+    -1.0415,
+    -0.6665
+   ]
+  },
+  {
+   "row": 12679,
+   "subject": "professional_psychology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.814,
+    -10.6265,
+    -9.189,
+    -0.0015
+   ]
+  },
+  {
+   "row": 12710,
+   "subject": "professional_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.6739,
+    -8.2989,
+    -0.0489,
+    -4.5489
+   ]
+  },
+  {
+   "row": 12866,
+   "subject": "professional_psychology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.7561,
+    -0.0061,
+    -9.7561,
+    -9.1936
+   ]
+  },
+  {
+   "row": 12884,
+   "subject": "professional_psychology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0028,
+    -7.7528,
+    -8.8778,
+    -7.9403
+   ]
+  },
+  {
+   "row": 12904,
+   "subject": "professional_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -2.8458,
+    -7.0958,
+    -0.0958,
+    -3.8458
+   ]
+  },
+  {
+   "row": 12923,
+   "subject": "professional_psychology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -4.4136,
+    -8.6011,
+    -0.0386,
+    -4.0386
+   ]
+  },
+  {
+   "row": 12934,
+   "subject": "professional_psychology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -2.8129,
+    -1.0629,
+    -1.5629,
+    -1.1879
+   ]
+  },
+  {
+   "row": 13054,
+   "subject": "public_relations",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.9289,
+    -0.7414,
+    -3.7414,
+    -0.7414
+   ]
+  },
+  {
+   "row": 13082,
+   "subject": "public_relations",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.5873,
+    -0.0248,
+    -7.8373,
+    -9.3373
+   ]
+  },
+  {
+   "row": 13083,
+   "subject": "public_relations",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.5077,
+    -0.0077,
+    -7.0702,
+    -8.3827
+   ]
+  },
+  {
+   "row": 13090,
+   "subject": "public_relations",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.3006,
+    -2.4256,
+    -2.3006,
+    -2.8006
+   ]
+  },
+  {
+   "row": 13107,
+   "subject": "public_relations",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0521,
+    -3.3021,
+    -5.6771,
+    -4.9271
+   ]
+  },
+  {
+   "row": 13111,
+   "subject": "public_relations",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.0776,
+    -0.0151,
+    -5.7026,
+    -9.0776
+   ]
+  },
+  {
+   "row": 13113,
+   "subject": "public_relations",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.2706,
+    -0.0206,
+    -5.6456,
+    -5.7081
+   ]
+  },
+  {
+   "row": 13117,
+   "subject": "public_relations",
+   "answer": 0,
+   "pred": 2,
+   "logprobs": [
+    -4.8997,
+    -6.5247,
+    -0.0247,
+    -4.5247
+   ]
+  },
+  {
+   "row": 13118,
+   "subject": "public_relations",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -3.1394,
+    -2.7644,
+    -0.6394,
+    -1.0144
+   ]
+  },
+  {
+   "row": 13137,
+   "subject": "public_relations",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.007,
+    -7.1945,
+    -8.1945,
+    -7.9445
+   ]
+  },
+  {
+   "row": 13202,
+   "subject": "security_studies",
+   "answer": 1,
+   "pred": 3,
+   "logprobs": [
+    -2.1673,
+    -2.5423,
+    -2.0423,
+    -0.4173
+   ]
+  },
+  {
+   "row": 13250,
+   "subject": "security_studies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.5117,
+    -8.8242,
+    -6.3242,
+    -0.0117
+   ]
+  },
+  {
+   "row": 13260,
+   "subject": "security_studies",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.59,
+    -1.965,
+    -3.465,
+    -1.34
+   ]
+  },
+  {
+   "row": 13263,
+   "subject": "security_studies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.2657,
+    -5.9532,
+    -5.7657,
+    -0.0157
+   ]
+  },
+  {
+   "row": 13294,
+   "subject": "security_studies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -7.6302,
+    -11.3802,
+    -10.7552,
+    -0.0052
+   ]
+  },
+  {
+   "row": 13295,
+   "subject": "security_studies",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.2912,
+    -6.3537,
+    -1.4162,
+    -5.7912
+   ]
+  },
+  {
+   "row": 13303,
+   "subject": "security_studies",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -3.7701,
+    -0.1451,
+    -2.7701,
+    -3.3951
+   ]
+  },
+  {
+   "row": 13304,
+   "subject": "security_studies",
+   "answer": 1,
+   "pred": 2,
+   "logprobs": [
+    -3.5082,
+    -0.8832,
+    -0.6332,
+    -4.3832
+   ]
+  },
+  {
+   "row": 13368,
+   "subject": "security_studies",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.0031,
+    -11.1906,
+    -8.1281,
+    -0.0031
+   ]
+  },
+  {
+   "row": 13398,
+   "subject": "security_studies",
+   "answer": 0,
+   "pred": 3,
+   "logprobs": [
+    -3.2284,
+    -5.1034,
+    -3.1034,
+    -0.1034
+   ]
+  },
+  {
+   "row": 13406,
+   "subject": "sociology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.2606,
+    -0.0106,
+    -8.1356,
+    -8.0731
+   ]
+  },
+  {
+   "row": 13440,
+   "subject": "sociology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0032,
+    -7.2532,
+    -8.9407,
+    -8.7532
+   ]
+  },
+  {
+   "row": 13450,
+   "subject": "sociology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -5.9544,
+    -0.0169,
+    -5.6419,
+    -7.6419
+   ]
+  },
+  {
+   "row": 13454,
+   "subject": "sociology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.4535,
+    -0.016,
+    -8.891,
+    -9.391
+   ]
+  },
+  {
+   "row": 13480,
+   "subject": "sociology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -6.1087,
+    -6.4837,
+    -0.4837,
+    -0.9837
+   ]
+  },
+  {
+   "row": 13498,
+   "subject": "sociology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0047,
+    -7.1922,
+    -8.9422,
+    -8.6297
+   ]
+  },
+  {
+   "row": 13504,
+   "subject": "sociology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.697,
+    -8.6345,
+    -5.7595,
+    -0.0095
+   ]
+  },
+  {
+   "row": 13509,
+   "subject": "sociology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.8772,
+    -12.6272,
+    -10.8147,
+    -0.0022
+   ]
+  },
+  {
+   "row": 13588,
+   "subject": "sociology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -8.6386,
+    -11.4511,
+    -0.0136,
+    -8.3261
+   ]
+  },
+  {
+   "row": 13598,
+   "subject": "sociology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.4491,
+    -0.0116,
+    -7.4491,
+    -8.2616
+   ]
+  },
+  {
+   "row": 13620,
+   "subject": "us_foreign_policy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.3269,
+    -0.0144,
+    -9.2019,
+    -7.7019
+   ]
+  },
+  {
+   "row": 13624,
+   "subject": "us_foreign_policy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.6356,
+    -0.0106,
+    -5.6981,
+    -6.2606
+   ]
+  },
+  {
+   "row": 13625,
+   "subject": "us_foreign_policy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.0663,
+    -6.5038,
+    -5.5663,
+    -0.0663
+   ]
+  },
+  {
+   "row": 13628,
+   "subject": "us_foreign_policy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -8.3221,
+    -0.0096,
+    -9.5096,
+    -9.6346
+   ]
+  },
+  {
+   "row": 13645,
+   "subject": "us_foreign_policy",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.5706,
+    -0.0081,
+    -8.6956,
+    -9.8206
+   ]
+  },
+  {
+   "row": 13648,
+   "subject": "us_foreign_policy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -8.3163,
+    -11.1913,
+    -12.1288,
+    -0.0039
+   ]
+  },
+  {
+   "row": 13665,
+   "subject": "us_foreign_policy",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0037,
+    -8.6287,
+    -11.5037,
+    -8.8787
+   ]
+  },
+  {
+   "row": 13670,
+   "subject": "us_foreign_policy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.8788,
+    -10.8163,
+    -0.0038,
+    -8.1288
+   ]
+  },
+  {
+   "row": 13682,
+   "subject": "us_foreign_policy",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -7.3773,
+    -11.3148,
+    -0.0022,
+    -8.5023
+   ]
+  },
+  {
+   "row": 13694,
+   "subject": "us_foreign_policy",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -6.3191,
+    -9.3816,
+    -8.5691,
+    -0.0066
+   ]
+  },
+  {
+   "row": 13707,
+   "subject": "virology",
+   "answer": 1,
+   "pred": 0,
+   "logprobs": [
+    -0.2049,
+    -3.4549,
+    -2.7049,
+    -3.3299
+   ]
+  },
+  {
+   "row": 13727,
+   "subject": "virology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.4435,
+    -5.3185,
+    -4.4435,
+    -0.0685
+   ]
+  },
+  {
+   "row": 13739,
+   "subject": "virology",
+   "answer": 3,
+   "pred": 2,
+   "logprobs": [
+    -1.3241,
+    -1.5741,
+    -0.6991,
+    -4.0741
+   ]
+  },
+  {
+   "row": 13743,
+   "subject": "virology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0109,
+    -9.0734,
+    -10.2609,
+    -8.7609
+   ]
+  },
+  {
+   "row": 13758,
+   "subject": "virology",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -4.9764,
+    -0.0389,
+    -6.4139,
+    -7.4139
+   ]
+  },
+  {
+   "row": 13774,
+   "subject": "virology",
+   "answer": 2,
+   "pred": 0,
+   "logprobs": [
+    -0.0844,
+    -3.7094,
+    -8.0219,
+    -2.9594
+   ]
+  },
+  {
+   "row": 13780,
+   "subject": "virology",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0091,
+    -6.0091,
+    -7.8216,
+    -6.3841
+   ]
+  },
+  {
+   "row": 13801,
+   "subject": "virology",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -2.7021,
+    -7.3271,
+    -7.8896,
+    -0.0771
+   ]
+  },
+  {
+   "row": 13806,
+   "subject": "virology",
+   "answer": 2,
+   "pred": 2,
+   "logprobs": [
+    -3.9186,
+    -5.5436,
+    -0.0436,
+    -5.7311
+   ]
+  },
+  {
+   "row": 13829,
+   "subject": "virology",
+   "answer": 0,
+   "pred": 2,
+   "logprobs": [
+    -6.1297,
+    -10.6922,
+    -0.0047,
+    -8.5672
+   ]
+  },
+  {
+   "row": 13883,
+   "subject": "world_religions",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -7.508,
+    -0.008,
+    -8.1955,
+    -10.633
+   ]
+  },
+  {
+   "row": 13896,
+   "subject": "world_religions",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.004,
+    -7.254,
+    -8.379,
+    -7.754
+   ]
+  },
+  {
+   "row": 13904,
+   "subject": "world_religions",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0081,
+    -8.7581,
+    -8.5706,
+    -8.1956
+   ]
+  },
+  {
+   "row": 13913,
+   "subject": "world_religions",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0038,
+    -10.5663,
+    -8.1913,
+    -11.0663
+   ]
+  },
+  {
+   "row": 13918,
+   "subject": "world_religions",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -9.9555,
+    -11.2055,
+    -10.7055,
+    -0.018
+   ]
+  },
+  {
+   "row": 13944,
+   "subject": "world_religions",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.0114,
+    -9.7614,
+    -11.3239,
+    -10.0114
+   ]
+  },
+  {
+   "row": 13965,
+   "subject": "world_religions",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -3.0483,
+    -3.2983,
+    -1.7983,
+    -0.2983
+   ]
+  },
+  {
+   "row": 13968,
+   "subject": "world_religions",
+   "answer": 0,
+   "pred": 0,
+   "logprobs": [
+    -0.6715,
+    -7.359,
+    -0.7965,
+    -3.9215
+   ]
+  },
+  {
+   "row": 14000,
+   "subject": "world_religions",
+   "answer": 3,
+   "pred": 3,
+   "logprobs": [
+    -5.2783,
+    -4.4033,
+    -6.5908,
+    -0.0283
+   ]
+  },
+  {
+   "row": 14006,
+   "subject": "world_religions",
+   "answer": 1,
+   "pred": 1,
+   "logprobs": [
+    -6.5684,
+    -0.0059,
+    -8.1309,
+    -8.7559
+   ]
+  }
+ ]
+}
